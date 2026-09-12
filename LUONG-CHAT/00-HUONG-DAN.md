@@ -2,13 +2,94 @@
 
 ## Cách mở một luồng mới
 
-Mở session Claude Code mới, dán đúng một câu:
+Mở session Claude Code mới, dán đúng một câu. Không kể lại bối cảnh, không dán code — file brief là đủ.
 
+### Prompt sẵn, theo đúng thứ tự nên làm
+
+**01 — Nền tảng & CSDL**
 ```
-Đọc CLAUDE.md và LUONG-CHAT/<tên file>.md rồi bắt đầu.
+Đọc CLAUDE.md, HIEU-NANG.md và LUONG-CHAT/01-nen-tang.md rồi bắt đầu.
 ```
 
-Không kể lại bối cảnh. Không dán code. Hai file đó là đủ.
+**02 — Tin đăng xe**
+```
+Đọc CLAUDE.md, CHANGELOG.md, HIEU-NANG.md và LUONG-CHAT/02-tin-dang.md rồi bắt đầu.
+```
+
+**04 — Tìm kiếm & bộ lọc**
+```
+Đọc CLAUDE.md, CHANGELOG.md, HIEU-NANG.md và LUONG-CHAT/04-tim-kiem.md rồi bắt đầu.
+```
+
+**05 — Trang chi tiết xe**
+```
+Đọc CLAUDE.md, CHANGELOG.md, HIEU-NANG.md và LUONG-CHAT/05-trang-xe.md rồi bắt đầu.
+```
+
+**03 — Bảng điều khiển chủ xe**
+```
+Đọc CLAUDE.md, CHANGELOG.md, HIEU-NANG.md và LUONG-CHAT/03-chu-xe.md rồi bắt đầu.
+```
+
+**06 — Ví token & thanh toán** ⚠️ nhạy cảm nhất
+```
+Đọc CLAUDE.md, CHANGELOG.md và LUONG-CHAT/06-vi-token.md rồi bắt đầu.
+Đọc kỹ mục "Luật kế toán" trước khi viết dòng code đầu tiên.
+```
+
+**08 — Tin cậy & kiểm duyệt**
+```
+Đọc CLAUDE.md, CHANGELOG.md và LUONG-CHAT/08-tin-cay.md rồi bắt đầu.
+```
+
+**10 — Trang quản trị**
+```
+Đọc CLAUDE.md, CHANGELOG.md, HIEU-NANG.md và LUONG-CHAT/10-quan-tri.md rồi bắt đầu.
+```
+
+**11 — Thông báo**
+```
+Đọc CLAUDE.md, CHANGELOG.md và LUONG-CHAT/11-thong-bao.md rồi bắt đầu.
+```
+
+**12 — Pháp lý & trang tĩnh**
+```
+Đọc CLAUDE.md, CHANGELOG.md và LUONG-CHAT/12-phap-ly.md rồi bắt đầu.
+```
+
+**09 — Đánh giá thật** *(để sau)*
+```
+Đọc CLAUDE.md, CHANGELOG.md và LUONG-CHAT/09-danh-gia.md rồi bắt đầu.
+Trước khi code, trình bày 3 phương án A/B/C trong brief và chờ anh chọn.
+```
+
+**07 — Đẩy tin** *(để sau)*
+```
+Đọc CLAUDE.md, CHANGELOG.md và LUONG-CHAT/07-day-tin.md rồi bắt đầu.
+Kiểm tra điều kiện mở luồng trước: có tỉnh nào trên 50 tin đang hiển thị chưa?
+```
+
+### Câu dùng chung
+
+Khi luồng đi lạc phạm vi:
+```
+Dừng. Việc này ngoài phạm vi brief. Ghi lại vào CHANGELOG rồi báo anh.
+```
+
+Chốt sổ giữa chừng:
+```
+Chạy scripts/backup.ps1, commit, ghi một dòng vào CHANGELOG.md, rồi tóm tắt việc đã xong.
+```
+
+Nghi luồng làm lại việc cũ:
+```
+Đọc CHANGELOG.md trước. Việc này đã làm chưa?
+```
+
+### Chạy song song
+
+Sau khi 01 xong, **02 / 04 / 05 chạy song song được** — không đụng file của nhau.
+**03 và 06 phải chờ 02** vì ăn dữ liệu của nó.
 
 ## 12 luồng
 
