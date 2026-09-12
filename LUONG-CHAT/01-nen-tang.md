@@ -30,14 +30,21 @@ Tất cả các bảng, kể cả bảng của luồng sau — để schema là 
 
 ```
 users, user_roles
-listings, listing_images, listing_blocked_dates, listing_events
+listings, listing_images, listing_blocked_dates, listing_events, saved_listings
 wallets, wallet_transactions, topups, charges, boosts
 reviews, reports, moderation_queue, otp_codes
-events                      -- view_listing, reveal_phone, search, topup, renew
+events                      -- view_listing, reveal_phone, click_call, click_zalo, search, topup, renew
+events_daily                -- bảng tổng hợp theo ngày, cron gộp mỗi đêm
 notifications
 brands, models, provinces, districts, amenities
 admin_actions               -- nhật ký thao tác admin, không được xoá
 ```
+
+Ngoài bảng, luồng này phải tạo sẵn:
+- View **`listing_card`** — chỉ ~10 cột cho thẻ xe trong danh sách (`HIEU-NANG.md` mục 2.1). Cấm để luồng sau `select *`.
+- `listing_images` có cột **`blur_base64`** (< 1 KB) để trả kèm JSON, không tốn request.
+- Index theo `HIEU-NANG.md` mục 2.3.
+- Cron gộp `events` → `events_daily`, dọn bảng thô sau 90 ngày.
 
 Quy ước bắt buộc:
 - Tên bảng/cột **snake_case tiếng Anh**. Nội dung hiển thị tiếng Việt.

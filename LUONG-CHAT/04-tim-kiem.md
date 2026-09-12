@@ -3,6 +3,7 @@
 > Mở luồng mới, dán: `Đọc CLAUDE.md và LUONG-CHAT/04-tim-kiem.md rồi bắt đầu.`
 
 **Phụ thuộc:** 01, 02 · **Chặn:** không
+**Bắt buộc đọc thêm:** `HIEU-NANG.md` mục 2 (truy vấn), 3 (bundle), 4 (render)
 
 ---
 
@@ -56,6 +57,10 @@ Chỉ trả về tin `status = dang_hien_thi`.
 - [ ] Bộ lọc lưu trong URL
 - [ ] Tin hết hạn / bị ẩn **không** xuất hiện
 - [ ] 1.000 tin mẫu vẫn trả kết quả dưới 300ms
+- [ ] Phân trang **cursor**, 20 tin/lần, không dùng `OFFSET`, không đếm tổng
+- [ ] Thẻ xe dùng ảnh `thumb` + nền `blur`, không dùng ảnh gốc
+- [ ] Ô tìm kiếm debounce 300ms, huỷ request cũ
+- [ ] Trang tìm kiếm 20 thẻ: tổng tải **dưới 500 KB**, Lighthouse mobile ≥ 90
 - [ ] Ghi một dòng vào `CHANGELOG.md`
 
 ## Cấm

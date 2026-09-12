@@ -3,6 +3,7 @@
 > Mở luồng mới, dán: `Đọc CLAUDE.md và LUONG-CHAT/03-chu-xe.md rồi bắt đầu.`
 
 **Phụ thuộc:** 01, 02 · **Chặn:** 06
+**Bắt buộc đọc thêm:** `HIEU-NANG.md` mục 2.4 — số liệu đọc từ bảng tổng hợp `events_daily`, **cấm quét bảng `events` thô**
 
 ---
 

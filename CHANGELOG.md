@@ -22,6 +22,7 @@ Quy tắc:
 
 | Ngày | Luồng | Nội dung | File |
 |---|---|---|---|
+| 2026-09-12 | nền tảng | 🔒 Thêm `HIEU-NANG.md`: ngân sách LCP/CLS/INP, ảnh 4 cỡ + blur base64, cursor pagination, `listing_card`, `events_daily` | `HIEU-NANG.md`, `CLAUDE.md`, brief 01–05 |
 | 2026-09-12 | nền tảng | Tạo 12 brief luồng chat trong `LUONG-CHAT/` | `LUONG-CHAT/*.md` |
 | 2026-09-12 | nền tảng | Thêm luật chống mất code, `.gitignore`, script sao lưu, khởi tạo Git | `CLAUDE.md`, `.gitignore`, `scripts/backup.ps1` |
 | 2026-09-12 | nền tảng | 🔒 Chốt mô hình giá: ví token, 1 token = 4.000đ, 10 token/xe/tháng, bỏ gói vĩnh viễn | `CLAUDE.md`, `QUYET-DINH.md` |

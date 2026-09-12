@@ -36,6 +36,17 @@ Tài liệu gốc cho mọi luồng chat. **Đọc file này + `CHANGELOG.md` tr
 - **Không xoá cứng dữ liệu.** Soft delete bằng `deleted_at`.
 - Phân tách rõ luồng **Khách thuê** và **Chủ xe**.
 
+### 1.4 Hiệu năng
+Người dùng là **điện thoại Android tầm trung, mạng 4G chập chờn**. Ngân sách bắt buộc: **LCP < 2,5s · CLS < 0,1 · INP < 200ms · JS lần đầu < 150 KB gzip · trang tìm kiếm < 500 KB**.
+
+Chi tiết đầy đủ ở **`HIEU-NANG.md`** — file này **bắt buộc đọc** với luồng 02, 03, 04, 05, 10. Vượt ngân sách thì **không được coi là xong**.
+
+Bốn luật hay bị quên nhất:
+- Ảnh sinh sẵn 4 cỡ (`blur` base64 < 1 KB → `thumb` 400w → `medium` 800w → `full` 1600w). **Cấm trả ảnh gốc ra danh sách.**
+- Mọi `<img>` phải có `width`/`height` hoặc `aspect-ratio`, nếu không trang sẽ nhảy.
+- Danh sách phân trang bằng **cursor**, cấm `OFFSET`. Cấm `select *`.
+- `lucide-react` **import từng icon**, cấm import cả gói (hơn 1 MB).
+
 ---
 
 ## 2. 🛡️ Luật chống phá code & mất code
@@ -105,7 +116,7 @@ Tài liệu gốc cho mọi luồng chat. **Đọc file này + `CHANGELOG.md` tr
 
 **Thứ tự:** `01 → 02 → 04 → 05 → 03 → 06 → 08 → 10 → 11 → 12 → 09 → 07`
 
-**Luật:** luồng module **chỉ đọc** `CLAUDE.md`, `CHANGELOG.md`, brief của mình, thư mục module của mình, `contracts/`. **Chỉ luồng nền tảng** được sửa `CLAUDE.md` và `contracts/`.
+**Luật:** luồng module **chỉ đọc** `CLAUDE.md`, `CHANGELOG.md`, brief của mình, thư mục module của mình, `contracts/`, và `HIEU-NANG.md` (với luồng 02, 03, 04, 05, 10). **Chỉ luồng nền tảng** được sửa `CLAUDE.md`, `HIEU-NANG.md` và `contracts/`.
 
 ---
 

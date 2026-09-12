@@ -3,6 +3,7 @@
 > Mở luồng mới, dán: `Đọc CLAUDE.md và LUONG-CHAT/02-tin-dang.md rồi bắt đầu.`
 
 **Phụ thuộc:** 01 · **Chặn:** 03, 04, 05, 08
+**Bắt buộc đọc thêm:** `HIEU-NANG.md` mục 1 (ảnh)
 
 ---
 
@@ -52,6 +53,8 @@ Cả hai gói **đều tốn 10 token/tháng**. Gói Đầy Đủ không phải 
 - [ ] Đăng được xe mới, lưu vào Postgres
 - [ ] Sửa được xe đã đăng
 - [ ] Upload ≥ 5 ảnh, nén ở client, chọn được ảnh bìa
+- [ ] Mỗi ảnh sinh đủ **4 bản**: `blur` base64 <1KB, `thumb` 400w, `medium` 800w, `full` 1600w (WebP)
+- [ ] `blur` lưu thẳng vào cột trong `listing_images` để trả kèm JSON, không tốn request
 - [ ] Lịch chặn ngày lưu và hiện lại đúng
 - [ ] Tin có `expires_at`, đổi trạng thái đúng vòng đời
 - [ ] Graceful degradation: gói Cơ Bản thiếu dữ liệu thì **ẩn UI**, không hiện ô trống

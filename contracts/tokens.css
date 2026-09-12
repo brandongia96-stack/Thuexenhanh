@@ -1,0 +1,230 @@
+/* ============================================================
+   contracts/tokens.css — Design token Thuexenhanh v0.2
+   HỢP ĐỒNG CHUNG. Chỉ luồng 01 được sửa file này.
+   Luật: CSS thuần. KHÔNG Tailwind. Cấm hardcode mã màu mới —
+         thiếu token thì dừng lại, báo anh, thêm ở đây.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
+:root {
+  /* ─── Màu thương hiệu ───
+     Lưu ý: tên là --m-green nhưng giá trị THỰC TẾ là xanh dương.
+     Giữ nguyên tên để khỏi phải sửa toàn bộ code cũ khi tham chiếu. */
+  --m-green:        #3b82f6;
+  --m-green-hover:  #2563eb;
+  --m-green-light:  #eff6ff;
+  --m-green-border: #bfdbfe;
+
+  /* ─── Chữ ─── */
+  --m-dark:   #141414;
+  --m-mid:    #4b4f56;
+  --m-subtle: #8a8f9a;
+
+  /* ─── Nền ─── */
+  --m-bg:      #f5f5f7;
+  --m-surface: #ffffff;
+  --m-border:  #e8e8ec;
+
+  /* ─── Ngữ nghĩa ─── */
+  --m-red:      #e8364b;
+  --m-red-bg:   #fff0f2;
+  --m-amber:    #f59e0b;
+  --m-amber-bg: #fffbeb;
+  --m-blue:     #3b82f6;
+  --m-blue-bg:  #eff6ff;
+  --m-green-ok: #16a34a;
+  --m-green-ok-bg: #f0fdf4;
+  --m-zalo:     #0068ff;
+
+  /* ─── Đổ bóng ─── */
+  --shadow-sm: 0 1px 3px rgba(0,0,0,.06), 0 1px 2px rgba(0,0,0,.04);
+  --shadow-md: 0 4px 16px rgba(0,0,0,.07), 0 2px 6px rgba(0,0,0,.04);
+  --shadow-lg: 0 12px 40px rgba(0,0,0,.10), 0 4px 12px rgba(0,0,0,.06);
+  --shadow-xl: 0 24px 64px rgba(0,0,0,.14), 0 8px 24px rgba(0,0,0,.08);
+
+  /* ─── Bo góc ─── */
+  --r-sm: 8px;
+  --r-md: 12px;
+  --r-lg: 16px;
+  --r-xl: 20px;
+  --r-full: 9999px;
+
+  /* ─── Khoảng cách ─── */
+  --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;
+  --sp-5: 20px; --sp-6: 24px; --sp-8: 32px; --sp-10: 40px;
+
+  /* ─── Chuyển động ─── */
+  --t-fast: .15s cubic-bezier(.4,0,.2,1);
+  --t-mid:  .25s cubic-bezier(.4,0,.2,1);
+  --t-slow: .4s  cubic-bezier(.4,0,.2,1);
+
+  /* ─── Bố cục ─── */
+  --w-page: 1200px;
+  --h-header: 64px;
+  --z-header: 100;
+  --z-sheet: 200;
+  --z-modal: 300;
+
+  /* ─── Chữ ─── */
+  font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  font-size: 15px;
+  color-scheme: light;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ─── Reset ─── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  background: var(--m-bg);
+  color: var(--m-dark);
+  min-width: 320px;
+  line-height: 1.5;
+}
+
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; border: none; background: none; }
+a { text-decoration: none; color: inherit; }
+img { max-width: 100%; display: block; }
+ul, ol { list-style: none; }
+
+:focus-visible {
+  outline: 2px solid var(--m-green);
+  outline-offset: 2px;
+}
+
+/* ============================================================
+   COMPONENT CHUNG — dùng chung cho mọi luồng.
+   Luồng module được dùng, KHÔNG được sửa. Cần thêm → báo luồng 01.
+   ============================================================ */
+
+/* ─── Nút ─── */
+.btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  height: 44px; padding: 0 var(--sp-5);
+  border-radius: var(--r-md);
+  font-weight: 600; font-size: 15px;
+  transition: background var(--t-fast), box-shadow var(--t-fast), transform var(--t-fast);
+  white-space: nowrap;
+}
+.btn:active:not(:disabled) { transform: translateY(1px); }
+.btn:disabled { opacity: .5; cursor: not-allowed; }
+
+.btn-primary { background: var(--m-green); color: #fff; box-shadow: var(--shadow-sm); }
+.btn-primary:hover:not(:disabled) { background: var(--m-green-hover); box-shadow: var(--shadow-md); }
+
+.btn-ghost { background: var(--m-surface); color: var(--m-dark); box-shadow: inset 0 0 0 1px var(--m-border); }
+.btn-ghost:hover:not(:disabled) { background: var(--m-bg); }
+
+.btn-soft { background: var(--m-green-light); color: var(--m-green-hover); }
+.btn-soft:hover:not(:disabled) { background: var(--m-green-border); }
+
+.btn-danger { background: var(--m-red-bg); color: var(--m-red); }
+.btn-zalo   { background: var(--m-zalo); color: #fff; }
+
+.btn-sm  { height: 36px; padding: 0 var(--sp-3); font-size: 14px; border-radius: var(--r-sm); }
+.btn-lg  { height: 52px; padding: 0 var(--sp-6); font-size: 16px; }
+.btn-block { width: 100%; }
+
+/* ─── Thẻ ─── */
+.card {
+  background: var(--m-surface);
+  border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  transition: box-shadow var(--t-mid), transform var(--t-mid);
+}
+.card-hover:hover { box-shadow: var(--shadow-lg); transform: translateY(-2px); }
+.card-pad { padding: var(--sp-5); }
+
+/* ─── Ô nhập ─── */
+.field { display: flex; flex-direction: column; gap: var(--sp-2); }
+.field-label { font-size: 13px; font-weight: 600; color: var(--m-mid); }
+.field-hint  { font-size: 12px; color: var(--m-subtle); }
+.field-error { font-size: 12px; color: var(--m-red); }
+
+.input, .select, .textarea {
+  height: 44px; padding: 0 var(--sp-3);
+  background: var(--m-surface);
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-md);
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
+  width: 100%;
+}
+.textarea { height: auto; min-height: 96px; padding: var(--sp-3); resize: vertical; }
+.input:focus, .select:focus, .textarea:focus {
+  outline: none;
+  border-color: var(--m-green);
+  box-shadow: 0 0 0 3px var(--m-green-light);
+}
+.input[aria-invalid='true'] { border-color: var(--m-red); }
+.input::placeholder, .textarea::placeholder { color: var(--m-subtle); }
+
+/* ─── Nhãn ─── */
+.badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  height: 24px; padding: 0 var(--sp-2);
+  border-radius: var(--r-full);
+  font-size: 12px; font-weight: 600;
+}
+.badge-verified { background: var(--m-green-ok-bg); color: var(--m-green-ok); }
+.badge-info     { background: var(--m-blue-bg);  color: var(--m-blue); }
+.badge-warn     { background: var(--m-amber-bg); color: var(--m-amber); }
+.badge-danger   { background: var(--m-red-bg);   color: var(--m-red); }
+.badge-neutral  { background: var(--m-bg);       color: var(--m-mid); }
+
+/* ─── Trạng thái rỗng ───
+   Luật: thiếu dữ liệu thì ẩn cả khối. Chỉ dùng khối này khi
+   sự vắng mặt là thông tin có ý nghĩa ("Chưa có đánh giá"). */
+.empty {
+  display: flex; flex-direction: column; align-items: center; gap: var(--sp-3);
+  padding: var(--sp-10) var(--sp-5);
+  text-align: center; color: var(--m-subtle);
+}
+.empty-title { font-weight: 600; color: var(--m-mid); }
+
+/* ─── Khung xương khi đang tải ─── */
+.skeleton {
+  background: linear-gradient(90deg, var(--m-bg) 25%, #ececf0 50%, var(--m-bg) 75%);
+  background-size: 200% 100%;
+  animation: skeleton 1.4s ease-in-out infinite;
+  border-radius: var(--r-sm);
+}
+@keyframes skeleton { from { background-position: 200% 0 } to { background-position: -200% 0 } }
+
+/* ─── Bố cục ─── */
+.page { max-width: var(--w-page); margin: 0 auto; padding: var(--sp-6) var(--sp-4); }
+.row  { display: flex; align-items: center; gap: var(--sp-3); }
+.stack { display: flex; flex-direction: column; gap: var(--sp-4); }
+.grid-cards {
+  display: grid; gap: var(--sp-4);
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+/* ─── Chữ ─── */
+.t-h1 { font-size: 28px; font-weight: 800; letter-spacing: -.02em; }
+.t-h2 { font-size: 20px; font-weight: 700; letter-spacing: -.01em; }
+.t-h3 { font-size: 17px; font-weight: 700; }
+.t-body  { font-size: 15px; color: var(--m-mid); }
+.t-small { font-size: 13px; color: var(--m-subtle); }
+.t-price { font-size: 18px; font-weight: 800; color: var(--m-green); }
+
+/* ─── Miễn trừ trách nhiệm ───
+   BẮT BUỘC xuất hiện ở mọi trang chi tiết xe. */
+.disclaimer {
+  padding: var(--sp-3);
+  background: var(--m-bg);
+  border-radius: var(--r-md);
+  font-size: 12px; color: var(--m-subtle); line-height: 1.6;
+}
+
+@media (max-width: 640px) {
+  .page { padding: var(--sp-4) var(--sp-3); }
+  .t-h1 { font-size: 23px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; }
+}

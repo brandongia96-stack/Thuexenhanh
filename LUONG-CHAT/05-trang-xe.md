@@ -3,6 +3,7 @@
 > Mở luồng mới, dán: `Đọc CLAUDE.md và LUONG-CHAT/05-trang-xe.md rồi bắt đầu.`
 
 **Phụ thuộc:** 01, 02 · **Chặn:** 09
+**Bắt buộc đọc thêm:** `HIEU-NANG.md` mục 1.4 (slider), 5 (cache), 6 (cảm nhận nhanh)
 
 ---
 
@@ -59,6 +60,10 @@ Ghi: `events`, `saved_listings`
 - [ ] Lưu xe **lưu thật vào CSDL** *(code cũ chỉ đổi state, không lưu)*
 - [ ] Có dòng miễn trừ trách nhiệm
 - [ ] Tin hết hạn mở link trực tiếp → hiện "Tin đã hết hạn", không hiện số điện thoại
+- [ ] Ảnh bìa dùng `medium`; `full` **chỉ tải khi bấm phóng to**; slider prefetch đúng 1 ảnh kế tiếp
+- [ ] Bấm tim "Lưu xe" đổi màu ngay (optimistic), lỗi thì hoàn lại
+- [ ] Bấm **Quay lại** hiện lại danh sách tức thì, đúng vị trí đã cuộn
+- [ ] Bản đồ là **ảnh tĩnh + nút "Mở bản đồ"**, không nhúng iframe
 - [ ] Ghi một dòng vào `CHANGELOG.md`
 
 ## Cấm
