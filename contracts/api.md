@@ -86,6 +86,8 @@ type ListingCard = {
   cover_blur: string | null    // base64 20px, < 1KB, hiện ngay, 0 request
   cover_width: number | null   // bắt buộc đặt aspect-ratio -> không vỡ CLS
   cover_height: number | null
+  // Hai cột dưới CHỈ để lọc ở luồng 04, KHÔNG hiển thị và không select vào
+  // payload: `search_tsv` (tìm full-text đã bỏ dấu), `amenity_codes` (lọc tiện nghi).
 }
 
 type WalletBalance = {
@@ -141,6 +143,15 @@ supabase.from('events_daily').select('day,kind,count')
 ```
 
 Tìm kiếm toàn văn (luồng 04): dùng cột `search_tsv`, khớp chuỗi đã bỏ dấu.
+
+```js
+// tsquery dựng ở client: bỏ dấu, cắt token, thêm `:*` để khớp tiền tố.
+// Cấu hình PHẢI là 'simple' — khớp với to_tsvector('simple', unaccent(...)) lúc ghi.
+supabase.from('listing_card')
+  .select('id,brand_text,model_text,price_per_day,cover_thumb,cover_blur,...')
+  .textSearch('search_tsv', 'vinfast:* & (vf8:* | (vf:* & 8:*))', { config: 'simple' })
+  .contains('amenity_codes', ['ghe_da', 'cam_lui'])   // lọc tiện nghi
+```
 Debounce 300ms, huỷ request cũ bằng `AbortController` (HIEU-NANG.md mục 2.5).
 
 ---

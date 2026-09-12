@@ -179,7 +179,9 @@ create index listings_search_idx        on listings using gin (search_tsv);
 -- Cron quét tin sắp hết hạn / hết hạn.
 create index listings_expiry_idx on listings (status, expires_at);
 -- Lọc theo khoảng giá, chỉ trên tin còn hiển thị.
-create index listings_price_idx on listings (price_per_day)
+-- (price_per_day, id): sắp xếp theo giá cũng phân trang KEYSET, nên id phải nằm
+-- trong index, không thì Postgres vẫn phải sort lại từ đầu mỗi trang.
+create index listings_price_idx on listings (price_per_day, id)
   where status in ('dang_hien_thi', 'sap_het_han') and deleted_at is null;
 
 -- Mỗi ảnh lưu 4 bản (HIEU-NANG.md muc 1.1). CẤM trả ảnh gốc ra danh sách.
@@ -254,6 +256,14 @@ select
   l.published_at,
   l.expires_at,
   l.owner_id,
+  -- Hai cột dưới KHÔNG để hiển thị, chỉ để LỌC qua PostgREST (luồng 04):
+  --   · search_tsv    -> tìm full-text tiếng Việt đã bỏ dấu
+  --   · amenity_codes -> lọc tiện nghi
+  -- Thiếu chúng ở view thì trang tìm kiếm phải gọi 2 lượt mạng mỗi trang,
+  -- vỡ ngân sách 4G (HIEU-NANG.md mục 0). Client luôn liệt kê cột rõ ràng khi
+  -- select nên search_tsv không bao giờ bị tải về trong payload.
+  l.amenity_codes,
+  l.search_tsv,
   -- Ảnh: chỉ bản thumb + blur nhúng sẵn. Tuyệt đối không trả ảnh gốc.
   i.url_thumb   as cover_thumb,
   i.blur_base64 as cover_blur,
