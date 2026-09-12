@@ -1,0 +1,92 @@
+/* listing/media — chọn và sắp xếp ảnh xe. Chỉ dùng token từ contracts/tokens.css. */
+
+.ua { display: flex; flex-direction: column; gap: var(--sp-4); }
+
+.ua-tha {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: var(--sp-2);
+  min-height: 148px;
+  padding: var(--sp-6) var(--sp-4);
+  text-align: center;
+  color: var(--m-mid);
+  background: var(--m-bg);
+  border-radius: var(--r-md);
+  /* Viền nét đứt chỉ dùng cho vùng thả file — không phải thành phần chính,
+     nên không phạm luật "không border: dashed" trong CLAUDE.md mục 7. */
+  border: 1.5px dashed var(--m-border);
+  cursor: pointer;
+  transition: border-color var(--t-fast), background var(--t-fast);
+}
+.ua-tha:hover, .ua-tha:focus-visible {
+  border-color: var(--m-green);
+  background: var(--m-green-light);
+}
+
+.ua-quay { animation: ua-quay 1s linear infinite; }
+@keyframes ua-quay { to { transform: rotate(360deg) } }
+
+.ua-loi { display: flex; flex-direction: column; gap: var(--sp-1); }
+
+.ua-luoi {
+  display: grid; gap: var(--sp-3);
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+
+.ua-o {
+  display: flex; flex-direction: column; gap: var(--sp-2);
+}
+
+.ua-khung {
+  position: relative;
+  border-radius: var(--r-md);
+  overflow: hidden;
+  background-color: var(--m-bg);
+  /* Bản mờ 20px phóng to làm nền — có hình ngay trước khi ảnh thật tải xong. */
+  background-size: cover;
+  background-position: center;
+  box-shadow: var(--shadow-sm);
+}
+
+.ua-khung img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  /* Chuyển mờ → nét bằng opacity, không đổi đột ngột (HIEU-NANG mục 6). */
+  animation: ua-hien var(--t-mid) ease-out;
+}
+@keyframes ua-hien { from { opacity: 0 } to { opacity: 1 } }
+
+.ua-nhan-bia {
+  position: absolute; top: var(--sp-2); left: var(--sp-2);
+  display: inline-flex; align-items: center; gap: 4px;
+  height: 22px; padding: 0 var(--sp-2);
+  border-radius: var(--r-full);
+  background: var(--m-green); color: #fff;
+  font-size: 11px; font-weight: 700;
+}
+
+.ua-nhan-moi {
+  position: absolute; bottom: var(--sp-2); left: var(--sp-2);
+  padding: 2px var(--sp-2);
+  border-radius: var(--r-full);
+  background: rgba(20, 20, 20, .72); color: #fff;
+  font-size: 10px; font-weight: 600;
+}
+
+.ua-nut { display: flex; gap: 2px; }
+.ua-nut button {
+  flex: 1;
+  display: inline-flex; align-items: center; justify-content: center;
+  height: 32px;
+  border-radius: var(--r-sm);
+  color: var(--m-mid);
+  transition: background var(--t-fast), color var(--t-fast);
+}
+.ua-nut button:hover:not(:disabled) { background: var(--m-green-light); color: var(--m-green-hover); }
+.ua-nut button:disabled { opacity: .3; cursor: not-allowed; }
+.ua-nut .ua-xoa:hover:not(:disabled) { background: var(--m-red-bg); color: var(--m-red); }
+
+@media (max-width: 640px) {
+  .ua-luoi { grid-template-columns: repeat(2, 1fr); }
+  /* Ngón tay cần vùng bấm lớn hơn con trỏ chuột. */
+  .ua-nut button { height: 38px; }
+}

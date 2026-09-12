@@ -1,0 +1,118 @@
+/* listing/availability — lịch chặn ngày.
+   Chỉ dùng token var(--m-...) / var(--r-...) / var(--sp-...) từ contracts/tokens.css.
+   Không hardcode mã màu mới. */
+
+.lcn { display: flex; flex-direction: column; gap: var(--sp-4); }
+
+.lcn-huong-dan { min-height: 22px; }
+.lcn-dang-chon {
+  display: inline-flex; align-items: center; gap: var(--sp-2); flex-wrap: wrap;
+  font-size: 13px; font-weight: 600; color: var(--m-green);
+}
+.lcn-dem { color: var(--m-dark); }
+.lcn-huy {
+  font-size: 12px; color: var(--m-red); text-decoration: underline;
+}
+
+.lcn-hai-thang {
+  display: grid; gap: var(--sp-5);
+  grid-template-columns: 1fr 1fr;
+  padding: var(--sp-4);
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-md);
+  background: var(--m-surface);
+}
+
+.lcn-thang { display: flex; flex-direction: column; gap: var(--sp-2); }
+
+.lcn-dau {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 14px;
+}
+.lcn-nut-thang {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 30px; height: 30px;
+  border-radius: var(--r-sm);
+  color: var(--m-mid);
+  transition: background var(--t-fast);
+}
+.lcn-nut-thang:hover { background: var(--m-bg); }
+.lcn-an { visibility: hidden; }
+
+.lcn-luoi {
+  display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px;
+}
+.lcn-thu {
+  font-size: 11px; font-weight: 600; color: var(--m-subtle); text-align: center;
+  margin-bottom: 2px;
+}
+
+/* Ô ngày vuông, không đổi kích thước khi bấm → không gây nhảy layout. */
+.lcn-ngay {
+  aspect-ratio: 1;
+  display: flex; align-items: center; justify-content: center;
+  border-radius: var(--r-sm);
+  font-size: 13px; font-weight: 500;
+  color: var(--m-dark);
+  transition: background var(--t-fast), color var(--t-fast);
+}
+.lcn-ngay:hover:not(:disabled) { background: var(--m-green-light); }
+
+.lcn-qua { color: var(--m-subtle); opacity: .4; cursor: not-allowed; }
+
+.lcn-chan {
+  background: var(--m-red-bg);
+  color: var(--m-red);
+  font-weight: 700;
+  text-decoration: line-through;
+}
+.lcn-chan:hover:not(:disabled) { background: var(--m-red-bg); }
+
+.lcn-re { background: var(--m-green-light); color: var(--m-green-hover); }
+
+.lcn-dau-chon { background: var(--m-green); color: #fff; font-weight: 700; }
+.lcn-dau-chon:hover:not(:disabled) { background: var(--m-green); }
+
+/* ─── Khối sửa ghi chú ─── */
+.lcn-sua {
+  display: flex; flex-direction: column; gap: var(--sp-3);
+  padding: var(--sp-4);
+  background: var(--m-green-light);
+  border-radius: var(--r-md);
+}
+.lcn-dong {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; flex-shrink: 0;
+  border-radius: var(--r-sm);
+  color: var(--m-subtle);
+  transition: background var(--t-fast), color var(--t-fast);
+}
+.lcn-dong:hover { background: var(--m-red-bg); color: var(--m-red); }
+
+/* ─── Danh sách các đợt ─── */
+.lcn-ds { display: flex; flex-direction: column; gap: var(--sp-1); }
+.lcn-ds li {
+  display: flex; align-items: center; gap: var(--sp-2);
+  border-radius: var(--r-sm);
+}
+.lcn-ds li:hover { background: var(--m-bg); }
+
+.lcn-ds-nut {
+  flex: 1; min-width: 0;
+  display: flex; align-items: center; gap: var(--sp-3);
+  padding: var(--sp-2) var(--sp-3);
+  text-align: left;
+}
+.lcn-ds-ngay { font-size: 14px; font-weight: 600; white-space: nowrap; }
+.lcn-ds-note {
+  font-size: 12px; color: var(--m-subtle);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  /* Một tháng mỗi lần trên điện thoại — hai lịch cạnh nhau thì ô ngày
+     bé hơn 40px, ngón tay bấm không trúng. */
+  .lcn-hai-thang { grid-template-columns: 1fr; }
+  .lcn-hai-thang > .lcn-thang:last-child { display: none; }
+  .lcn-ngay { font-size: 14px; }
+}
