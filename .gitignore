@@ -31,3 +31,6 @@ desktop.ini
 .DS_Store
 .vscode/
 .idea/
+
+# Build cua khung v0.2
+dist/

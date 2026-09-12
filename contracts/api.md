@@ -64,10 +64,29 @@ type Listing = {
   created_at: string
 }
 
-type ListingCard = Pick<Listing,
-  'id'|'brand_text'|'model_text'|'year'|'seats'|'transmission'
-  |'price_per_day'|'province_id'|'district_id'|'is_verified'|'expires_at'>
-  & { cover_url: string | null }
+// Đọc từ view `listing_card`. KHÔNG select * cho danh sách (HIEU-NANG.md 2.1).
+// Không có contact_phone: số chỉ lấy qua Edge Function reveal-phone.
+type ListingCard = {
+  id: Uuid
+  status: ListingStatus
+  brand_text: string
+  model_text: string
+  year: number | null
+  seats: number | null
+  transmission: 'so_san' | 'so_tu_dong' | null
+  fuel: 'xang' | 'dau' | 'dien' | 'hybrid' | null
+  price_per_day: number
+  province_id: number | null
+  district_id: number | null
+  is_verified: boolean
+  published_at: string | null
+  expires_at: string | null
+  owner_id: Uuid
+  cover_thumb: string | null   // 400w
+  cover_blur: string | null    // base64 20px, < 1KB, hiện ngay, 0 request
+  cover_width: number | null   // bắt buộc đặt aspect-ratio -> không vỡ CLS
+  cover_height: number | null
+}
 
 type WalletBalance = {
   wallet_id: Uuid
@@ -86,24 +105,43 @@ type WalletBalance = {
 ## 2. Đọc trực tiếp qua Supabase client
 
 ```js
-// Danh sách tin đang hiển thị
-supabase.from('listings')
-  .select('id,brand_text,model_text,year,seats,transmission,price_per_day,province_id,district_id,is_verified,listing_images(url,is_cover)')
+// Danh sách — LUÔN đọc view listing_card, không đọc bảng listings.
+// Phân trang KEYSET, không OFFSET. 20 tin mỗi lần, cuộn vô hạn.
+// Không đếm tổng số kết quả — chỉ cần biết còn nữa hay hết.
+const TRANG = 20
+let q = supabase.from('listing_card').select('*')
   .in('status', ['dang_hien_thi', 'sap_het_han'])
-  .is('deleted_at', null)
   .order('published_at', { ascending: false })
+  .order('id', { ascending: false })
+  .limit(TRANG + 1)                       // lấy dư 1 để biết "còn nữa"
 
-// Chi tiết tin — KHÔNG select contact_phone ở bước này
-supabase.from('listings').select('*').eq('id', id).single()
+if (cursor) {                              // cursor = { published_at, id } của tin cuối
+  q = q.or(`published_at.lt.${cursor.published_at},` +
+           `and(published_at.eq.${cursor.published_at},id.lt.${cursor.id})`)
+}
+const { data } = await q
+const conNua = data.length > TRANG
+const items = data.slice(0, TRANG)
+
+// Chi tiết tin — chỉ ở đây mới lấy mô tả, thông số, danh sách ảnh.
+// Vẫn KHÔNG lấy contact_phone.
+supabase.from('listings')
+  .select('*, listing_images(url_medium,url_full,blur_base64,width,height,sort_order,is_cover)')
+  .eq('id', id).single()
 
 // Tin của chính chủ xe (RLS tự lọc)
-supabase.from('listings').select('*').eq('owner_id', uid)
+supabase.from('listing_card').select('*').eq('owner_id', uid)
 
 // Số dư ví (chỉ đọc)
 supabase.from('wallet_balances').select('*').eq('user_id', uid).single()
+
+// Số liệu cho chủ xe — ĐỌC TỪ BẢNG TỔNG HỢP, không quét bảng events thô.
+supabase.from('events_daily').select('day,kind,count')
+  .eq('listing_id', id).gte('day', tuNgay).order('day')
 ```
 
 Tìm kiếm toàn văn (luồng 04): dùng cột `search_tsv`, khớp chuỗi đã bỏ dấu.
+Debounce 300ms, huỷ request cũ bằng `AbortController` (HIEU-NANG.md mục 2.5).
 
 ---
 
@@ -200,8 +238,20 @@ Dạng trả về lỗi: `{ "error": "<ma>", "message": "<tiếng Việt>", "fie
 | `listing-images` | ảnh xe | đọc công khai, ghi = chủ tin |
 | `verify-docs` | giấy tờ xét tích xanh | **riêng tư**, chỉ admin đọc |
 
-Đường dẫn: `listing-images/<owner_id>/<listing_id>/<uuid>.webp`
-Client nén trước khi tải lên: cạnh dài tối đa 1600px, dưới 400KB.
+Mỗi ảnh lưu **4 bản** (HIEU-NANG.md mục 1.1). Danh sách chỉ được dùng bản `thumb`.
+
+```
+listing-images/<owner_id>/<listing_id>/<uuid>_thumb.webp     400w,  < 25KB
+listing-images/<owner_id>/<listing_id>/<uuid>_medium.webp    800w,  < 70KB
+listing-images/<owner_id>/<listing_id>/<uuid>_full.webp     1600w,  < 200KB
+listing-images/<owner_id>/<listing_id>/<uuid>_orig.webp     lưu trữ, không phục vụ
+```
+
+Bản `blur` 20px **không** nằm ở Storage — nhúng base64 thẳng vào cột
+`listing_images.blur_base64` để danh sách không tốn thêm request nào.
+
+Client nén trước khi tải lên: cạnh dài tối đa 1600px, chất lượng 0.8.
+Tên file có hash nội dung → cache `max-age=31536000, immutable`.
 
 ---
 

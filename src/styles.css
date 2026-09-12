@@ -1,0 +1,5 @@
+/* Toàn bộ design token + component chung nằm ở contracts/tokens.css.
+   File này chỉ import và thêm style riêng của khung app.
+   CẤM hardcode mã màu mới ở đây — thiếu token thì báo luồng 01. */
+
+@import '../contracts/tokens.css';

@@ -1,3 +1,6 @@
+-- SINH TỰ ĐỘNG bởi scripts/gen-migrations.mjs từ contracts/schema.sql
+-- Đừng sửa tay file này. Sửa nguồn rồi chạy lại script.
+
 -- ============================================================
 -- Thuexenhanh - schema Postgres (Supabase) - v0.2
 -- HOP DONG CHUNG. Chi luong 01 (nen tang) duoc sua file nay.

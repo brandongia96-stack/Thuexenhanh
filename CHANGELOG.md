@@ -22,6 +22,11 @@ Quy tắc:
 
 | Ngày | Luồng | Nội dung | File |
 |---|---|---|---|
+| 2026-09-12 | 01 nền tảng | 🔒 Bổ sung theo `HIEU-NANG.md`: view `listing_card`, bảng `events_daily` + hàm gộp/dọn, cột ảnh 4 cỡ + `blur_base64`, index keyset | `contracts/schema.sql`, `contracts/api.md` |
+| 2026-09-12 | 01 nền tảng | Tải trễ `@supabase/supabase-js` + tách gói theo route: gói đầu 146,8 → **58,9 KB gzip** | `src/lib/supabase.js`, `src/App.jsx` |
+| 2026-09-12 | 01 nền tảng | Sinh migration tự động từ hợp đồng + dữ liệu tĩnh (26 hãng, 173 dòng xe, 39 tỉnh, 68 quận/huyện, 13 tiện nghi) | `scripts/gen-migrations.mjs`, `supabase/migrations/*` |
+| 2026-09-12 | 01 nền tảng | Dựng khung React mới ở gốc repo: `App.jsx` 83 dòng chỉ routing, auth Google, rbac, ui-kit, analytics/events | `src/**`, `package.json`, `vite.config.js` |
+| 2026-09-12 | 01 nền tảng | 🔒 Viết 3 file hợp đồng chung: 25 bảng + RLS + trigger chống sửa sổ ví, API, design token | `contracts/schema.sql`, `contracts/api.md`, `contracts/tokens.css` |
 | 2026-09-12 | nền tảng | 🔒 Thêm `HIEU-NANG.md`: ngân sách LCP/CLS/INP, ảnh 4 cỡ + blur base64, cursor pagination, `listing_card`, `events_daily` | `HIEU-NANG.md`, `CLAUDE.md`, brief 01–05 |
 | 2026-09-12 | nền tảng | Tạo 12 brief luồng chat trong `LUONG-CHAT/` | `LUONG-CHAT/*.md` |
 | 2026-09-12 | nền tảng | Thêm luật chống mất code, `.gitignore`, script sao lưu, khởi tạo Git | `CLAUDE.md`, `.gitignore`, `scripts/backup.ps1` |
@@ -44,7 +49,7 @@ Quy tắc:
 
 | # | Luồng | Trạng thái | Ngày xong |
 |---|---|---|---|
-| 01 | Nền tảng & CSDL | ⬜ chưa làm | |
+| 01 | Nền tảng & CSDL | 🟨 khung xong, chờ tạo dự án Supabase | |
 | 02 | Tin đăng xe | ⬜ | |
 | 03 | Bảng điều khiển chủ xe | ⬜ | |
 | 04 | Tìm kiếm & bộ lọc | ⬜ | |
