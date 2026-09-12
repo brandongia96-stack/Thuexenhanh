@@ -1,0 +1,17 @@
+{
+  "name": "Thuexenhanh",
+  "short_name": "Thuexenhanh",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#007bff",
+  "description": "Nền tảng thuê xe tự lái siêu tốc",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

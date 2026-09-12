@@ -1,0 +1,33 @@
+# Phụ thuộc
+node_modules/
+.pnpm-store/
+
+# Kết quả build — sinh lại được, không commit
+dist/
+preview_offline.html
+*.log
+
+# File nén gốc
+*.rar
+*.zip
+*.7z
+
+# Snapshot đời cũ — chỉ tham khảo, không theo dõi
+Web thue xe/source-*/
+
+# Bản sao lưu do scripts/backup.ps1 tạo
+_backup/
+
+# Bí mật
+.env
+.env.*
+!.env.example
+firebase-adminsdk*.json
+*serviceAccount*.json
+
+# Hệ điều hành / trình soạn thảo
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/

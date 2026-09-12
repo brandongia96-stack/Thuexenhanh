@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <meta name="theme-color" content="#007bff" />
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <link rel="apple-touch-icon" href="/icon.svg" />
+    <title>Thuexenhanh</title>
+  </head>
+  <body>
+    <div id="root">
+      <div style="font-family: Arial, sans-serif; padding: 24px; color: #202124;">
+        Đang tải ứng dụng quản lý thuê xe...
+      </div>
+    </div>
+    <script>
+      window.addEventListener("error", function (event) {
+        var root = document.getElementById("root");
+        if (!root) return;
+        root.innerHTML = '<div style="font-family: Arial, sans-serif; padding: 24px; color: #202124;"><h1 style="font-size: 22px;">Ứng dụng đang gặp lỗi khi tải</h1><p style="color:#a50e0e;">' + event.message + '</p><button onclick="localStorage.removeItem(\\'web-thue-xe-cars\\'); location.reload();" style="height:40px;padding:0 14px;border:1px solid #dadce0;border-radius:8px;background:#1a73e8;color:white;">Xóa dữ liệu tạm và tải lại</button></div>';
+      });
+    </script>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
