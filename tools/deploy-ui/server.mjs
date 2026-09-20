@@ -261,6 +261,16 @@ async function kiemTraSecret() {
         'Vite nhúng mọi biến VITE_* vào file JS công khai. Đây là lộ toàn bộ CSDL.',
         f, 'LUONG-CHAT/13-deploy.md §B3'))
     }
+    // Khoá web Firebase/Google vốn được thiết kế để lộ ra ngoài — BÌNH THƯỜNG nếu
+    // rules chặt. Nhưng CLAUDE.md §9 ghi rõ v0.1 KHÔNG có Firestore rules, ai cũng
+    // gọi setDoc/deleteDoc được. Lộ config = mở cửa thẳng vào CSDL cũ.
+    if (/\bAIza[0-9A-Za-z_-]{30,}/.test(txt)) {
+      chan.push(loi('khoa-firebase', 'Có cấu hình Firebase/Google API trong repo',
+        'Khoá loại này an toàn khi security rules chặt. CLAUDE.md §9 ghi v0.1 KHÔNG có '
+        + 'Firestore rules — ai cũng ghi/xoá được. Chỉ đẩy lên khi repo private, hoặc '
+        + 'xoá dự án Firebase cũ, hoặc gỡ khoá khỏi file.',
+        f, 'CLAUDE.md §9'))
+    }
   }
   return chan
 }
