@@ -93,7 +93,7 @@ Bốn luật hay bị quên nhất:
 
 ## 3. Cách chia luồng chat
 
-13 luồng, brief nằm trong `LUONG-CHAT/`. Mở luồng mới chỉ cần dán:
+14 luồng, brief nằm trong `LUONG-CHAT/`. Mở luồng mới chỉ cần dán:
 
 ```
 Đọc CLAUDE.md và LUONG-CHAT/<tên file>.md rồi bắt đầu.
@@ -114,6 +114,7 @@ Bốn luật hay bị quên nhất:
 | 11 | `11-thong-bao.md` | Thông báo | 01, 06 |
 | 12 | `12-phap-ly.md` | Pháp lý & trang tĩnh | 01 |
 | 13 | `13-deploy.md` | Triển khai: GitHub + Cloudflare | 01 |
+| 14 | `14-landing.md` | Landing page & SEO | 01, 04 |
 
 **Thứ tự:** `01 → 02 → 04 → 05 → 03 → 06 → 08 → 10 → 11 → 12 → 09 → 07`
 

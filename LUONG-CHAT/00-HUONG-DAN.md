@@ -1,4 +1,4 @@
-# Hướng dẫn dùng 13 luồng chat
+# Hướng dẫn dùng 14 luồng chat
 
 ## Cách mở một luồng mới
 
@@ -75,6 +75,11 @@ Kiểm tra điều kiện mở luồng trước: có tỉnh nào trên 50 tin đ
 Repo GitHub private của anh: <dán URL vào đây>
 ```
 
+**14 — Landing page & SEO**
+```
+Đọc CLAUDE.md, HIEU-NANG.md và LUONG-CHAT/14-landing.md rồi bắt đầu.
+```
+
 ### Câu dùng chung
 
 Khi luồng đi lạc phạm vi:
@@ -97,7 +102,7 @@ Nghi luồng làm lại việc cũ:
 Sau khi 01 xong, **02 / 04 / 05 chạy song song được** — không đụng file của nhau.
 **03 và 06 phải chờ 02** vì ăn dữ liệu của nó.
 
-## 13 luồng
+## 14 luồng
 
 | # | File | Tên luồng | Phụ thuộc | Trạng thái |
 |---|---|---|---|---|
@@ -114,6 +119,7 @@ Sau khi 01 xong, **02 / 04 / 05 chạy song song được** — không đụng f
 | 11 | `11-thong-bao.md` | Email / SMS / Zalo / in-app | 01, 06 | ⬜ |
 | 12 | `12-phap-ly.md` | Pháp lý & trang tĩnh | 01 | ⬜ |
 | 13 | `13-deploy.md` | Triển khai: GitHub + Cloudflare | 01 | ⬜ |
+| 14 | `14-landing.md` | Landing page & SEO | 01, 04 | ⬜ |
 
 ## Thứ tự làm
 
