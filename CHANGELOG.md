@@ -22,6 +22,7 @@ Quy tắc:
 
 | Ngày | Luồng | Nội dung | File |
 |---|---|---|---|
+| 2026-09-20 | 12 pháp lý | Viết Điều khoản, Bảo mật, Hoàn token (v1.0), Giới thiệu, FAQ, Liên hệ; ô tích đồng ý ở đăng nhập, ghi phiên bản + thời điểm vào `user_consents` (🔒 bảng mới, luồng 01 cần gộp vào `contracts/schema.sql`); link chân trang | `src/modules/legal/**`, `supabase/migrations/0005_legal_consent.sql`, `src/modules/auth/DangNhap.jsx`, `src/components/Footer.jsx`, `src/App.jsx` |
 | 2026-09-20 | 08 tin cậy | Nháp server: chặn INSERT tin lên thẳng đang hiển thị, chặn tự gửi duyệt, chuẩn hoá + chặn trùng biển số, 3 báo cáo → tự ẩn, hạn mức lấy số/OTP. Client: `trustApi`, `huyHieu` (chưa nối UI, chưa có Edge Function) | `src/modules/trust/**` |
 | 2026-09-20 | 13 deploy | Chuẩn bị hạ tầng Cloudflare Pages: `_redirects` (hết 404 khi F5), `_headers` (cache + bảo mật), `.nvmrc`=20, dọn `thu-luong-02.html`, quét sạch secret, viết `DEPLOY.md` | `public/_redirects`, `public/_headers`, `.nvmrc`, `DEPLOY.md` |
 | 2026-09-20 | nền tảng | Thêm luồng 13 (deploy): brief GitHub + Cloudflare Pages. Đổi hosting Netlify/Vercel → Cloudflare Pages | `LUONG-CHAT/13-deploy.md`, `CLAUDE.md` |
@@ -63,5 +64,5 @@ Quy tắc:
 | 09 | Đánh giá thật | ⬜ để sau | |
 | 10 | Trang quản trị | ⬜ | |
 | 11 | Thông báo | ⬜ | |
-| 12 | Pháp lý & trang tĩnh | ⬜ | |
+| 12 | Pháp lý & trang tĩnh | 🟨 bản nháp xong, chờ luật sư đọc + email hỗ trợ | |
 | 13 | Triển khai GitHub + Cloudflare | 🟨 hạ tầng repo xong, chờ tạo repo GitHub + nối Cloudflare (xem `DEPLOY.md`) | |

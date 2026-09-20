@@ -8,6 +8,8 @@ export default function Footer() {
           <Link to="/dieu-khoan" className="t-small">Điều khoản sử dụng</Link>
           <Link to="/bao-mat" className="t-small">Chính sách bảo mật</Link>
           <Link to="/hoan-token" className="t-small">Chính sách hoàn token</Link>
+          <Link to="/gioi-thieu" className="t-small">Về chúng tôi</Link>
+          <Link to="/tro-giup" className="t-small">Câu hỏi thường gặp</Link>
           <Link to="/lien-he" className="t-small">Liên hệ</Link>
         </div>
         <p className="t-small">
