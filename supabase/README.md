@@ -24,7 +24,18 @@ Lấy thêm `Project ref` (đoạn `xxxx` trong `https://xxxx.supabase.co`) đ�
 
 ## 2. Chạy migration — ĐÚNG THỨ TỰ NÀY
 
-**SQL Editor** → mỗi file một lần chạy, theo đúng dãy:
+**Cách nhanh — dán một lần.** Chạy lệnh này để chép toàn bộ SQL vào clipboard:
+
+```bash
+cat supabase/chay-tat-ca.sql | clip
+```
+
+Rồi mở SQL Editor, dán (Ctrl+V), bấm **Run**. File đó là 8 file dưới nối lại,
+bọc trong `BEGIN/COMMIT` — lỗi ở đâu là huỷ sạch, không để CSDL dở dang.
+Sửa migration xong nhớ chạy lại `node scripts/gop-migration.mjs`.
+
+**Cách chậm — dán từng file.** Nếu trình duyệt ì vì file to, chạy lần lượt 8 file
+theo đúng dãy:
 
 | # | File | Nội dung |
 |---|---|---|
