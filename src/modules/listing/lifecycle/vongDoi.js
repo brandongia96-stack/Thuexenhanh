@@ -10,8 +10,8 @@
 // `dang_hien_thi`, ghi `published_at` / `expires_at` là CỦA SERVER
 // (contracts/api.md mục 0). Client không được ghi mấy cột đó.
 
-import { LISTING_STATUS } from '../../data/options'
-import { daysUntil } from '../../lib/format'
+import { LISTING_STATUS } from '../../../data/options'
+import { daysUntil } from '../../../lib/format'
 
 export const STATUS = {
   NHAP: 'nhap',

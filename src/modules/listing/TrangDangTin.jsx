@@ -12,6 +12,7 @@ import { useAuth } from '../auth/AuthProvider'
 import { HAS_BACKEND } from '../../lib/config'
 import { useFormDangTin } from './editor/useFormDangTin'
 import FormDangTin from './editor/FormDangTin'
+import KhoiHienThi from './lifecycle/KhoiHienThi'
 
 export default function TrangDangTin() {
   const { id } = useParams()
@@ -69,6 +70,9 @@ export default function TrangDangTin() {
         </button>
         <h1 className="t-h1">{id ? 'Sửa tin đăng' : 'Đăng xe cho thuê'}</h1>
       </div>
+
+      {/* Trả phí / gia hạn: chỉ mở HopTraPhi của luồng 06, không tự trừ token. */}
+      <KhoiHienThi tin={dieuKhien.tin} userId={user.id} onDoiTrangThai={dieuKhien.taiLaiTin} />
 
       <FormDangTin
         dieuKhien={dieuKhien}

@@ -23,6 +23,7 @@ Quy tắc:
 | Ngày | Luồng | Nội dung | File |
 |---|---|---|---|
 | 2026-09-21 | 14 landing | Viết lại trang chủ: hero có ô tìm kiếm tỉnh/quận → `/thue-xe?tinh=&quan=` (TODO thay bằng bộ lọc luồng 04), khối "Xe mới đăng" đọc `listing_card` thật, chưa có tin thì ẩn, khối chủ xe 10 token = 40.000đ. `index.html` thêm canonical/og/robots/JSON-LD; thêm `robots.txt`, `sitemap.xml`. **Chưa có** logo/favicon/og-image (không tìm thấy file gốc, chờ anh). Gói đầu vẫn 58,9 KB gzip. Đụng `index.html` (file khung) | `src/modules/shell/TrangChu.jsx`, `index.html`, `public/robots.txt`, `public/sitemap.xml` |
+| 2026-09-21 | 02 tin đăng | Form đăng/sửa 2 gói trường (cùng giá), nén ảnh client ra **4 bản** WebP (thử: 1.235 KB → full 103 / medium 38 / thumb 14 KB, blur 799 ký tự), lịch chặn ngày theo khoảng, `vongDoi` (trạng thái thật theo `expires_at`), khối "Hiển thị tin" **mở `HopTraPhi` của luồng 06** — không có cơ chế trừ token riêng. Nối 2 route `/chu-xe/dang-tin`, `/chu-xe/tin/:id`. Gói đầu vẫn 58,9 KB, gói đăng tin 15 KB gzip. **Chưa chạy với Supabase thật. Chặn: chưa có Edge Function `submit-listing` (nút Gửi duyệt sẽ báo lỗi) và người mới không có vai trò `chu_xe` nên `RequireRole` chặn trang đăng tin** | `src/modules/listing/**`, `src/App.jsx` |
 | 2026-09-21 | nền tảng | Thêm luồng 14 (landing & SEO). Xác minh: production `thuexenhanh.pages.dev` = repo này; alias `dev.` phục vụ bản build cũ của codebase Firebase khác | `LUONG-CHAT/14-landing.md`, `CLAUDE.md` |
 | 2026-09-21 | 13 deploy | Dựng lại giao diện bảng điều khiển theo ảnh mẫu: thanh điều hướng bo tròn + 3 tab (Tổng quan/Module/Thay đổi), 4 thẻ chỉ số (thẻ đầu tô xanh), biểu đồ cột dòng code theo module + vành khuyên phân bổ `src/`. Nối remote `origin`; thêm kiểm tra khoá Firebase `AIza...` (chặn khi repo public, cảnh báo khi private) và tự đọc public/private qua GitHub API | `tools/deploy-ui/**` |
 | 2026-09-21 | 13 deploy | Bảng điều khiển triển khai 3 nút (Quét / Dev / Main) chạy ở `127.0.0.1:4545`: tổng code + tổng module + code mới từng module, 11 phép kiểm tra chặn (build, secret, `_redirects`/`_headers`, ngân sách JS, tailwind, lucide cả gói, `App.jsx`>200 dòng), lỗi hiện ở ô ghim dính có nút copy ra prompt sửa. **Chỉ stage file được tick, không `git add -A`; không đổi nhánh, đẩy bằng `push HEAD:<nhánh>`** | `tools/deploy-ui/**`, `.gitignore` |
@@ -62,7 +63,7 @@ Quy tắc:
 | # | Luồng | Trạng thái | Ngày xong |
 |---|---|---|---|
 | 01 | Nền tảng & CSDL | 🟨 khung xong, chờ tạo dự án Supabase | |
-| 02 | Tin đăng xe | ⬜ | |
+| 02 | Tin đăng xe | 🟨 client xong, chờ `submit-listing` + vai trò `chu_xe` | |
 | 03 | Bảng điều khiển chủ xe | ⬜ | |
 | 04 | Tìm kiếm & bộ lọc | ⬜ | |
 | 05 | Trang chi tiết xe | 🟨 xong phần giao diện + API, chờ Supabase để chạy thật | 2026-09-20 |

@@ -28,6 +28,8 @@ const TrangDaLuu = lazy(() => import('./modules/discovery/saved/TrangDaLuu'))
 // Luồng 06 — ví token. Chỉ chủ xe vào, nên tuyệt đối không nằm ở gói đầu:
 // khách thuê không bao giờ phải tải code của sổ ví và màn QR chuyển khoản.
 const TrangVi = lazy(() => import('./modules/billing/wallet/TrangVi'))
+// Luồng 02 — đăng/sửa tin. Form + nén ảnh + lịch chặn ngày: chỉ chủ xe cần, nên tách gói riêng.
+const TrangDangTin = lazy(() => import('./modules/listing/TrangDangTin'))
 
 /**
  * App.jsx CHỈ làm routing + layout. Dưới 200 dòng.
@@ -66,10 +68,10 @@ export default function App() {
                 <RequireRole><ChuaLam ten="Bảng điều khiển chủ xe" luong="03 — Chủ xe" /></RequireRole>
               } />
               <Route path="/chu-xe/dang-tin" element={
-                <RequireRole><ChuaLam ten="Đăng tin xe" luong="02 — Tin đăng xe" /></RequireRole>
+                <RequireRole><TrangDangTin /></RequireRole>
               } />
               <Route path="/chu-xe/tin/:id" element={
-                <RequireRole><ChuaLam ten="Sửa tin đăng" luong="02 — Tin đăng xe" /></RequireRole>
+                <RequireRole><TrangDangTin /></RequireRole>
               } />
               <Route path="/chu-xe/vi" element={
                 <RequireRole><TrangVi /></RequireRole>

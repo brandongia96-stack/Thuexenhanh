@@ -10,7 +10,7 @@
 import { getSupabase, callFunction } from '../../lib/supabase'
 import { HAS_BACKEND } from '../../lib/config'
 import { normalizePhone } from '../../lib/phone'
-import { STATUS } from './lifecycle'
+import { STATUS } from './lifecycle/vongDoi'
 import { tailenMotAnh, hangAnh } from './media/storage'
 
 // ─────────────────────────────────────────────
@@ -180,7 +180,7 @@ export async function danhSachTinCuaToi(ownerId, { cursor = null, limit = 20 } =
     .select(
       'id,status,brand_text,model_text,year,seats,transmission,price_per_day,' +
       'province_id,district_id,is_verified,published_at,expires_at,created_at,reject_reason,' +
-      'listing_images(url,is_cover,sort_order)',
+      'listing_images(url_thumb,blur_base64,width,height,is_cover,sort_order)',
     )
     .eq('owner_id', ownerId)
     .is('deleted_at', null)
@@ -276,7 +276,6 @@ export async function luuAnhMoi(listingId, ownerId, danhSachAnh, { batDauTu = 0,
       listingId,
       daTaiLen,
       sortOrder: batDauTu + i,
-      isCover: danhSachAnh[i].laBia === true,
     }))
     onTienDo?.(i + 1, danhSachAnh.length)
   }
@@ -287,16 +286,32 @@ export async function luuAnhMoi(listingId, ownerId, danhSachAnh, { batDauTu = 0,
   return data
 }
 
-/** Đổi thứ tự + ảnh bìa cho ảnh đã lưu. */
-export async function capNhatThuTuAnh(danhSach) {
+/**
+ * Đặt thứ tự ảnh theo mảng id, ảnh đầu mảng là ảnh bìa.
+ *
+ * Schema chỉ cho MỘT ảnh bìa mỗi tin (unique index `listing_images_cover_idx`),
+ * nên phải gỡ bìa cũ TRƯỚC rồi mới đặt bìa mới — chạy song song hai lệnh là có
+ * lúc hai ảnh cùng là bìa và Postgres từ chối. Làm tuần tự, số ảnh ≤ 12 nên nhẹ.
+ */
+export async function sapXepAnh(listingId, idTheoThuTu) {
+  if (!idTheoThuTu.length) return
   const sb = await getSupabase()
-  await Promise.all(
-    danhSach.map((a, i) =>
-      sb.from('listing_images')
-        .update({ sort_order: i, is_cover: a.is_cover === true })
-        .eq('id', a.id),
-    ),
-  )
+
+  const { error: loiGo } = await sb
+    .from('listing_images')
+    .update({ is_cover: false })
+    .eq('listing_id', listingId)
+    .eq('is_cover', true)
+    .is('deleted_at', null)
+  if (loiGo) throw loiGo
+
+  for (let i = 0; i < idTheoThuTu.length; i++) {
+    const { error } = await sb
+      .from('listing_images')
+      .update({ sort_order: i, is_cover: i === 0 })
+      .eq('id', idTheoThuTu[i])
+    if (error) throw error
+  }
 }
 
 export async function xoaAnh(imageId) {

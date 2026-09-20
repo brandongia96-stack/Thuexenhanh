@@ -11,7 +11,7 @@ import { TOKENS_PER_MONTH } from '../../../lib/config'
 import { vndForMonths } from '../../../lib/pricing'
 import { formatVnd } from '../../../lib/format'
 import { GOI, GOI_LABEL, GOI_MO_TA, nhomTruong } from '../fieldGroups'
-import { nhanTrangThai, STATUS } from '../lifecycle'
+import { nhanTrangThai, STATUS } from '../lifecycle/vongDoi'
 import LichChanNgay from '../availability/LichChanNgay'
 import UploadAnh from '../media/UploadAnh'
 import TruongNhap from './TruongNhap'
@@ -76,7 +76,7 @@ export default function FormDangTin({ dieuKhien, onXong }) {
       {/* ─── Chọn gói trường ─── */}
       <div className="card card-pad stack">
         <div>
-          <h2 className="t-h3">Khai bao nhiêu thông tin?</h2>
+          <h2 className="t-h3">Khai báo bao nhiêu thông tin?</h2>
           <p className="t-small">Hai lựa chọn dưới đây <strong>cùng một giá</strong>. Khác nhau ở số trường phải điền, không phải ở tiền.</p>
         </div>
 

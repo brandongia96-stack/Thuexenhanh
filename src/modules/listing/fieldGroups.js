@@ -24,7 +24,7 @@ export const GOI_LABEL = {
 // Mô tả gói cho người dùng. Nói thẳng là không khác giá — đừng để chủ xe
 // tưởng mình đang bị bán thêm thứ gì.
 export const GOI_MO_TA = {
-  co_ban: 'Chín trường tối thiểu để tin lên được. Điền nhanh, xong trong 2 phút.',
+  co_ban: 'Chỉ những thông tin tối thiểu để tin lên được. Điền nhanh, xong trong vài phút.',
   day_du: 'Khai thêm kỹ thuật, giấy tờ, giới hạn km và lịch bận. Cùng giá, chỉ nhiều thông tin hơn để khách đỡ phải gọi hỏi.',
 }
 

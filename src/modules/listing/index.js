@@ -22,7 +22,7 @@ export {
   trangThaiThuc,
   ngayConLai,
   loiNhacHan,
-} from './lifecycle'
+} from './lifecycle/vongDoi'
 
 export { GOI, GOI_LABEL, GOI_MO_TA, nhomTruong, tenTruongCuaGoi } from './fieldGroups'
 
@@ -35,7 +35,7 @@ export {
   anTin,
   guiDuyet,
   luuAnhMoi,
-  capNhatThuTuAnh,
+  sapXepAnh,
   xoaAnh,
   luuNgayChan,
   formSangHang,
@@ -43,5 +43,5 @@ export {
 } from './listingApi'
 
 // Dùng ở luồng 04/05 để lấy đúng cỡ ảnh cho từng chỗ hiển thị.
-export { nguonAnh, COT_ANH_4_CO } from './media/storage'
+export { nguonAnh } from './media/storage'
 export { CO_ANH, xuLyAnh, xuLyNhieuAnh } from './media/imagePipeline'
