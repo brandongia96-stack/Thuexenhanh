@@ -34,3 +34,6 @@ desktop.ini
 
 # Build cua khung v0.2
 dist/
+
+# File thu nghiem tam - khong dua len GitHub, khong deploy
+_scratch/
