@@ -10,20 +10,25 @@
 
 import { trySupabase } from '../../lib/supabase'
 
-const KHOA = 'txn_ten_dia_gioi_v1'
+const KHOA = 'txn_ten_dia_gioi_v2' // v2: thêm quanTinh (luồng 04 cần tra ngược tên → id)
 let bangTen = null
 let dangTai = null
 
 function docCache() {
   try {
     const o = JSON.parse(localStorage.getItem(KHOA) || 'null')
-    return o?.tinh ? o : null
+    return o?.tinh && Object.keys(o.tinh).length && o.quanTinh ? o : null
   } catch {
     return null
   }
 }
 
-/** Trả về { tinh: {id: tên}, quan: {id: tên} }. Không có mạng thì trả bảng rỗng. */
+/**
+ * Trả về { tinh: {id: tên}, quan: {id: tên}, quanTinh: {id quận: id tỉnh} }.
+ * Không có mạng thì trả bảng rỗng (KHÔNG nhớ bảng rỗng — xem bên dưới).
+ * `quanTinh` để luồng 04 đổi tên → id: tên quận trùng giữa các tỉnh nên phải
+ * khoá theo cặp (tỉnh, tên).
+ */
 export function taiTenDiaGioi() {
   if (bangTen) return Promise.resolve(bangTen)
   if (dangTai) return dangTai
@@ -40,19 +45,24 @@ export function taiTenDiaGioi() {
 
     const [{ data: t }, { data: q }] = await Promise.all([
       sb.from('provinces').select('id,name').is('deleted_at', null),
-      sb.from('districts').select('id,name').is('deleted_at', null),
+      sb.from('districts').select('id,name,province_id').is('deleted_at', null),
     ])
 
     const bang = {
       tinh: Object.fromEntries((t ?? []).map((r) => [r.id, r.name])),
       quan: Object.fromEntries((q ?? []).map((r) => [r.id, r.name])),
+      quanTinh: Object.fromEntries((q ?? []).map((r) => [r.id, r.province_id])),
     }
-    try {
-      localStorage.setItem(KHOA, JSON.stringify(bang))
-    } catch {
-      /* hết chỗ thì lần sau tải lại, không sao */
+    // Tải hỏng (mất mạng lần đầu) ra bảng rỗng thì KHÔNG được nhớ: nhớ là từ đó
+    // về sau mọi thẻ xe mất địa điểm và lọc theo tỉnh trả rỗng, không tự lành.
+    if (Object.keys(bang.tinh).length) {
+      try {
+        localStorage.setItem(KHOA, JSON.stringify(bang))
+      } catch {
+        /* hết chỗ thì lần sau tải lại, không sao */
+      }
+      bangTen = bang
     }
-    bangTen = bang
     return bang
   })().finally(() => {
     dangTai = null

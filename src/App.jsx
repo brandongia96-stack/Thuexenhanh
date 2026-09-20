@@ -24,6 +24,7 @@ const HoiDap = lazy(() => import('./modules/legal/HoiDap'))
 // Luồng 05 — trang xem xe và xe đã lưu. Tách gói riêng: khách vào trang chủ
 // không phải tải slider ảnh, hộp liên hệ hay 13 icon tiện nghi.
 const TrangXe = lazy(() => import('./modules/discovery/listing-page/TrangXe'))
+const TrangTimKiem = lazy(() => import('./modules/discovery/search/TrangTimKiem'))
 const TrangDaLuu = lazy(() => import('./modules/discovery/saved/TrangDaLuu'))
 // Luồng 06 — ví token. Chỉ chủ xe vào, nên tuyệt đối không nằm ở gói đầu:
 // khách thuê không bao giờ phải tải code của sổ ví và màn QR chuyển khoản.
@@ -49,7 +50,7 @@ export default function App() {
               <Route path="/" element={<TrangChu />} />
 
               {/* ── Khách thuê ── */}
-              <Route path="/thue-xe" element={<ChuaLam ten="Tìm kiếm xe" luong="04 — Tìm kiếm & bộ lọc" />} />
+              <Route path="/thue-xe" element={<TrangTimKiem />} />
               <Route path="/xe/:id" element={<TrangXe />} />
               {/* Xe đã lưu thuộc luồng 05 (module discovery/saved), không phải 04. */}
               <Route path="/da-luu" element={<TrangDaLuu />} />

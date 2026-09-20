@@ -1,0 +1,31 @@
+/* Trang tìm kiếm /thue-xe — luồng 04. Chỉ dùng token, không hardcode màu. */
+
+.tk-dau { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: center; }
+.tk-timkiem { flex: 1 1 320px; min-width: 0; }
+.tk-xep { width: auto; min-width: 170px; }
+.tk-nutloc { display: none; }
+
+.tk-luoi { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: var(--sp-6); align-items: start; }
+.tk-loc { position: sticky; top: calc(var(--h-header) + var(--sp-4)); max-height: calc(100vh - var(--h-header) - var(--sp-8)); overflow-y: auto; }
+.tk-ketqua { min-width: 0; display: flex; flex-direction: column; gap: var(--sp-4); }
+
+/* Danh sách dài: trình duyệt bỏ qua dựng/vẽ thẻ ngoài màn hình. Đây là cách
+   nhẹ thay cho virtualize (HIEU-NANG.md mục 4) — DOM vẫn còn, nhưng layout và
+   paint thì không tốn. `auto` nhớ chiều cao thật sau lần dựng đầu → thanh cuộn
+   không nhảy. */
+.tk-the .thexe { content-visibility: auto; contain-intrinsic-size: auto 340px; }
+
+.tk-moc { height: 1px; }
+.tk-them { display: flex; align-items: center; justify-content: center; gap: var(--sp-3); }
+
+.tk-khung-anh { aspect-ratio: 4 / 3; border-radius: 0; }
+.tk-khung-chu { display: flex; flex-direction: column; gap: var(--sp-2); }
+
+/* Điện thoại: bộ lọc thu gọn sau nút, mở ra ngay dưới thanh tìm kiếm. */
+@media (max-width: 899px) {
+  .tk-luoi { grid-template-columns: minmax(0, 1fr); }
+  .tk-nutloc { display: inline-flex; }
+  .tk-loc { display: none; position: static; max-height: none; }
+  .tk-loc.mo { display: block; }
+  .tk-xep { flex: 1 1 0; }
+}

@@ -1,29 +1,3 @@
-/* Thẻ xe trong trang "Xe đã lưu" — luồng 05.
-   Luồng 04 sẽ có thẻ xe dùng chung; khi đó gộp file này vào đó. */
-
-.thexe { display: flex; flex-direction: column; overflow: hidden; }
-
-.thexe-anh {
-  position: relative;
-  background: var(--m-bg) center / cover no-repeat;
-  /* aspect-ratio đặt inline theo kích thước ảnh thật → trang không nhảy
-     khi ảnh tải xong (HIEU-NANG.md mục 1.3). */
-}
-.thexe-anh img {
-  width: 100%; height: 100%; object-fit: cover;
-  /* Ảnh mờ base64 nằm ở nền, ảnh nét hiện đè lên. */
-  animation: hienAnh .2s ease;
-}
-@keyframes hienAnh { from { opacity: 0 } to { opacity: 1 } }
-
-.thexe-than { display: flex; flex-direction: column; gap: var(--sp-2); padding: var(--sp-4); }
-
-.thexe-dong { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-2); }
-.thexe-dong .t-h3 { transition: color var(--t-fast); }
-.thexe-dong .t-h3:hover { color: var(--m-green); }
-
-.thexe-meta { display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-3); }
-.thexe-meta span { display: inline-flex; align-items: center; gap: 4px; }
-
-.thexe-chan { display: flex; align-items: baseline; gap: var(--sp-1); flex-wrap: wrap; }
-.thexe-chan .badge { margin-left: auto; align-self: center; }
+/* Style thẻ xe đã chuyển sang `../the-xe/TheXe.css` (luồng 04). File này giữ lại
+   chỉ để các nơi còn import đường dẫn cũ (TrangChu, TrangDaLuu) không bị mất style. */
+@import '../the-xe/TheXe.css';

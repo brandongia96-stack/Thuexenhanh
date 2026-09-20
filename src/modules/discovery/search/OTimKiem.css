@@ -1,0 +1,26 @@
+.otk {
+  display: flex; align-items: center; gap: var(--sp-2);
+  height: 48px; padding: 0 var(--sp-1) 0 var(--sp-3);
+  background: var(--m-surface);
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-full);
+  box-shadow: var(--shadow-sm);
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
+  min-width: 0;
+}
+.otk:focus-within { border-color: var(--m-green); box-shadow: 0 0 0 3px var(--m-green-light); }
+.otk-kinh { color: var(--m-subtle); flex: none; }
+.otk-o {
+  flex: 1; min-width: 0; height: 100%;
+  border: none; background: transparent; outline: none;
+}
+.otk-o::placeholder { color: var(--m-subtle); }
+/* Nút X tự có của trình duyệt trùng với nút X của mình. */
+.otk-o::-webkit-search-cancel-button { display: none; }
+.otk-xoa {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 32px; height: 32px; flex: none;
+  border-radius: var(--r-full); color: var(--m-subtle);
+}
+.otk-xoa:hover { background: var(--m-bg); color: var(--m-dark); }
+.otk-tim { border-radius: var(--r-full); height: 40px; padding: 0 var(--sp-5); }

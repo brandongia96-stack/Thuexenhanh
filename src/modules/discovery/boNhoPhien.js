@@ -58,12 +58,19 @@ export function useNhoViTriCuon(khoa, sanSang) {
     }
   }, [khoa, sanSang, kieuDieuHuong])
 
-  // Ghi vị trí lúc rời trang. Không nghe sự kiện scroll: cuộn bắn ra hàng trăm
-  // sự kiện mỗi giây, ghi liên tục là ăn INP (HIEU-NANG.md mục 0).
+  // Ghi vị trí cuộn. KHÔNG đọc `window.scrollY` lúc component bị gỡ: khi đó trang
+  // đích (thường đang hiện skeleton ngắn) đã thay chỗ, trình duyệt kẹp scrollY
+  // xuống thấp → Quay lại là về sai chỗ. Nên ghi dần vào biến thường (không
+  // setState, không dựng lại gì) bằng listener passive: mỗi sự kiện chỉ gán một
+  // con số, không ảnh hưởng INP (HIEU-NANG.md mục 0).
   useEffect(() => {
+    let y = window.scrollY
+    const nho = () => { y = window.scrollY }
+    window.addEventListener('scroll', nho, { passive: true })
     return () => {
+      window.removeEventListener('scroll', nho)
       const cu = kho.get(khoa)
-      kho.set(khoa, { ...cu, cuon: window.scrollY, luc: cu?.luc ?? Date.now() })
+      kho.set(khoa, { ...cu, cuon: y, luc: cu?.luc ?? Date.now() })
     }
   }, [khoa])
 }
