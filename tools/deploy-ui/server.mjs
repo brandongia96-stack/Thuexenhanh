@@ -292,17 +292,20 @@ async function kiemTraSecret(hienTrang) {
     if (/\bAIza[0-9A-Za-z_-]{30,}/.test(txt)) {
       if (hienTrang === 'public') {
         chan.push(loi('khoa-firebase', 'Repo ĐANG PUBLIC mà có cấu hình Firebase trong file',
-          'CLAUDE.md §9 ghi v0.1 không có Firestore rules — ai đọc được khoá này là '
-          + 'ghi/xoá được CSDL cũ. Đổi repo sang private, hoặc xoá dự án Firebase cũ, '
-          + 'hoặc gỡ khoá khỏi file.',
+          'Khoá web Firebase vốn công khai theo thiết kế — nguy hiểm hay không là do '
+          + 'security rules của dự án, KHÔNG phải do khoá bị lộ. CLAUDE.md §9 ghi v0.1 '
+          + 'không có rules; kiểm lại ở Firebase Console để biết thực tế.\n\n'
+          + 'Lưu ý: gỡ khoá khỏi file BÂY GIỜ không xoá nó khỏi lịch sử git, và cũng '
+          + 'không thu hồi được thứ đã đẩy lên repo công khai. Cách thật sự có tác dụng '
+          + 'là siết rules hoặc xoá dự án Firebase cũ.',
           f, 'CLAUDE.md §9'))
       } else {
         canhBao.push(loi('khoa-firebase', 'Có cấu hình Firebase v0.1 trong repo',
           hienTrang === 'private'
-            ? 'Repo private nên khoá không lộ ra ngoài. Vẫn nên vào Firebase Console '
-              + 'tắt dự án cũ nếu không dùng nữa — v0.1 không có Firestore rules.'
+            ? 'Repo private nên khoá không lộ thêm. Vẫn nên vào Firebase Console tắt dự '
+              + 'án cũ nếu không dùng nữa — v0.2 đã chạy Supabase.'
             : 'Không xác định được repo public hay private (mất mạng?). Nếu repo public '
-              + 'thì đây là lỗ hổng — v0.1 không có Firestore rules.',
+              + 'thì cần kiểm lại security rules của dự án Firebase cũ.',
           f, 'CLAUDE.md §9'))
       }
     }
