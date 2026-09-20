@@ -6,7 +6,7 @@
 --
 -- Bọc trong BEGIN/COMMIT: lỗi ở bất kỳ đâu là huỷ sạch toàn bộ, CSDL trở lại
 -- như trước khi chạy. Không có chuyện vào được một nửa rồi mắc kẹt.
--- Gồm 8 file: 0001_init.sql, 0002_auth_hooks.sql, 0003_seed_static.sql, 0004_billing.sql, 0005_trust.sql, 0006_legal_consent.sql, 0007_notify.sql, 0008_admin.sql
+-- Gồm 9 file: 0001_init.sql, 0002_auth_hooks.sql, 0003_seed_static.sql, 0004_billing.sql, 0005_trust.sql, 0006_legal_consent.sql, 0007_notify.sql, 0008_admin.sql, 0009_grants.sql
 -- ============================================================
 
 begin;
@@ -704,6 +704,30 @@ create policy events_daily_read on events_daily for select
 create policy notif_own      on notifications for select using (user_id = auth.uid());
 create policy notif_own_upd  on notifications for update using (user_id = auth.uid());
 create policy admin_log_read on admin_actions for select using (has_role('admin'));
+
+-- ─────────────────────────────────────────────
+-- 9. QUYỀN BẢNG (GRANT) — thiếu phần này là app trắng trang
+--
+-- RLS và GRANT là HAI lớp khác nhau, phải có cả hai:
+--   GRANT quyết định có được CHẠM vào bảng không.
+--   RLS   quyết định chạm rồi thì thấy DÒNG NÀO.
+-- Thiếu GRANT thì RLS đúng đến mấy client vẫn nhận
+-- `42501 insufficient_privilege`, không đọc được gì.
+--
+-- KHÔNG cấp `delete` cho ai cả: luật "không xoá cứng" (CLAUDE.md 1.3) được
+-- cưỡng chế ngay ở tầng quyền, không chỉ trông vào việc nhớ dùng deleted_at.
+-- Cần xoá thật thì qua service_role, và phải có lý do ghi vào admin_actions.
+-- ─────────────────────────────────────────────
+grant usage on schema public to anon, authenticated, service_role;
+
+grant select                 on all tables    in schema public to anon, authenticated;
+grant insert, update         on all tables    in schema public to authenticated;
+grant usage, select          on all sequences in schema public to anon, authenticated;
+
+-- Bảng do luồng sau tạo tự thừa hưởng, khỏi phải nhớ grant tay mỗi lần.
+alter default privileges in schema public grant select         on tables    to anon, authenticated;
+alter default privileges in schema public grant insert, update on tables    to authenticated;
+alter default privileges in schema public grant usage, select  on sequences to anon, authenticated;
 
 -- ════════════════════════════════════════════════════════════
 -- ▼ 0002_auth_hooks.sql
@@ -2510,6 +2534,80 @@ begin
     execute format('grant execute on function %s to service_role', f);
   end loop;
 end $blk$;
+
+-- ════════════════════════════════════════════════════════════
+-- ▼ 0009_grants.sql
+-- ════════════════════════════════════════════════════════════
+do $$ begin raise notice 'Đang chạy: 0009_grants.sql'; end $$;
+
+-- ============================================================
+-- Luồng 01 — QUYỀN: chốt lại sau khi TẤT CẢ bảng và hàm đã tồn tại.
+-- Chạy CUỐI CÙNG, sau 0008.
+--
+-- Hai việc:
+--   1. Cấp lại quyền bảng — phủ cả bảng do 0007 tạo (0001 chạy trước nên
+--      `grant on all tables` lúc đó chưa nhìn thấy chúng).
+--   2. Thu hồi quyền GỌI các hàm đụng tiền và hàm admin.
+--
+-- Vì sao việc 2 quan trọng: Postgres mặc định cấp EXECUTE cho PUBLIC trên
+-- mọi hàm. Các hàm dưới đây là `security definer` — chúng chạy bằng quyền
+-- của người TẠO ra chúng, bỏ qua RLS. Để nguyên mặc định thì bất kỳ ai đăng
+-- nhập cũng gọi thẳng được `admin_adjust_wallet` hay `charge_and_publish`.
+--
+-- An toàn để thu hồi: đã rà toàn bộ `src/`, client KHÔNG gọi `.rpc()` chỗ nào.
+-- Mọi đường đi đều qua Edge Function, mà Edge Function chạy bằng service_role.
+-- ============================================================
+
+-- ── 1. Quyền bảng ──
+grant usage on schema public to anon, authenticated, service_role;
+
+grant select         on all tables    in schema public to anon, authenticated;
+grant insert, update on all tables    in schema public to authenticated;
+grant usage, select  on all sequences in schema public to anon, authenticated;
+
+-- Không cấp `delete` cho ai: luật "không xoá cứng" (CLAUDE.md 1.3).
+revoke delete on all tables in schema public from anon, authenticated;
+
+-- ── 2. Thu hồi quyền gọi hàm nhạy cảm ──
+-- Revoke theo TÊN hàm, quét từ pg_proc, nên không sợ gõ sai chữ ký
+-- (nhiều hàm có tham số mặc định, chữ ký trải nhiều dòng).
+do $blk$
+declare
+  r record;
+  n int := 0;
+  -- Hàm chỉ service_role được gọi. Đụng tiền, đụng quyền, hoặc là việc của cron.
+  cam text[] := array[
+    -- ví token (0004)
+    'charge_and_publish', 'credit_topup', 'refund_tokens',
+    'expire_listings', 'doi_soat_vi', 'ensure_wallet',
+    -- quản trị (0008)
+    'admin_log', 'admin_moderate_listing', 'admin_set_user_lock',
+    'admin_set_verified', 'admin_adjust_wallet', 'admin_handle_report',
+    'admin_revenue', 'admin_health', 'admin_plate_conflicts', 'admin_has_role',
+    -- thông báo + dọn dẹp (0001, 0007)
+    'rollup_events_daily', 'prune_events',
+    'claim_outbox', 'mark_outbox', 'queue_notification', 'scan_expiry_reminders'
+  ];
+begin
+  for r in
+    select p.oid::regprocedure as sig, p.proname
+    from pg_proc p
+    join pg_namespace ns on ns.oid = p.pronamespace
+    where ns.nspname = 'public' and p.proname = any(cam)
+  loop
+    execute format('revoke all on function %s from public, anon, authenticated', r.sig);
+    execute format('grant execute on function %s to service_role', r.sig);
+    n := n + 1;
+  end loop;
+  raise notice 'Đã khoá % hàm nhạy cảm, chỉ service_role gọi được.', n;
+
+  if n = 0 then
+    raise exception 'Không tìm thấy hàm nào để khoá — 0004/0007/0008 đã chạy chưa?';
+  end if;
+end $blk$;
+
+-- `has_role` và `wallet_so_du` CỐ Ý để nguyên: chỉ đọc, không đổi gì,
+-- và policy RLS lẫn view `wallet_ledger` đều cần gọi được chúng.
 
 -- ════════════════════════════════════════════════════════════
 do $$ begin raise notice 'XONG — tất cả migration đã chạy.'; end $$;

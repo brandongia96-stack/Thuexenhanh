@@ -686,3 +686,27 @@ create policy events_daily_read on events_daily for select
 create policy notif_own      on notifications for select using (user_id = auth.uid());
 create policy notif_own_upd  on notifications for update using (user_id = auth.uid());
 create policy admin_log_read on admin_actions for select using (has_role('admin'));
+
+-- ─────────────────────────────────────────────
+-- 9. QUYỀN BẢNG (GRANT) — thiếu phần này là app trắng trang
+--
+-- RLS và GRANT là HAI lớp khác nhau, phải có cả hai:
+--   GRANT quyết định có được CHẠM vào bảng không.
+--   RLS   quyết định chạm rồi thì thấy DÒNG NÀO.
+-- Thiếu GRANT thì RLS đúng đến mấy client vẫn nhận
+-- `42501 insufficient_privilege`, không đọc được gì.
+--
+-- KHÔNG cấp `delete` cho ai cả: luật "không xoá cứng" (CLAUDE.md 1.3) được
+-- cưỡng chế ngay ở tầng quyền, không chỉ trông vào việc nhớ dùng deleted_at.
+-- Cần xoá thật thì qua service_role, và phải có lý do ghi vào admin_actions.
+-- ─────────────────────────────────────────────
+grant usage on schema public to anon, authenticated, service_role;
+
+grant select                 on all tables    in schema public to anon, authenticated;
+grant insert, update         on all tables    in schema public to authenticated;
+grant usage, select          on all sequences in schema public to anon, authenticated;
+
+-- Bảng do luồng sau tạo tự thừa hưởng, khỏi phải nhớ grant tay mỗi lần.
+alter default privileges in schema public grant select         on tables    to anon, authenticated;
+alter default privileges in schema public grant insert, update on tables    to authenticated;
+alter default privileges in schema public grant usage, select  on sequences to anon, authenticated;
