@@ -1,4 +1,4 @@
-# Hướng dẫn dùng 12 luồng chat
+# Hướng dẫn dùng 13 luồng chat
 
 ## Cách mở một luồng mới
 
@@ -69,6 +69,12 @@ Trước khi code, trình bày 3 phương án A/B/C trong brief và chờ anh ch
 Kiểm tra điều kiện mở luồng trước: có tỉnh nào trên 50 tin đang hiển thị chưa?
 ```
 
+**13 — Triển khai: GitHub + Cloudflare** *(chạy được ngay sau 01)*
+```
+Đọc CLAUDE.md và LUONG-CHAT/13-deploy.md rồi bắt đầu.
+Repo GitHub private của anh: <dán URL vào đây>
+```
+
 ### Câu dùng chung
 
 Khi luồng đi lạc phạm vi:
@@ -91,7 +97,7 @@ Nghi luồng làm lại việc cũ:
 Sau khi 01 xong, **02 / 04 / 05 chạy song song được** — không đụng file của nhau.
 **03 và 06 phải chờ 02** vì ăn dữ liệu của nó.
 
-## 12 luồng
+## 13 luồng
 
 | # | File | Tên luồng | Phụ thuộc | Trạng thái |
 |---|---|---|---|---|
@@ -107,6 +113,7 @@ Sau khi 01 xong, **02 / 04 / 05 chạy song song được** — không đụng f
 | 10 | `10-quan-tri.md` | Trang quản trị (admin) | 01, 06 | ⬜ |
 | 11 | `11-thong-bao.md` | Email / SMS / Zalo / in-app | 01, 06 | ⬜ |
 | 12 | `12-phap-ly.md` | Pháp lý & trang tĩnh | 01 | ⬜ |
+| 13 | `13-deploy.md` | Triển khai: GitHub + Cloudflare | 01 | ⬜ |
 
 ## Thứ tự làm
 

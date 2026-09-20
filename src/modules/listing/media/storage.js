@@ -4,7 +4,7 @@
 //   listing-images/<owner_id>/<listing_id>/<uuid>_<ban>.webp
 // Bucket `listing-images`: đọc công khai, ghi = chủ tin (RLS lo).
 
-import { requireSupabase } from '../../../lib/supabase'
+import { getSupabase } from '../../../lib/supabase'
 import { DUOI_FILE, DINH_DANG } from './imagePipeline'
 
 export const BUCKET = 'listing-images'
@@ -46,7 +46,7 @@ async function day(sb, path, blob) {
  * @returns {{ url_thumb, url_medium, url_full, blur_data_url, width, height }}
  */
 export async function tailenMotAnh(anh, { ownerId, listingId }) {
-  const sb = requireSupabase()
+  const sb = await getSupabase()
 
   // Tuần tự chứ không song song: mạng 4G chập chờn, ba request cùng lúc
   // dễ nghẽn rồi hỏng cả ba. Chậm hơn vài giây nhưng chắc.

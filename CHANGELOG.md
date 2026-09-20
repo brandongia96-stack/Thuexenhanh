@@ -22,6 +22,7 @@ Quy tắc:
 
 | Ngày | Luồng | Nội dung | File |
 |---|---|---|---|
+| 2026-09-20 | nền tảng | Thêm luồng 13 (deploy): brief GitHub + Cloudflare Pages. Đổi hosting Netlify/Vercel → Cloudflare Pages | `LUONG-CHAT/13-deploy.md`, `CLAUDE.md` |
 | 2026-09-12 | 01 nền tảng | 🔒 Bổ sung theo `HIEU-NANG.md`: view `listing_card`, bảng `events_daily` + hàm gộp/dọn, cột ảnh 4 cỡ + `blur_base64`, index keyset | `contracts/schema.sql`, `contracts/api.md` |
 | 2026-09-12 | 01 nền tảng | Tải trễ `@supabase/supabase-js` + tách gói theo route: gói đầu 146,8 → **58,9 KB gzip** | `src/lib/supabase.js`, `src/App.jsx` |
 | 2026-09-12 | 01 nền tảng | Sinh migration tự động từ hợp đồng + dữ liệu tĩnh (26 hãng, 173 dòng xe, 39 tỉnh, 68 quận/huyện, 13 tiện nghi) | `scripts/gen-migrations.mjs`, `supabase/migrations/*` |
@@ -61,3 +62,4 @@ Quy tắc:
 | 10 | Trang quản trị | ⬜ | |
 | 11 | Thông báo | ⬜ | |
 | 12 | Pháp lý & trang tĩnh | ⬜ | |
+| 13 | Triển khai GitHub + Cloudflare | ⬜ | |

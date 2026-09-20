@@ -48,12 +48,16 @@ export function ngayBatDau(soNgay = SO_NGAY, moc = new Date()) {
   return khoaNgay(d)
 }
 
-const congRong = () => ({
+/** Bộ đếm rỗng: tất cả bằng 0. Dùng cho xe chưa có dòng nào trong `events_daily` —
+ *  0 là con số thật, không phải dữ liệu bịa. */
+export const soRong = () => ({
   view_listing: 0,
   reveal_phone: 0,
   click_call: 0,
   click_zalo: 0,
 })
+
+const congRong = soRong
 
 /**
  * Gộp hàng `events_daily` theo từng xe.

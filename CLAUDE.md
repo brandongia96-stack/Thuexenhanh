@@ -87,13 +87,13 @@ Bốn luật hay bị quên nhất:
 | 2. Ảnh chụp toàn bộ | `scripts/backup.ps1` → `_backup/*.zip`, giữ 20 bản | trước mỗi phiên sửa lớn |
 | 3. Bản gốc | `Web thue xe.rar` | không đụng tới |
 
-> **Nên có thêm:** đẩy repo lên GitHub private. Ổ cứng hỏng thì Git local mất theo. Anh tạo repo rồi bảo em, em nối `remote` giúp.
+> **Lớp thứ 4 — GitHub private:** ổ cứng hỏng thì Git local mất theo. Việc này giao cho **luồng 13** (`LUONG-CHAT/13-deploy.md`).
 
 ---
 
 ## 3. Cách chia luồng chat
 
-12 luồng, brief nằm trong `LUONG-CHAT/`. Mở luồng mới chỉ cần dán:
+13 luồng, brief nằm trong `LUONG-CHAT/`. Mở luồng mới chỉ cần dán:
 
 ```
 Đọc CLAUDE.md và LUONG-CHAT/<tên file>.md rồi bắt đầu.
@@ -113,8 +113,11 @@ Bốn luật hay bị quên nhất:
 | 10 | `10-quan-tri.md` | Trang quản trị | 01, 06 |
 | 11 | `11-thong-bao.md` | Thông báo | 01, 06 |
 | 12 | `12-phap-ly.md` | Pháp lý & trang tĩnh | 01 |
+| 13 | `13-deploy.md` | Triển khai: GitHub + Cloudflare | 01 |
 
 **Thứ tự:** `01 → 02 → 04 → 05 → 03 → 06 → 08 → 10 → 11 → 12 → 09 → 07`
+
+Luồng **13 (deploy)** chạy được ngay sau 01 — nối GitHub + Cloudflare sớm để mỗi luồng sau có link xem thử thật.
 
 **Luật:** luồng module **chỉ đọc** `CLAUDE.md`, `CHANGELOG.md`, brief của mình, thư mục module của mình, `contracts/`, và `HIEU-NANG.md` (với luồng 02, 03, 04, 05, 10). **Chỉ luồng nền tảng** được sửa `CLAUDE.md`, `HIEU-NANG.md` và `contracts/`.
 
@@ -153,7 +156,7 @@ contracts/              ← hợp đồng chung, chỉ luồng 01 được sửa
 | **CSDL** | **Postgres (Supabase)** — thay Firestore |
 | Auth | Supabase Auth (Google) + OTP SĐT |
 | Lưu ảnh | Supabase Storage + nén client |
-| Hosting | Netlify / Vercel |
+| Hosting | **Cloudflare Pages** (GitHub tự build) |
 | Thanh toán | VietQR động: SePay / PayOS / Casso |
 
 **Lý do bỏ Firestore:** trang rao vặt là read-heavy, Firestore tính tiền từng document đọc → đắt theo quy mô. Ví tiền cần transaction SQL thật. Full-text tiếng Việt có sẵn trong Postgres. Báo cáo doanh thu bằng SQL là một câu lệnh.

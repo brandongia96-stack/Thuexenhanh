@@ -7,7 +7,7 @@
 //     và không tự đẩy status sang `dang_hien_thi`. Mấy thứ đó qua Edge Function.
 //   · Không xoá cứng. Xoá = set deleted_at.
 
-import { requireSupabase, supabase, callFunction } from '../../lib/supabase'
+import { getSupabase, callFunction } from '../../lib/supabase'
 import { HAS_BACKEND } from '../../lib/config'
 import { normalizePhone } from '../../lib/phone'
 import { STATUS } from './lifecycle'
@@ -36,7 +36,7 @@ async function taiDiaGioi() {
 
   if (!HAS_BACKEND) return { tinh: {}, quan: {} }
 
-  const sb = requireSupabase()
+  const sb = await getSupabase()
   const [{ data: tinhRows }, { data: quanRows }] = await Promise.all([
     sb.from('provinces').select('id,name').is('deleted_at', null),
     sb.from('districts').select('id,name,province_id').is('deleted_at', null),
@@ -149,7 +149,7 @@ export async function hangSangForm(l) {
 
 /** Một tin đầy đủ để sửa: kèm ảnh và lịch chặn ngày. RLS lo phần quyền. */
 export async function docTin(id) {
-  const sb = requireSupabase()
+  const sb = await getSupabase()
   const { data, error } = await sb
     .from('listings')
     .select('*, listing_images(*), listing_blocked_dates(*)')
@@ -174,7 +174,7 @@ export async function docTin(id) {
  * Phân trang bằng cursor, không OFFSET.
  */
 export async function danhSachTinCuaToi(ownerId, { cursor = null, limit = 20 } = {}) {
-  const sb = requireSupabase()
+  const sb = await getSupabase()
   let q = sb
     .from('listings')
     .select(
@@ -213,7 +213,7 @@ export async function danhSachTinCuaToi(ownerId, { cursor = null, limit = 20 } =
 
 /** Tạo bản nháp. Không gửi `status` — CSDL mặc định `nhap`. */
 export async function taoNhap(form, ownerId) {
-  const sb = requireSupabase()
+  const sb = await getSupabase()
   const hang = await formSangHang(form, ownerId)
   const { data, error } = await sb.from('listings').insert(hang).select('id,status').single()
   if (error) throw error
@@ -225,7 +225,7 @@ export async function taoNhap(form, ownerId) {
  * (status, published_at, expires_at, is_verified) đều không có trong `formSangHang`.
  */
 export async function capNhatTin(id, form, ownerId) {
-  const sb = requireSupabase()
+  const sb = await getSupabase()
   const hang = await formSangHang(form, ownerId)
   delete hang.owner_id // không cho đổi chủ tin
   const { error } = await sb.from('listings').update(hang).eq('id', id)
@@ -234,7 +234,7 @@ export async function capNhatTin(id, form, ownerId) {
 
 /** Xoá mềm. CLAUDE.md mục 1.3: không xoá cứng dữ liệu. */
 export async function xoaTin(id) {
-  const sb = requireSupabase()
+  const sb = await getSupabase()
   const { error } = await sb
     .from('listings')
     .update({ deleted_at: new Date().toISOString() })
@@ -244,7 +244,7 @@ export async function xoaTin(id) {
 
 /** Ẩn tin khỏi tìm kiếm mà vẫn giữ nguyên dữ liệu. */
 export async function anTin(id) {
-  const sb = requireSupabase()
+  const sb = await getSupabase()
   const { error } = await sb.from('listings').update({ status: STATUS.AN }).eq('id', id)
   if (error) throw error
 }
@@ -267,7 +267,7 @@ export async function guiDuyet(listingId) {
  * @param {(xong:number, tong:number) => void} onTienDo
  */
 export async function luuAnhMoi(listingId, ownerId, danhSachAnh, { batDauTu = 0, onTienDo } = {}) {
-  const sb = requireSupabase()
+  const sb = await getSupabase()
   const hang = []
 
   for (let i = 0; i < danhSachAnh.length; i++) {
@@ -289,7 +289,7 @@ export async function luuAnhMoi(listingId, ownerId, danhSachAnh, { batDauTu = 0,
 
 /** Đổi thứ tự + ảnh bìa cho ảnh đã lưu. */
 export async function capNhatThuTuAnh(danhSach) {
-  const sb = requireSupabase()
+  const sb = await getSupabase()
   await Promise.all(
     danhSach.map((a, i) =>
       sb.from('listing_images')
@@ -300,7 +300,7 @@ export async function capNhatThuTuAnh(danhSach) {
 }
 
 export async function xoaAnh(imageId) {
-  const sb = requireSupabase()
+  const sb = await getSupabase()
   const { error } = await sb
     .from('listing_images')
     .update({ deleted_at: new Date().toISOString() })
@@ -318,7 +318,7 @@ export async function xoaAnh(imageId) {
  * thay cả cụm đơn giản và đúng hơn là dò từng khoảng xem đổi gì.
  */
 export async function luuNgayChan(listingId, khoang) {
-  const sb = requireSupabase()
+  const sb = await getSupabase()
 
   const { error: loiXoa } = await sb
     .from('listing_blocked_dates')
@@ -342,4 +342,4 @@ export async function luuNgayChan(listingId, khoang) {
   return data
 }
 
-export const coBackend = () => Boolean(supabase)
+export const coBackend = () => HAS_BACKEND
