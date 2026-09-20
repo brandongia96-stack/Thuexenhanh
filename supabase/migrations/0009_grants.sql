@@ -64,5 +64,14 @@ begin
   end if;
 end $blk$;
 
--- `has_role` và `wallet_so_du` CỐ Ý để nguyên: chỉ đọc, không đổi gì,
--- và policy RLS lẫn view `wallet_ledger` đều cần gọi được chúng.
+-- Ghi chú về hai hàm hay bị hiểu nhầm:
+--
+-- `wallet_so_du` KHÔNG nằm trong danh sách trên vì `0004_billing.sql` đã tự
+-- revoke nó rồi (dòng 463). Lý do của luồng 06 chặt hơn: hàm nhận `user_id`
+-- làm THAM SỐ, nên ai gọi được là đọc được số dư ví của bất kỳ ai.
+-- ĐỪNG mở lại. Client đọc số dư qua view `wallet_balances` / `wallet_ledger`,
+-- hai view đó lọc theo `auth.uid()` nên chỉ thấy ví của chính mình.
+--
+-- `has_role` CỐ Ý để mở: mọi policy RLS đều gọi nó khi đánh giá quyền. Khoá
+-- nó lại là khoá luôn cả những câu đọc hợp lệ. Nó chỉ trả true/false cho
+-- CHÍNH người đang gọi (dùng auth.uid() bên trong), không lộ gì của ai khác.
