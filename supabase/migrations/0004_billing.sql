@@ -1,10 +1,12 @@
 -- ============================================================
 -- Luồng 06 — VÍ TOKEN: hàm phía server. Chạy SAU 0001, 0002, 0003.
--- Độc lập với `src/modules/trust/server/0004_trust.sql` (luồng 08) —
--- hai file không đụng nhau, chạy thứ tự nào cũng được.
+-- Độc lập với `0005_trust.sql` (luồng 08) — hai file không đụng nhau.
 --
--- Nằm ở đây, không nằm trong `supabase/migrations/`, vì thư mục đó sinh tự
--- động từ contracts/ và chỉ luồng 01 được sửa. Luồng 01 xem xét rồi gộp.
+-- PHẢI chạy TRƯỚC `0007_notify.sql` và `0008_admin.sql`: cả hai gọi
+-- `wallet_so_du()` được định nghĩa ở file này.
+--
+-- Luồng 01 đã rà và chuyển file này từ `src/modules/billing/server/`
+-- vào đây ngày 21/09 để thứ tự migration chạy được một mạch.
 --
 -- KHÔNG sửa bảng nào của contracts/schema.sql. File này chỉ THÊM:
 --   · hàm security definer để service_role gọi từ Edge Function

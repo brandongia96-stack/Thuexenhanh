@@ -1,6 +1,6 @@
 // admin — khung trang quản trị, gắn ở /quan-tri/* (App.jsx).
 //
-// Chặn quyền thật nằm ở server (RLS + hàm 0005_admin.sql + Edge Function).
+// Chặn quyền thật nằm ở server (RLS + hàm 0008_admin.sql + Edge Function).
 // RequireRole ở App.jsx chỉ là lớp giao diện cho êm.
 // Mỗi tab tải trễ — mở "Doanh thu" không kéo theo code "Người dùng".
 

@@ -425,6 +425,26 @@ create table moderation_queue (
 );
 create index on moderation_queue (status, created_at);
 
+-- Bằng chứng người dùng đã đồng ý điều khoản (luồng 12, gộp vào hợp đồng 21/09).
+-- CHỈ GHI THÊM: mỗi lần đồng ý là một dòng mới, không sửa dòng cũ. Đổi điều khoản
+-- thì tăng `version` và xin đồng ý lại — không được ghi đè lịch sử.
+-- Cố ý KHÔNG có `updated_at` (trái quy ước chung): bảng bằng chứng mà có dấu vết
+-- sửa đổi thì không còn là bằng chứng. Cũng không có `deleted_at` vì không xoá.
+create table user_consents (
+  id          uuid primary key default gen_random_uuid(),
+  user_id     uuid not null references users(id) on delete cascade,
+  document    text not null check (document in ('terms', 'privacy', 'refund')),
+  version     text not null,
+  accepted_at timestamptz not null default now(),
+  created_at  timestamptz not null default now()
+);
+create index user_consents_user_idx on user_consents (user_id, document, accepted_at desc);
+-- Chặn sửa/xoá ở tầng CSDL, không chỉ dựa vào việc thiếu policy —
+-- service_role bỏ qua RLS nhưng không bỏ qua trigger.
+create trigger user_consents_append_only
+  before update or delete on user_consents
+  for each row execute function forbid_mutation();
+
 create table otp_codes (
   id          uuid primary key default gen_random_uuid(),
   phone       text not null,
@@ -587,7 +607,7 @@ begin
     'users','user_roles','brands','models','provinces','districts','amenities',
     'listings','listing_images','listing_blocked_dates','listing_events','saved_listings',
     'wallets','wallet_transactions','topups','charges','boosts',
-    'reviews','reports','moderation_queue','otp_codes','events','events_daily','notifications','admin_actions'
+    'reviews','reports','moderation_queue','otp_codes','user_consents','events','events_daily','notifications','admin_actions'
   ] loop
     execute format('alter table %I enable row level security', t);
   end loop;
@@ -642,6 +662,13 @@ create policy boosts_read   on boosts  for select using (deleted_at is null);
 create policy reviews_read   on reviews for select using (is_public and deleted_at is null);
 create policy reviews_author on reviews for all
   using (author_id = auth.uid()) with check (author_id = auth.uid());
+
+-- Bằng chứng đồng ý điều khoản: mỗi người chỉ thấy và chỉ thêm được dòng của mình.
+-- Không có policy update/delete -> client không sửa, không xoá.
+create policy user_consents_insert_own on user_consents for insert
+  to authenticated with check (user_id = auth.uid());
+create policy user_consents_select_own on user_consents for select
+  to authenticated using (user_id = auth.uid() or has_role('admin'));
 
 create policy reports_create on reports for insert with check (reporter_id = auth.uid());
 create policy reports_staff  on reports for select using (has_role('kiem_duyet') or has_role('admin'));

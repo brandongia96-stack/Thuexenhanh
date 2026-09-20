@@ -11,8 +11,9 @@ Ba phần: **hàm SQL**, **Edge Function**, **webhook ngân hàng**. Làm đúng
 
 ## 1. Chạy SQL
 
-SQL Editor của Supabase → dán và chạy `0005_billing.sql`. Chạy **sau** `0001`,
-`0002`, `0003`. Độc lập với `0004_trust.sql` của luồng 08.
+File SQL nay nam o `supabase/migrations/0004_billing.sql` (luong 01 chuyen vao
+ngay 21/09). Chay theo dung day migration chung — xem `supabase/README.md`.
+PHAI chay TRUOC `0007_notify.sql` va `0008_admin.sql`: ca hai goi `wallet_so_du()`.
 
 File này thêm: `wallet_so_du`, `ensure_wallet`, view `wallet_ledger`, trigger
 chặn số dư âm, `credit_topup`, `charge_and_publish`, `refund_tokens`,

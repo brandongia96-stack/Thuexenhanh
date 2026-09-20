@@ -1,6 +1,8 @@
 -- Luồng 08 — Tin cậy & chống gian lận. BẢN NHÁP, chưa chạy.
 --
--- Nằm ở đây vì contracts/ và supabase/ chỉ luồng 01 được sửa (CLAUDE.md mục 3).
+-- Luồng 01 đã chuyển file này từ `src/modules/trust/server/` vào đây ngày 21/09.
+-- Độc lập với billing/notify/admin — chạy ở đâu trong dãy cũng được.
+-- VẪN LÀ BẢN NHÁP: luồng 08 chưa chạy thử, chưa nối UI.
 -- Luồng 01 xem xét, gộp vào contracts/schema.sql rồi sinh lại migration.
 -- Chạy SAU 0001, 0002, 0003.
 

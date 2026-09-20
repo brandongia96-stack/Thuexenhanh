@@ -64,7 +64,7 @@ export async function danhDauTatCaDaDoc() {
   if (error) throw error
 }
 
-// Mặc định khi chưa có dòng prefs — phải khớp với default trong 0005_notify.sql.
+// Mặc định khi chưa có dòng prefs — phải khớp với default trong 0007_notify.sql.
 export const PREFS_MAC_DINH = { van_hanh_email: true, tang_truong_email: false }
 
 export async function docCaiDat(userId) {

@@ -5,7 +5,7 @@
 //
 // Hai lớp chặn quyền, không tin lớp nào một mình:
 //   1. Ở đây: xác thực JWT, tra vai trò trong user_roles bằng service_role.
-//   2. Trong từng hàm 0005_admin.sql: hàm TỰ kiểm tra lại p_actor.
+//   2. Trong từng hàm 0008_admin.sql: hàm TỰ kiểm tra lại p_actor.
 // Client không bao giờ gửi "tôi là admin" — người gọi luôn lấy từ JWT.
 //
 // Không có action nào ghi thẳng vào bảng. Mọi thao tác ghi là một hàm

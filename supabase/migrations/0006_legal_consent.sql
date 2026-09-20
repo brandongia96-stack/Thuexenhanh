@@ -1,28 +1,16 @@
--- Luồng 12: lưu thời điểm + phiên bản điều khoản người dùng đã đồng ý.
--- Bảng chỉ ghi thêm (không sửa, không xoá) để làm bằng chứng.
--- 🔒 Bảng mới ngoài contracts/schema.sql — cần luồng 01 gộp vào hợp đồng.
+-- ============================================================
+-- ĐÃ GỘP VÀO HỢP ĐỒNG CHUNG — file này cố ý KHÔNG làm gì.
+--
+-- Bảng `user_consents` (luồng 12) nay nằm trong `contracts/schema.sql`,
+-- nghĩa là nó đã được tạo từ `0001_init.sql`. Giữ file rỗng này để số thứ tự
+-- migration không nhảy cóc, và để ai đọc lịch sử còn thấy nó đã đi đâu.
+--
+-- KHÔNG khôi phục nội dung cũ vào đây. Bản cũ tạo policy
+-- `user_consents_select_own` KHÔNG có nhánh `has_role('admin')`; chạy lại nó
+-- sau 0001 sẽ âm thầm siết mất quyền đọc của admin.
+--
+-- Cần sửa bảng này -> sửa `contracts/schema.sql` rồi chạy
+-- `node scripts/gen-migrations.mjs` để sinh lại `0001_init.sql`.
+-- ============================================================
 
-create table if not exists user_consents (
-  id          uuid primary key default gen_random_uuid(),
-  user_id     uuid not null references users(id) on delete cascade,
-  document    text not null check (document in ('terms', 'privacy', 'refund')),
-  version     text not null,
-  accepted_at timestamptz not null default now(),
-  created_at  timestamptz not null default now()
-);
-
-create index if not exists user_consents_user_idx on user_consents (user_id, document, accepted_at desc);
-
-alter table user_consents enable row level security;
-
-drop policy if exists user_consents_insert_own on user_consents;
-create policy user_consents_insert_own on user_consents
-  for insert to authenticated
-  with check (user_id = auth.uid());
-
-drop policy if exists user_consents_select_own on user_consents;
-create policy user_consents_select_own on user_consents
-  for select to authenticated
-  using (user_id = auth.uid());
-
--- Không có policy update/delete => client không sửa/xoá được.
+select 1;
