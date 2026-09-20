@@ -46,9 +46,16 @@ const COT_TIN_CHO =
   'id,owner_id,brand_text,model_text,year,plate,color,seats,transmission,fuel,' +
   'price_per_day,description,contact_phone,province_id,address_text,created_at,' +
   'owner:users!listings_owner_id_fkey(full_name,phone,verify_status),' +
-  'listing_images(url_thumb,url_medium,sort_order,deleted_at)'
+  'listing_images(url_thumb,url_medium,sort_order,deleted_at),' +
+  'moderation_queue(status,created_at)'
 
-/** Tin `cho_duyet`, cũ nhất trước — người gửi trước được duyệt trước. */
+/**
+ * Tin `cho_duyet` CHƯA được duyệt, cũ nhất trước — người gửi trước được duyệt trước.
+ *
+ * Duyệt xong tin vẫn ở `cho_duyet` (chờ chủ xe trả phí mới lên `dang_hien_thi`),
+ * nên phải loại những tin mà dòng hàng đợi MỚI NHẤT đã là `da_duyet`, nếu không
+ * tin đã duyệt cứ hiện lại. Lọc sau khi tải nên một trang có thể ít hơn `limit`.
+ */
 export async function hangDuyet({ cursor = null, limit = TRANG } = {}) {
   const sb = await getSupabase()
   const q = phanTrang(
@@ -57,7 +64,11 @@ export async function hangDuyet({ cursor = null, limit = TRANG } = {}) {
   )
   const { data, error } = await q
   if (error) throw error
-  return goiTrang(data, limit)
+  const chuaDuyet = (data ?? []).filter((t) => {
+    const moi = [...(t.moderation_queue ?? [])].sort((a, b) => b.created_at.localeCompare(a.created_at))[0]
+    return moi?.status !== 'da_duyet'
+  })
+  return goiTrang(chuaDuyet, limit)
 }
 
 export const canhBaoTrungBienSo = (listingId) => op('plate_conflicts', { listing_id: listingId })

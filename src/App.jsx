@@ -13,6 +13,7 @@ import GhiNhanDongY from './modules/legal/GhiNhanDongY'
 // tải code của ví token, quản trị hay form đăng xe.
 // Trang chủ nằm trong gói đầu vì đó là nơi khách đáp xuống.
 const DangNhap = lazy(() => import('./modules/auth/DangNhap'))
+const TrangQuanTri = lazy(() => import('./modules/admin/TrangQuanTri'))
 const TrangThongBao = lazy(() => import('./modules/notify/TrangThongBao'))
 const DieuKhoan = lazy(() => import('./modules/legal/DieuKhoan'))
 const BaoMat = lazy(() => import('./modules/legal/BaoMat'))
@@ -78,8 +79,8 @@ export default function App() {
               <Route path="/kiem-duyet" element={
                 <RequireRole><ChuaLam ten="Hàng chờ kiểm duyệt" luong="08 — Tin cậy & kiểm duyệt" /></RequireRole>
               } />
-              <Route path="/quan-tri" element={
-                <RequireRole><ChuaLam ten="Trang quản trị" luong="10 — Quản trị" /></RequireRole>
+              <Route path="/quan-tri/*" element={
+                <RequireRole><TrangQuanTri /></RequireRole>
               } />
 
               {/* ── Trang tĩnh ── */}
