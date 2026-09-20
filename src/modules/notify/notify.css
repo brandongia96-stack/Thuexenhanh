@@ -1,0 +1,25 @@
+/* Trang thông báo — CSS thuần, chỉ dùng token var(--m-...) của contracts/tokens.css. */
+
+.tb-dau { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); flex-wrap: wrap; }
+
+.tb-ds { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--sp-2); }
+.tb-muc {
+  background: var(--m-surface); border-radius: var(--r-lg); box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--t-fast);
+}
+.tb-muc:hover { box-shadow: var(--shadow-md); }
+.tb-muc[data-chua-doc="true"] { background: var(--m-green-light); }
+
+.tb-lien-ket {
+  display: flex; gap: var(--sp-3); align-items: flex-start; width: 100%;
+  padding: var(--sp-4); background: none; border: 0; text-align: left;
+  color: inherit; text-decoration: none; cursor: pointer; font: inherit;
+}
+.tb-cham { flex: none; width: 8px; height: 8px; margin-top: 7px; border-radius: var(--r-full); background: transparent; }
+.tb-cham[data-chua-doc="true"] { background: var(--m-green); }
+.tb-chu { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.tb-tieu { display: block; font-weight: 700; color: var(--m-dark); }
+.tb-nd { display: block; color: var(--m-mid); font-size: 14px; }
+
+.tb-gat { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-4); cursor: pointer; }
+.tb-gat input { width: 20px; height: 20px; margin-top: 2px; flex: none; accent-color: var(--m-green); }

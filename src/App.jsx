@@ -7,11 +7,26 @@ import RequireRole from './components/RequireRole'
 import { PageLoading } from './components/Loading'
 import TrangChu from './modules/shell/TrangChu'
 import ChuaLam from './modules/shell/ChuaLam'
+import GhiNhanDongY from './modules/legal/GhiNhanDongY'
 
 // HIEU-NANG.md mục 3: chia gói theo route. Khách vào trang tìm kiếm KHÔNG
 // tải code của ví token, quản trị hay form đăng xe.
 // Trang chủ nằm trong gói đầu vì đó là nơi khách đáp xuống.
 const DangNhap = lazy(() => import('./modules/auth/DangNhap'))
+const TrangThongBao = lazy(() => import('./modules/notify/TrangThongBao'))
+const DieuKhoan = lazy(() => import('./modules/legal/DieuKhoan'))
+const BaoMat = lazy(() => import('./modules/legal/BaoMat'))
+const HoanToken = lazy(() => import('./modules/legal/HoanToken'))
+const LienHe = lazy(() => import('./modules/legal/LienHe'))
+const GioiThieu = lazy(() => import('./modules/legal/GioiThieu'))
+const HoiDap = lazy(() => import('./modules/legal/HoiDap'))
+// Luồng 05 — trang xem xe và xe đã lưu. Tách gói riêng: khách vào trang chủ
+// không phải tải slider ảnh, hộp liên hệ hay 13 icon tiện nghi.
+const TrangXe = lazy(() => import('./modules/discovery/listing-page/TrangXe'))
+const TrangDaLuu = lazy(() => import('./modules/discovery/saved/TrangDaLuu'))
+// Luồng 06 — ví token. Chỉ chủ xe vào, nên tuyệt đối không nằm ở gói đầu:
+// khách thuê không bao giờ phải tải code của sổ ví và màn QR chuyển khoản.
+const TrangVi = lazy(() => import('./modules/billing/wallet/TrangVi'))
 
 /**
  * App.jsx CHỈ làm routing + layout. Dưới 200 dòng.
@@ -21,6 +36,7 @@ const DangNhap = lazy(() => import('./modules/auth/DangNhap'))
 export default function App() {
   return (
     <AuthProvider>
+      <GhiNhanDongY />
       <BrowserRouter>
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
           <Header />
@@ -31,8 +47,9 @@ export default function App() {
 
               {/* ── Khách thuê ── */}
               <Route path="/thue-xe" element={<ChuaLam ten="Tìm kiếm xe" luong="04 — Tìm kiếm & bộ lọc" />} />
-              <Route path="/xe/:id" element={<ChuaLam ten="Trang chi tiết xe" luong="05 — Trang xe & liên hệ" />} />
-              <Route path="/da-luu" element={<ChuaLam ten="Xe đã lưu" luong="04 — Tìm kiếm & bộ lọc" />} />
+              <Route path="/xe/:id" element={<TrangXe />} />
+              {/* Xe đã lưu thuộc luồng 05 (module discovery/saved), không phải 04. */}
+              <Route path="/da-luu" element={<TrangDaLuu />} />
 
               {/* ── Tài khoản ── */}
               <Route path="/dang-nhap" element={<DangNhap />} />
@@ -40,7 +57,7 @@ export default function App() {
                 <RequireRole><ChuaLam ten="Tài khoản" luong="01 — Nền tảng" /></RequireRole>
               } />
               <Route path="/thong-bao" element={
-                <RequireRole><ChuaLam ten="Thông báo" luong="11 — Thông báo" /></RequireRole>
+                <RequireRole><TrangThongBao /></RequireRole>
               } />
 
               {/* ── Chủ xe ── */}
@@ -54,7 +71,7 @@ export default function App() {
                 <RequireRole><ChuaLam ten="Sửa tin đăng" luong="02 — Tin đăng xe" /></RequireRole>
               } />
               <Route path="/chu-xe/vi" element={
-                <RequireRole><ChuaLam ten="Ví token" luong="06 — Ví token & thanh toán" /></RequireRole>
+                <RequireRole><TrangVi /></RequireRole>
               } />
 
               {/* ── Vận hành ── */}
@@ -66,10 +83,12 @@ export default function App() {
               } />
 
               {/* ── Trang tĩnh ── */}
-              <Route path="/dieu-khoan" element={<ChuaLam ten="Điều khoản sử dụng" luong="12 — Pháp lý" />} />
-              <Route path="/bao-mat" element={<ChuaLam ten="Chính sách bảo mật" luong="12 — Pháp lý" />} />
-              <Route path="/hoan-token" element={<ChuaLam ten="Chính sách hoàn token" luong="12 — Pháp lý" />} />
-              <Route path="/lien-he" element={<ChuaLam ten="Liên hệ" luong="12 — Pháp lý" />} />
+              <Route path="/dieu-khoan" element={<DieuKhoan />} />
+              <Route path="/bao-mat" element={<BaoMat />} />
+              <Route path="/hoan-token" element={<HoanToken />} />
+              <Route path="/gioi-thieu" element={<GioiThieu />} />
+              <Route path="/tro-giup" element={<HoiDap />} />
+              <Route path="/lien-he" element={<LienHe />} />
 
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
