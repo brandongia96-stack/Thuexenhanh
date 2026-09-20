@@ -1,0 +1,546 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Triển khai — Thuexenhanh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+:root{
+  --m-green:#3b82f6; --m-green-hover:#2563eb; --m-green-light:#eff6ff; --m-green-border:#bfdbfe;
+  --m-dark:#141414; --m-mid:#4b4f56; --m-subtle:#8a8f9a;
+  --m-bg:#f5f5f7; --m-surface:#ffffff; --m-border:#e8e8ec;
+  --m-red:#e8364b; --m-red-bg:#fff0f2;
+  --m-amber:#f59e0b; --m-amber-bg:#fffbeb;
+  --m-ok:#16a34a; --m-ok-bg:#f0fdf4;
+  --r-sm:8px; --r-md:12px; --r-lg:16px; --r-full:9999px;
+  --shadow-sm:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 16px rgba(0,0,0,.07),0 2px 6px rgba(0,0,0,.04);
+  --shadow-lg:0 12px 40px rgba(0,0,0,.10),0 4px 12px rgba(0,0,0,.06);
+  --t-fast:.15s cubic-bezier(.4,0,.2,1);
+  --mono:ui-monospace,SFMono-Regular,"Cascadia Mono",Consolas,monospace;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--m-bg);color:var(--m-dark);
+  font-family:"Plus Jakarta Sans",-apple-system,"Segoe UI",Roboto,sans-serif;
+  font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:24px 20px 80px}
+
+/* ── Đầu trang ── */
+header{display:flex;align-items:flex-start;gap:16px;flex-wrap:wrap;margin-bottom:20px}
+h1{font-size:22px;font-weight:700;margin:0 0 6px;letter-spacing:-.02em}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{
+  display:inline-flex;align-items:center;gap:5px;font-size:12.5px;font-weight:500;
+  padding:3px 10px;border-radius:var(--r-full);background:var(--m-surface);
+  border:1px solid var(--m-border);color:var(--m-mid);
+}
+.chip.warn{background:var(--m-amber-bg);border-color:#fde68a;color:#92400e}
+.chip.ok{background:var(--m-ok-bg);border-color:#bbf7d0;color:#166534}
+.chip code{font-family:var(--mono);font-size:11.5px}
+
+/* ── Nút ── */
+.nut-hang{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 20px}
+button{
+  font-family:inherit;font-size:14.5px;font-weight:600;cursor:pointer;
+  border-radius:var(--r-md);padding:11px 20px;border:1px solid transparent;
+  transition:background var(--t-fast),border-color var(--t-fast),transform var(--t-fast),opacity var(--t-fast);
+  display:inline-flex;align-items:center;gap:8px;
+}
+button:active:not(:disabled){transform:translateY(1px)}
+button:disabled{opacity:.45;cursor:not-allowed}
+.b-phu{background:var(--m-surface);border-color:var(--m-border);color:var(--m-dark)}
+.b-phu:hover:not(:disabled){border-color:#d4d4dc;background:#fafafb}
+.b-dev{background:var(--m-green);color:#fff}
+.b-dev:hover:not(:disabled){background:var(--m-green-hover)}
+.b-main{background:var(--m-dark);color:#fff}
+.b-main:hover:not(:disabled){background:#000}
+.b-nho{font-size:12.5px;padding:5px 11px;border-radius:var(--r-sm);font-weight:600}
+.svg{width:17px;height:17px;flex:0 0 auto}
+
+/* ── Thẻ ── */
+.the{background:var(--m-surface);border:1px solid var(--m-border);border-radius:var(--r-lg);
+     box-shadow:var(--shadow-sm);padding:18px 20px;margin-bottom:14px}
+.the h2{font-size:15px;font-weight:700;margin:0 0 14px;display:flex;align-items:center;gap:8px}
+.the h2 .dem{font-weight:500;color:var(--m-subtle);font-size:13px}
+
+/* ── Ô ghim lỗi ── */
+#ghim{position:sticky;top:12px;z-index:20;margin-bottom:16px}
+.ghim-hop{background:var(--m-red-bg);border:1.5px solid #fecdd3;border-radius:var(--r-lg);
+          box-shadow:var(--shadow-lg);padding:16px 18px}
+.ghim-dau{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px;flex-wrap:wrap}
+.ghim-dau strong{font-size:15px;color:#9f1239;display:flex;align-items:center;gap:8px}
+.loi{background:var(--m-surface);border:1px solid #fecdd3;border-radius:var(--r-md);
+     padding:12px 14px;margin-bottom:9px}
+.loi:last-child{margin-bottom:0}
+.loi-dau{display:flex;align-items:flex-start;justify-content:space-between;gap:12px}
+.loi-tieu{font-weight:600;font-size:14px;color:#9f1239;flex:1;min-width:0}
+.loi-meta{display:flex;gap:6px;flex-wrap:wrap;margin:7px 0 0}
+.loi-chi{margin:9px 0 0;font-size:13px;color:var(--m-mid);white-space:pre-wrap;
+         font-family:var(--mono);background:#fafafb;border:1px solid var(--m-border);
+         border-radius:var(--r-sm);padding:9px 11px;max-height:220px;overflow:auto;line-height:1.5}
+.b-copy{background:var(--m-surface);border:1px solid #fecdd3;color:#9f1239}
+.b-copy:hover{background:#fff5f6}
+.b-copy.xong{background:var(--m-ok-bg);border-color:#bbf7d0;color:#166534}
+
+/* ── Cảnh báo ── */
+.canh{background:var(--m-amber-bg);border:1px solid #fde68a;border-radius:var(--r-md);
+      padding:10px 13px;margin-bottom:7px;font-size:13.5px}
+.canh b{color:#92400e;font-weight:600}
+.canh .f{font-family:var(--mono);font-size:12px;color:#a16207}
+
+/* ── Tổng quan ── */
+.o-luoi{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px}
+.o{background:var(--m-bg);border:1px solid var(--m-border);border-radius:var(--r-md);padding:13px 15px}
+.o .nhan{font-size:12px;color:var(--m-subtle);font-weight:500;margin-bottom:3px}
+.o .so{font-size:23px;font-weight:700;letter-spacing:-.02em;line-height:1.2}
+.o .phu{font-size:12px;color:var(--m-subtle);margin-top:2px}
+.o.do .so{color:var(--m-red)} .o.xanh .so{color:var(--m-ok)}
+
+.thanh{height:7px;border-radius:var(--r-full);background:var(--m-border);overflow:hidden;margin-top:9px}
+.thanh i{display:block;height:100%;border-radius:var(--r-full);background:var(--m-ok);transition:width .4s}
+.thanh i.qua{background:var(--m-red)}
+
+/* ── Bảng module ── */
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{text-align:left;font-weight:600;color:var(--m-subtle);font-size:12px;
+   padding:0 10px 8px;border-bottom:1px solid var(--m-border);white-space:nowrap}
+th.so,td.so{text-align:right}
+td{padding:9px 10px;border-bottom:1px solid #f2f2f5;vertical-align:top}
+tr:last-child td{border-bottom:0}
+tr.co-moi td{background:var(--m-green-light)}
+.ten-mod{font-weight:600}
+.ten-mod.he{font-weight:500;color:var(--m-subtle)}
+.mono{font-family:var(--mono);font-size:12.5px}
+.nhan-tt{display:inline-block;font-size:11px;font-weight:600;padding:1px 7px;
+         border-radius:var(--r-full);margin-right:5px}
+.tt-moi{background:var(--m-ok-bg);color:#166534}
+.tt-sua{background:var(--m-green-light);color:#1d4ed8}
+.tt-xoa{background:var(--m-red-bg);color:#9f1239}
+.chi-tiet-mod{font-size:12.5px;color:var(--m-mid);margin-top:5px}
+.chi-tiet-mod div{padding:1px 0}
+
+/* ── File thay đổi ── */
+.hang-file{display:flex;align-items:center;gap:10px;padding:7px 2px;border-bottom:1px solid #f2f2f5;font-size:13.5px}
+.hang-file:last-child{border-bottom:0}
+.hang-file input{width:16px;height:16px;accent-color:var(--m-green);cursor:pointer;flex:0 0 auto}
+.hang-file .p{flex:1;min-width:0;font-family:var(--mono);font-size:12.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hang-file .n{font-size:12px;color:var(--m-subtle);white-space:nowrap}
+.them{color:var(--m-ok);font-weight:600} .bot{color:var(--m-red);font-weight:600}
+input[type=text]{
+  width:100%;font-family:inherit;font-size:14px;padding:10px 13px;border-radius:var(--r-md);
+  border:1px solid var(--m-border);background:var(--m-surface);color:var(--m-dark);
+}
+input[type=text]:focus{outline:none;border-color:var(--m-green);box-shadow:0 0 0 3px var(--m-green-light)}
+
+/* ── Nhật ký ── */
+#nhat-ky{font-family:var(--mono);font-size:12.5px;color:var(--m-mid);white-space:pre-wrap;
+         background:var(--m-bg);border-radius:var(--r-md);padding:12px 14px;max-height:200px;overflow:auto}
+.trong{color:var(--m-subtle);font-size:13.5px;padding:6px 0}
+.an{display:none}
+.quay{animation:q 1s linear infinite}
+@keyframes q{to{transform:rotate(360deg)}}
+summary{cursor:pointer;font-weight:600;font-size:13.5px;color:var(--m-mid);padding:4px 0}
+summary::marker{color:var(--m-subtle)}
+@media (max-width:640px){
+  .wrap{padding:16px 14px 60px}
+  .nut-hang button{flex:1 1 auto;justify-content:center}
+  th.an-nho,td.an-nho{display:none}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <div style="flex:1;min-width:240px">
+    <h1>Triển khai — Thuexenhanh</h1>
+    <div class="chips" id="chips"></div>
+  </div>
+</header>
+
+<div class="nut-hang">
+  <button class="b-phu" id="b-quet">
+    <svg class="svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+    Quét
+  </button>
+  <button class="b-dev" id="b-dev">
+    <svg class="svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
+    Quét &amp; đẩy lên <b style="font-weight:700">dev</b>
+  </button>
+  <button class="b-main" id="b-main" disabled title="Phải đẩy lên dev xanh trước">
+    <svg class="svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6"/><path d="m9 5 3-3 3 3"/><rect x="3" y="8" width="18" height="13" rx="2"/></svg>
+    Đẩy lên <b style="font-weight:700">main</b>
+  </button>
+</div>
+
+<div id="ghim"></div>
+
+<div class="the an" id="the-nhat-ky">
+  <h2>Nhật ký</h2>
+  <div id="nhat-ky"></div>
+</div>
+
+<div id="ket-qua"></div>
+
+</div>
+
+<script>
+const $ = (s) => document.querySelector(s)
+let KQ = null            // kết quả quét gần nhất
+let DANG_CHAY = false
+let STATE = {}
+
+// ── Tiện ích ────────────────────────────────────────────────────────────────
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) =>
+  ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]))
+const kb = (n) => (n / 1024).toFixed(1) + ' KB'
+const so = (n) => Number(n || 0).toLocaleString('vi-VN')
+
+function nhatKy(t) {
+  $('#the-nhat-ky').classList.remove('an')
+  $('#nhat-ky').textContent += t + '\n'
+  $('#nhat-ky').scrollTop = 1e9
+}
+
+async function chepVaoClipboard(text, nut) {
+  try {
+    await navigator.clipboard.writeText(text)
+  } catch {
+    const ta = document.createElement('textarea')
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0'
+    document.body.appendChild(ta); ta.select()
+    try { document.execCommand('copy') } catch {}
+    ta.remove()
+  }
+  if (nut) {
+    const cu = nut.innerHTML
+    nut.innerHTML = 'Đã chép ✓'; nut.classList.add('xong')
+    setTimeout(() => { nut.innerHTML = cu; nut.classList.remove('xong') }, 1600)
+  }
+}
+
+/** Văn bản dán thẳng vào luồng chat Claude để sửa. */
+function loiThanhPrompt(l) {
+  return [
+    'Sửa lỗi cho Thuexenhanh. Bảng điều khiển triển khai chặn không cho đẩy lên GitHub.',
+    '',
+    'LỖI: ' + l.tieuDe,
+    l.file ? 'FILE: ' + l.file : null,
+    l.luat ? 'LUẬT BỊ VI PHẠM: ' + l.luat : null,
+    '',
+    'CHI TIẾT:',
+    l.chiTiet,
+    '',
+    'Đọc CLAUDE.md và CHANGELOG.md trước khi sửa.',
+    'Sửa nhỏ dùng Edit, không dùng Write. Sửa xong chạy `npm run build` kiểm tra lại.',
+  ].filter((x) => x !== null).join('\n')
+}
+
+// ── Vẽ ──────────────────────────────────────────────────────────────────────
+
+function veChips() {
+  const g = (KQ && KQ.git) || (STATE && STATE.git) || {}
+  const c = []
+  c.push(`<span class="chip">nhánh <code>${esc(g.branch || '?')}</code></span>`)
+  c.push(`<span class="chip">HEAD <code>${esc(g.headNgan || '?')}</code></span>`)
+  if (g.remote) {
+    c.push(`<span class="chip ok">origin đã nối</span>`)
+  } else {
+    c.push(`<span class="chip warn">chưa có remote origin</span>`)
+  }
+  if (STATE.devPush) {
+    const khop = STATE.devPush.sha === g.head
+    c.push(`<span class="chip ${khop ? 'ok' : 'warn'}">dev: <code>${esc(STATE.devPush.sha.slice(0, 7))}</code>${khop ? '' : ' (đã cũ)'}</span>`)
+  }
+  $('#chips').innerHTML = c.join('')
+}
+
+function veGhim() {
+  const ghim = $('#ghim')
+  if (!KQ) { ghim.innerHTML = ''; return }
+
+  if (KQ.sach) {
+    ghim.innerHTML = `<div class="ghim-hop" style="background:var(--m-ok-bg);border-color:#bbf7d0">
+      <div class="ghim-dau"><strong style="color:#166534">
+        <svg class="svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"/></svg>
+        Sạch — không có lỗi chặn</strong>
+      <span style="font-size:13px;color:#166534">quét ${esc(KQ.matGiay)}s</span></div></div>`
+    return
+  }
+
+  const items = KQ.chan.map((l, i) => `
+    <div class="loi">
+      <div class="loi-dau">
+        <div class="loi-tieu">${esc(l.tieuDe)}</div>
+        <button class="b-nho b-copy" data-copy="${i}">Copy để sửa</button>
+      </div>
+      <div class="loi-meta">
+        ${l.file ? `<span class="chip"><code>${esc(l.file)}</code></span>` : ''}
+        ${l.luat ? `<span class="chip">${esc(l.luat)}</span>` : ''}
+      </div>
+      <pre class="loi-chi">${esc(l.chiTiet)}</pre>
+    </div>`).join('')
+
+  ghim.innerHTML = `<div class="ghim-hop">
+    <div class="ghim-dau">
+      <strong>
+        <svg class="svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 9v4"/><path d="M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+        ${KQ.chan.length} lỗi chặn — chưa được đẩy lên GitHub
+      </strong>
+      <button class="b-nho b-copy" id="copy-het">Copy tất cả</button>
+    </div>
+    ${items}
+  </div>`
+
+  ghim.querySelectorAll('[data-copy]').forEach((n) => {
+    n.onclick = () => chepVaoClipboard(loiThanhPrompt(KQ.chan[Number(n.dataset.copy)]), n)
+  })
+  $('#copy-het').onclick = (e) => {
+    const t = 'Sửa ' + KQ.chan.length + ' lỗi cho Thuexenhanh. Bảng điều khiển triển khai chặn không cho đẩy lên GitHub.\n\n'
+      + KQ.chan.map((l, i) => `── LỖI ${i + 1}/${KQ.chan.length} ──\n`
+        + `${l.tieuDe}\n` + (l.file ? `FILE: ${l.file}\n` : '') + (l.luat ? `LUẬT: ${l.luat}\n` : '')
+        + `\n${l.chiTiet}`).join('\n\n')
+      + '\n\nĐọc CLAUDE.md và CHANGELOG.md trước khi sửa. Sửa nhỏ dùng Edit, không dùng Write.'
+    chepVaoClipboard(t, e.currentTarget)
+  }
+}
+
+function veTongQuan() {
+  const t = KQ.tongQuan
+  const vuot = t.jsGz && t.jsGz > t.nganSachJsGz
+  const pct = t.jsGz ? Math.min(100, (t.jsGz / t.nganSachJsGz) * 100) : 0
+  return `<div class="the">
+    <h2>Tổng quan <span class="dem">quét ${esc(KQ.matGiay)}s · ${new Date(KQ.luc).toLocaleTimeString('vi-VN')}</span></h2>
+    <div class="o-luoi">
+      <div class="o"><div class="nhan">Tổng code</div><div class="so">${so(t.lines)}</div><div class="phu">dòng · ${so(t.files)} file</div></div>
+      <div class="o"><div class="nhan">Module</div><div class="so">${so(t.soModule)}</div><div class="phu">trong src/modules</div></div>
+      <div class="o ${KQ.thayDoi.length ? '' : ''}"><div class="nhan">Chưa commit</div><div class="so">${so(KQ.thayDoi.length)}</div><div class="phu">file thay đổi</div></div>
+      <div class="o ${t.buildOk ? 'xanh' : 'do'}"><div class="nhan">Build</div><div class="so">${t.buildOk ? 'xanh' : 'hỏng'}</div><div class="phu">${(t.buildMs / 1000).toFixed(1)}s</div></div>
+      <div class="o ${vuot ? 'do' : 'xanh'}">
+        <div class="nhan">JS lần đầu (gzip)</div>
+        <div class="so">${t.jsGz ? kb(t.jsGz) : '—'}</div>
+        <div class="phu">ngân sách ${kb(t.nganSachJsGz)}${t.cssGz ? ' · CSS ' + kb(t.cssGz) : ''}</div>
+        <div class="thanh"><i class="${vuot ? 'qua' : ''}" style="width:${pct}%"></i></div>
+      </div>
+    </div>
+  </div>`
+}
+
+function veSoVoiLanTruoc() {
+  const s = KQ.soVoiLanTruoc
+  if (s.laLanDau) {
+    return `<div class="the"><h2>So với lần quét trước</h2>
+      <div class="trong">Đây là lần quét đầu tiên — chưa có mốc để so. Lần quét sau sẽ hiện code nào mới.</div></div>`
+  }
+  const khong = !s.themFile.length && !s.xoaFile.length && !s.suaFile.length
+  return `<div class="the">
+    <h2>So với lần quét trước <span class="dem">${new Date(s.luc).toLocaleString('vi-VN')}</span></h2>
+    ${khong ? '<div class="trong">Không có file nào đổi từ lần quét trước.</div>' : `
+    <div class="o-luoi" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">
+      <div class="o xanh"><div class="nhan">File mới</div><div class="so">${s.themFile.length}</div></div>
+      <div class="o"><div class="nhan">File sửa</div><div class="so">${s.suaFile.length}</div></div>
+      <div class="o ${s.xoaFile.length ? 'do' : ''}"><div class="nhan">File xoá</div><div class="so">${s.xoaFile.length}</div></div>
+    </div>
+    ${s.themFile.length ? `<details style="margin-top:12px"><summary>Xem ${s.themFile.length} file mới</summary>
+      <div class="chi-tiet-mod mono">${s.themFile.map((p) => '<div>+ ' + esc(p) + '</div>').join('')}</div></details>` : ''}
+    ${s.xoaFile.length ? `<details style="margin-top:6px"><summary>Xem ${s.xoaFile.length} file đã xoá</summary>
+      <div class="chi-tiet-mod mono">${s.xoaFile.map((p) => '<div>− ' + esc(p) + '</div>').join('')}</div></details>` : ''}
+    `}
+  </div>`
+}
+
+function veModule() {
+  const hang = KQ.modules.map((m) => {
+    const heThong = m.ten.startsWith('·')
+    const moi = m.thayDoi.filter((t) => t.trangThai === 'moi')
+    const sua = m.thayDoi.filter((t) => t.trangThai === 'sua' || t.trangThai === 'doi-ten')
+    const xoa = m.thayDoi.filter((t) => t.trangThai === 'xoa')
+    const coGi = m.thayDoi.length > 0
+    const chiTiet = coGi ? `<div class="chi-tiet-mod mono">${m.thayDoi.map((t) =>
+      `<div><span class="nhan-tt tt-${t.trangThai === 'doi-ten' ? 'sua' : t.trangThai}">${
+        t.trangThai === 'moi' ? 'mới' : t.trangThai === 'xoa' ? 'xoá' : 'sửa'
+      }</span>${esc(t.path.replace(/^src\//, ''))} <span class="them">+${t.them}</span> <span class="bot">−${t.bot}</span></div>`
+    ).join('')}</div>` : ''
+    return `<tr class="${coGi ? 'co-moi' : ''}">
+      <td><span class="ten-mod ${heThong ? 'he' : ''}">${esc(m.ten)}</span>${chiTiet}</td>
+      <td class="so an-nho">${so(m.files)}</td>
+      <td class="so">${so(m.lines)}</td>
+      <td class="so an-nho">${kb(m.bytes)}</td>
+      <td class="so">${coGi
+        ? `${moi.length ? '<span class="nhan-tt tt-moi">' + moi.length + ' mới</span>' : ''}${sua.length ? '<span class="nhan-tt tt-sua">' + sua.length + ' sửa</span>' : ''}${xoa.length ? '<span class="nhan-tt tt-xoa">' + xoa.length + ' xoá</span>' : ''}`
+        : '<span style="color:var(--m-subtle)">—</span>'}</td>
+    </tr>`
+  }).join('')
+
+  return `<div class="the">
+    <h2>Module <span class="dem">${KQ.modules.length} nhóm · dòng tô xanh là có code mới</span></h2>
+    <table>
+      <thead><tr>
+        <th>Tên</th><th class="so an-nho">File</th><th class="so">Dòng</th>
+        <th class="so an-nho">Nặng</th><th class="so">Thay đổi</th>
+      </tr></thead>
+      <tbody>${hang}</tbody>
+    </table>
+  </div>`
+}
+
+function veThayDoi() {
+  if (!KQ.thayDoi.length) {
+    return `<div class="the"><h2>File sẽ commit</h2>
+      <div class="trong">Không có thay đổi nào chưa commit. Nút Dev sẽ chỉ đẩy các commit sẵn có lên nhánh dev.</div>
+      ${KQ.commitChuaDay.length ? `<div class="chi-tiet-mod mono" style="margin-top:8px">${
+        KQ.commitChuaDay.map((c) => '<div>' + esc(c) + '</div>').join('')}</div>` : ''}
+    </div>`
+  }
+  const hang = KQ.thayDoi.map((t, i) => `
+    <label class="hang-file">
+      <input type="checkbox" class="tick" value="${esc(t.path)}" checked />
+      <span class="nhan-tt tt-${t.trangThai === 'doi-ten' ? 'sua' : t.trangThai}">${
+        t.trangThai === 'moi' ? 'mới' : t.trangThai === 'xoa' ? 'xoá' : 'sửa'}</span>
+      <span class="p">${esc(t.path)}</span>
+      <span class="n"><span class="them">+${t.them}</span> <span class="bot">−${t.bot}</span></span>
+    </label>`).join('')
+
+  return `<div class="the">
+    <h2>File sẽ commit <span class="dem">${KQ.thayDoi.length} file · bỏ tick file của luồng chat khác</span></h2>
+    <div style="max-height:320px;overflow:auto;margin-bottom:14px">${hang}</div>
+    <input type="text" id="loi-nhan" placeholder="Lời nhắn commit, ví dụ: luong 04: loc theo hang xe" />
+    <div style="font-size:12.5px;color:var(--m-subtle);margin-top:8px">
+      Công cụ này chỉ stage đúng file anh tick. Nó không bao giờ chạy <code class="mono">git add -A</code>.
+    </div>
+  </div>`
+}
+
+function veCanhBao() {
+  if (!KQ.canhBao.length) return ''
+  const gom = {}
+  for (const c of KQ.canhBao) { (gom[c.ma] ||= []).push(c) }
+  const khoi = Object.values(gom).map((ds) => `
+    <details>
+      <summary>${esc(ds[0].tieuDe.replace(/\(.*\)/, ''))} — ${ds.length} file</summary>
+      <div style="margin-top:6px">${ds.map((c) => `<div class="canh">
+        <b>${esc(c.tieuDe)}</b><div class="f">${esc(c.file || '')}</div>
+        <div style="color:var(--m-mid);margin-top:3px">${esc(c.chiTiet)}</div>
+      </div>`).join('')}</div>
+    </details>`).join('')
+  return `<div class="the">
+    <h2>Cảnh báo <span class="dem">${KQ.canhBao.length} chỗ · không chặn đẩy lên</span></h2>
+    ${khoi}
+  </div>`
+}
+
+function veHet() {
+  veChips()
+  veGhim()
+  $('#ket-qua').innerHTML = veTongQuan() + veSoVoiLanTruoc() + veModule() + veThayDoi() + veCanhBao()
+  capNhatNut()
+}
+
+function capNhatNut() {
+  const g = (KQ && KQ.git) || (STATE && STATE.git) || {}
+  const coRemote = Boolean(g.remote)
+  $('#b-quet').disabled = DANG_CHAY
+  $('#b-dev').disabled = DANG_CHAY || !coRemote
+  $('#b-dev').title = coRemote ? '' : 'Chưa có remote origin — chạy: git remote add origin <url>'
+
+  const sanSangMain = Boolean(STATE.devPush && g.head && STATE.devPush.sha === g.head && coRemote)
+  $('#b-main').disabled = DANG_CHAY || !sanSangMain
+  $('#b-main').title = sanSangMain
+    ? 'Đẩy đúng commit đã kiểm tra lên main'
+    : (STATE.devPush ? 'Commit đã đổi sau lần đẩy dev — bấm Dev lại' : 'Phải đẩy lên dev xanh trước')
+}
+
+// ── Chạy quét ───────────────────────────────────────────────────────────────
+
+function chayQuet() {
+  return new Promise((giaiQuyet) => {
+    DANG_CHAY = true; capNhatNut()
+    $('#nhat-ky').textContent = ''
+    $('#the-nhat-ky').classList.remove('an')
+    nhatKy('▶ Bắt đầu quét…')
+
+    const es = new EventSource('/api/scan')
+    es.addEventListener('buoc', (e) => nhatKy('  · ' + JSON.parse(e.data).text))
+    es.addEventListener('xong', (e) => {
+      KQ = JSON.parse(e.data)
+      nhatKy(KQ.sach ? '✔ Sạch — không có lỗi chặn.' : `✘ ${KQ.chan.length} lỗi chặn.`)
+      es.close(); DANG_CHAY = false; veHet(); giaiQuyet(KQ)
+    })
+    es.addEventListener('vo', (e) => {
+      nhatKy('✘ Công cụ vỡ: ' + JSON.parse(e.data).loi)
+      es.close(); DANG_CHAY = false; capNhatNut(); giaiQuyet(null)
+    })
+    es.onerror = () => {
+      if (DANG_CHAY) { nhatKy('✘ Mất kết nối tới máy chủ công cụ.'); DANG_CHAY = false; capNhatNut(); giaiQuyet(null) }
+      es.close()
+    }
+  })
+}
+
+async function goi(duongDan, body) {
+  const r = await fetch(duongDan, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json', 'x-deploy-ui': '1' },
+    body: JSON.stringify(body || {}),
+  })
+  return r.json()
+}
+
+// ── Gắn nút ─────────────────────────────────────────────────────────────────
+
+$('#b-quet').onclick = () => chayQuet()
+
+$('#b-dev').onclick = async () => {
+  const kq = await chayQuet()
+  if (!kq) return
+  if (!kq.sach) {
+    nhatKy('■ Dừng — không đẩy lên GitHub khi còn lỗi chặn. Xem ô ghim đỏ ở trên.')
+    document.querySelector('#ghim').scrollIntoView({ behavior: 'smooth', block: 'start' })
+    return
+  }
+  const paths = [...document.querySelectorAll('.tick:checked')].map((n) => n.value)
+  const message = ($('#loi-nhan') && $('#loi-nhan').value) || ''
+  if (paths.length) nhatKy(`▶ Commit ${paths.length} file rồi đẩy lên nhánh dev…`)
+  else nhatKy('▶ Không có gì để commit — đẩy commit sẵn có lên nhánh dev…')
+
+  DANG_CHAY = true; capNhatNut()
+  const r = await goi('/api/push-dev', { paths, message, headLucQuet: kq.git.head })
+  DANG_CHAY = false
+
+  if (!r.ok) { nhatKy('✘ ' + r.loi); await lamMoiState(); return }
+  nhatKy('✔ Đã lên nhánh dev: ' + r.sha.slice(0, 7))
+  if (r.log && r.log.trim()) nhatKy(r.log.trim())
+  nhatKy('→ Nút main đã mở.')
+  await lamMoiState()
+}
+
+$('#b-main').onclick = async () => {
+  const g = (KQ && KQ.git) || STATE.git || {}
+  if (!confirm(`Đẩy commit ${(STATE.devPush ? STATE.devPush.sha.slice(0, 7) : g.headNgan)} lên nhánh main?\n\n`
+    + 'Main là nhánh Cloudflare Pages build ra bản production.')) return
+  DANG_CHAY = true; capNhatNut()
+  nhatKy('▶ Đẩy lên nhánh main…')
+  const r = await goi('/api/push-main', {})
+  DANG_CHAY = false
+  if (!r.ok) { nhatKy('✘ ' + r.loi); await lamMoiState(); return }
+  nhatKy('✔ Đã lên nhánh main: ' + r.sha.slice(0, 7))
+  if (r.log && r.log.trim()) nhatKy(r.log.trim())
+  nhatKy('→ Cloudflare Pages sẽ tự build lại sau vài chục giây.')
+  await lamMoiState()
+}
+
+async function lamMoiState() {
+  STATE = await (await fetch('/api/state')).json()
+  if (KQ) KQ.git = STATE.git
+  veChips(); capNhatNut()
+}
+
+lamMoiState()
+</script>
+</body>
+</html>

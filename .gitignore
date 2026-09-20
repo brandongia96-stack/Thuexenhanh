@@ -37,3 +37,7 @@ dist/
 
 # File thu nghiem tam - khong dua len GitHub, khong deploy
 _scratch/
+
+# Trang thai cuc bo cua bang dieu khien trien khai (tools/deploy-ui)
+tools/deploy-ui/.state.json
+tools/deploy-ui/.snapshot.json
