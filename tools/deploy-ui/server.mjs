@@ -468,9 +468,13 @@ async function quet(bao) {
     const m = modules.get(f.module)
     m.files++; m.lines += f.lines; m.bytes += f.bytes
   }
+  // File thay đổi có thể nằm ngoài phạm vi đếm code (ví dụ `tools/`, `.gitignore`).
+  // Vẫn phải có dòng cho nó, nếu không thẻ "Chưa commit" báo có mà bảng Module trống.
   for (const t of thayDoi) {
-    const m = modules.get(t.module)
-    if (m) m.thayDoi.push(t)
+    if (!modules.has(t.module)) {
+      modules.set(t.module, { ten: t.module, files: 0, lines: 0, bytes: 0, thayDoi: [], moiSoLanTruoc: [] })
+    }
+    modules.get(t.module).thayDoi.push(t)
   }
   for (const p of soVoiLanTruoc.themFile) {
     const m = modules.get(moduleCua(p))

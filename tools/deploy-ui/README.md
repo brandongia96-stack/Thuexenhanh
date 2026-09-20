@@ -18,11 +18,23 @@ Rồi mở `http://127.0.0.1:4545`. Chỉ nghe ở `127.0.0.1` — máy khác tr
 
 | Nút | Làm gì |
 |---|---|
-| **Quét** | Soi toàn bộ app rồi báo cáo. **Không đẩy gì.** Dùng để xem tình hình. |
+| **Quét** (vòng tròn xanh trên thanh điều hướng) | Soi toàn bộ app rồi báo cáo. **Không đẩy gì.** Dùng để xem tình hình. |
 | **Quét & đẩy lên dev** | Quét lại. Sạch thì commit đúng file anh tick rồi `git push origin HEAD:dev`. Có lỗi thì **dừng**, hiện ô ghim đỏ. |
 | **Đẩy lên main** | Chỉ mở sau khi đẩy dev xanh. Đẩy **đúng commit đó** lên `main` — nhánh Cloudflare build ra production. |
 
 Nút main tự khoá lại nếu HEAD đổi sau lần đẩy dev. Main chỉ nhận commit đã qua kiểm tra, không nhận commit lạ.
+
+## Ba tab
+
+| Tab | Có gì |
+|---|---|
+| **Tổng quan** | 4 thẻ chỉ số (tổng code · JS lần đầu · chưa commit · build), biểu đồ cột dòng code theo module, vành khuyên phân bổ code trong `src/`, và khối so với lần quét trước |
+| **Module** | Bảng đầy đủ: file, dòng, dung lượng, thay đổi từng module. Dòng tô xanh là module có code chưa commit |
+| **Thay đổi** | Danh sách file có ô tick để chọn cái nào được commit, ô lời nhắn, và các cảnh báo vàng |
+
+Ô ghim lỗi dính ở đầu trang, hiện ở cả ba tab.
+
+Hai con số hay bị hỏi: thẻ **Tổng code** đếm cả `src/` + `contracts/` + `supabase/`; vành khuyên **chỉ đếm `src/`** nên nhỏ hơn. Đã ghi rõ trên giao diện.
 
 ---
 
