@@ -22,6 +22,7 @@ Quy tắc:
 
 | Ngày | Luồng | Nội dung | File |
 |---|---|---|---|
+| 2026-09-20 | 06 ví token | Server: `charge_and_publish` (trừ token + bật hiển thị trong 1 transaction, khoá dòng ví, idempotent theo `idem_key`), `credit_topup` (idempotent theo mã giao dịch ngân hàng), `refund_tokens`, `expire_listings`, `doi_soat_vi`, view `wallet_ledger` (có "số dư sau"), trigger chặn số dư âm; 3 Edge Function `create-topup` / `publish-listing` / `bank-webhook` (VietQR động + webhook SePay). Client: trang `/chu-xe/vi`, hộp nạp token, hộp trả phí hiển thị. **Nạp tiền thật còn TẮT** (2 cổng: `FLAGS.nap_tien_that` + env `NAP_TIEN_THAT`) | `src/modules/billing/**`, `supabase/functions/{create-topup,publish-listing,bank-webhook}/`, `src/lib/config.js`, `src/App.jsx` |
 | 2026-09-20 | 12 pháp lý | Viết Điều khoản, Bảo mật, Hoàn token (v1.0), Giới thiệu, FAQ, Liên hệ; ô tích đồng ý ở đăng nhập, ghi phiên bản + thời điểm vào `user_consents` (🔒 bảng mới, luồng 01 cần gộp vào `contracts/schema.sql`); link chân trang | `src/modules/legal/**`, `supabase/migrations/0005_legal_consent.sql`, `src/modules/auth/DangNhap.jsx`, `src/components/Footer.jsx`, `src/App.jsx` |
 | 2026-09-20 | 11 thông báo | Server: `notification_outbox` (unique chống gửi trùng) + `notification_prefs`, hàm quét mốc 3 ngày/1 ngày/hết hạn/thiếu token, trigger duyệt/từ chối/bị ẩn/nạp thành công, Edge Function `send-notifications` (Resend + Zalo ZNS, chưa có khoá thì giữ hàng đợi). Client: trang `/thong-bao` + cài đặt bật/tắt. Chưa nối cron, chưa có chuông ở Header, chưa có mốc "tài khoản bị khoá" | `supabase/migrations/0005_notify.sql`, `supabase/functions/send-notifications/`, `src/modules/notify/**`, `src/App.jsx` |
 | 2026-09-20 | 08 tin cậy | Nháp server: chặn INSERT tin lên thẳng đang hiển thị, chặn tự gửi duyệt, chuẩn hoá + chặn trùng biển số, 3 báo cáo → tự ẩn, hạn mức lấy số/OTP. Client: `trustApi`, `huyHieu` (chưa nối UI, chưa có Edge Function) | `src/modules/trust/**` |
@@ -59,7 +60,7 @@ Quy tắc:
 | 03 | Bảng điều khiển chủ xe | ⬜ | |
 | 04 | Tìm kiếm & bộ lọc | ⬜ | |
 | 05 | Trang chi tiết xe | ⬜ | |
-| 06 | Ví token & thanh toán | ⬜ | |
+| 06 | Ví token & thanh toán | 🟨 code xong, chờ chạy SQL + deploy function + kiểm tra 6 mục ở `src/modules/billing/server/README.md`; chưa bật nạp tiền thật | |
 | 07 | Đẩy tin | ⬜ để sau | |
 | 08 | Tin cậy & kiểm duyệt | ⬜ | |
 | 09 | Đánh giá thật | ⬜ để sau | |

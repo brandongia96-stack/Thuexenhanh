@@ -1,0 +1,230 @@
+/* Trang chi tiết xe — luồng 05.
+   CSS thuần, KHÔNG Tailwind. Mọi màu lấy từ token var(--m-...) trong
+   contracts/tokens.css — cấm hardcode mã màu mới (CLAUDE.md mục 1.3). */
+
+.trangxe { display: flex; flex-direction: column; gap: var(--sp-4); }
+
+.trangxe-quaylai {
+  display: inline-flex; align-items: center; gap: var(--sp-1);
+  align-self: flex-start;
+  font-size: 14px; font-weight: 600; color: var(--m-mid);
+  padding: var(--sp-2) var(--sp-2) var(--sp-2) 0;
+  transition: color var(--t-fast);
+}
+.trangxe-quaylai:hover { color: var(--m-green); }
+
+.trangxe-luoi {
+  display: grid; gap: var(--sp-6);
+  grid-template-columns: minmax(0, 1fr) 340px;
+  align-items: start;
+}
+.trangxe-trai { display: flex; flex-direction: column; gap: var(--sp-5); min-width: 0; }
+
+.trangxe-phai { position: sticky; top: calc(var(--h-header) + var(--sp-4)); }
+
+.trangxe-dau { display: flex; flex-direction: column; gap: var(--sp-2); }
+.trangxe-nhan { flex-wrap: wrap; gap: var(--sp-2); }
+
+/* ─── Thông báo tin hết hạn / không còn hiển thị ─── */
+.bang-hethan {
+  display: flex; align-items: flex-start; gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--m-amber-bg); color: var(--m-amber);
+  border-radius: var(--r-md); font-size: 14px; line-height: 1.5;
+}
+.bang-hethan strong { color: var(--m-dark); }
+
+.trangxe-bao {
+  align-items: center; text-align: center;
+  padding-top: var(--sp-10); color: var(--m-subtle);
+}
+
+/* ─── Slider ảnh ─── */
+.slider { display: flex; flex-direction: column; gap: var(--sp-2); }
+
+.slider-khung {
+  position: relative; overflow: hidden;
+  background: var(--m-bg);
+  border-radius: var(--r-lg);
+  /* aspect-ratio đặt inline theo kích thước ảnh thật → không vỡ CLS. */
+}
+.slider-anh {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: cover;
+  /* Ảnh mờ base64 làm nền, ảnh nét mờ dần đè lên trong 200ms
+     (HIEU-NANG.md mục 1.2 và mục 6). */
+  background-size: cover; background-position: center;
+  opacity: 0; transition: opacity .2s ease;
+  pointer-events: none;
+}
+.slider-anh.hien { opacity: 1; pointer-events: auto; }
+
+.slider-nut {
+  position: absolute; top: 50%; transform: translateY(-50%);
+  width: 36px; height: 36px; border-radius: var(--r-full);
+  display: grid; place-items: center;
+  background: var(--m-surface); color: var(--m-dark);
+  box-shadow: var(--shadow-md);
+  transition: opacity var(--t-fast), background var(--t-fast);
+}
+.slider-nut:disabled { opacity: 0; pointer-events: none; }
+.slider-trai { left: var(--sp-3); }
+.slider-phai { right: var(--sp-3); }
+.slider-to {
+  top: var(--sp-3); right: var(--sp-3); transform: none;
+  width: 32px; height: 32px;
+}
+
+.slider-dem {
+  position: absolute; left: var(--sp-3); bottom: var(--sp-3);
+  padding: 2px var(--sp-2); border-radius: var(--r-full);
+  background: rgba(20, 20, 20, .6); color: #fff;
+  font-size: 12px; font-weight: 600;
+}
+
+.slider-thumb {
+  display: flex; gap: var(--sp-2); overflow-x: auto;
+  scrollbar-width: thin; padding-bottom: var(--sp-1);
+}
+.slider-o {
+  flex: 0 0 72px; height: 54px; border-radius: var(--r-sm);
+  overflow: hidden; opacity: .55;
+  box-shadow: inset 0 0 0 2px transparent;
+  transition: opacity var(--t-fast), box-shadow var(--t-fast);
+}
+.slider-o img { width: 100%; height: 100%; object-fit: cover; }
+.slider-o.chon { opacity: 1; box-shadow: inset 0 0 0 2px var(--m-green); }
+
+.slider-trong {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: var(--sp-2); aspect-ratio: 4 / 3;
+  background: var(--m-bg); border-radius: var(--r-lg); color: var(--m-subtle);
+}
+
+.phongto {
+  position: fixed; inset: 0; z-index: var(--z-modal);
+  display: grid; place-items: center; padding: var(--sp-4);
+  background: rgba(20, 20, 20, .88);
+}
+.phongto img { max-width: 100%; max-height: 90vh; width: auto; height: auto; border-radius: var(--r-md); }
+.phongto-dong {
+  position: absolute; top: var(--sp-4); right: var(--sp-4);
+  width: 40px; height: 40px; border-radius: var(--r-full);
+  display: grid; place-items: center;
+  background: var(--m-surface); color: var(--m-dark);
+}
+
+/* ─── Khối nội dung ─── */
+.khoi { display: flex; flex-direction: column; gap: var(--sp-3); }
+.khoi + .khoi { padding-top: var(--sp-5); border-top: 1px solid var(--m-border); }
+
+.thongso {
+  display: grid; gap: var(--sp-3);
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+}
+.thongso-o {
+  display: grid; grid-template-columns: 22px 1fr; gap: 2px var(--sp-2);
+  align-items: center; color: var(--m-subtle);
+}
+.thongso-o svg { grid-row: span 2; color: var(--m-mid); }
+.thongso-o dd { font-size: 15px; font-weight: 600; color: var(--m-dark); }
+
+.tiennghi {
+  display: grid; gap: var(--sp-2);
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+}
+.tiennghi li {
+  display: flex; align-items: center; gap: var(--sp-2);
+  font-size: 14px; color: var(--m-mid);
+}
+.tiennghi svg { color: var(--m-green); flex: none; }
+
+.dieukien { display: flex; flex-direction: column; gap: var(--sp-3); }
+.dieukien > div {
+  display: flex; justify-content: space-between; gap: var(--sp-4);
+  align-items: baseline;
+}
+.dieukien dd { font-weight: 600; color: var(--m-dark); text-align: right; }
+
+.mota { font-size: 15px; line-height: 1.7; color: var(--m-mid); white-space: pre-line; }
+
+.lichban { display: flex; flex-direction: column; gap: var(--sp-2); }
+.lichban li {
+  display: flex; align-items: center; gap: var(--sp-2);
+  font-size: 14px; color: var(--m-mid);
+}
+.lichban svg { color: var(--m-red); flex: none; }
+
+.bando {
+  display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap;
+  padding: var(--sp-4); background: var(--m-bg); border-radius: var(--r-md);
+  font-size: 15px; color: var(--m-dark);
+}
+.bando svg:first-child { color: var(--m-green); flex: none; }
+.bando > span { flex: 1; min-width: 140px; }
+
+/* ─── Hộp liên hệ (cột phải) ─── */
+.hop-lienhe { display: flex; flex-direction: column; gap: var(--sp-3); }
+.hop-gia { display: flex; align-items: baseline; gap: var(--sp-1); }
+
+.lienhe { display: flex; flex-direction: column; gap: var(--sp-3); }
+.lienhe-loi { font-size: 13px; color: var(--m-red); }
+
+.lienhe-so { display: flex; flex-direction: column; gap: var(--sp-3); }
+.lienhe-sodep {
+  font-size: 24px; font-weight: 800; letter-spacing: .02em;
+  color: var(--m-dark); text-align: center;
+  padding: var(--sp-3); background: var(--m-green-light);
+  border-radius: var(--r-md);
+}
+.lienhe-nut { display: grid; grid-template-columns: 1fr 1fr; gap: var(--sp-2); }
+.lienhe-nut .btn { width: 100%; }
+
+.lienhe-tat {
+  display: flex; align-items: center; gap: var(--sp-2);
+  padding: var(--sp-3); border-radius: var(--r-md);
+  background: var(--m-bg); color: var(--m-subtle); font-size: 14px;
+}
+
+.xoay { animation: xoay 1s linear infinite; }
+@keyframes xoay { to { transform: rotate(360deg) } }
+
+/* ─── Nút tim ─── */
+.nutluu {
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: var(--sp-2); height: 44px; border-radius: var(--r-md);
+  font-size: 15px; font-weight: 600; color: var(--m-mid);
+  background: var(--m-surface); box-shadow: inset 0 0 0 1px var(--m-border);
+  transition: color var(--t-fast), background var(--t-fast);
+}
+.nutluu-nut { width: 100%; }
+.nutluu:hover { background: var(--m-bg); }
+.nutluu.daluu { color: var(--m-red); background: var(--m-red-bg); box-shadow: none; }
+/* Tim đổi màu tức thì khi bấm — phản hồi dưới 100ms (HIEU-NANG.md mục 6). */
+.nutluu svg { transition: transform var(--t-fast); }
+.nutluu.daluu svg { transform: scale(1.1); }
+
+.nutluu-tron {
+  width: 36px; height: 36px; padding: 0; border-radius: var(--r-full);
+}
+
+/* ─── Điện thoại ─── */
+@media (max-width: 900px) {
+  .trangxe-luoi { grid-template-columns: 1fr; }
+  /* Hộp liên hệ bám đáy màn hình: nút lấy số luôn trong tầm ngón cái,
+     đó là hành động duy nhất app này cần khách làm. */
+  .trangxe-phai {
+    position: sticky; top: auto; bottom: 0;
+    margin: 0 calc(var(--sp-3) * -1) calc(var(--sp-4) * -1);
+    z-index: calc(var(--z-header) - 1);
+  }
+  .hop-lienhe {
+    border-radius: var(--r-lg) var(--r-lg) 0 0;
+    box-shadow: var(--shadow-lg);
+    padding: var(--sp-4);
+  }
+  /* Dòng miễn trừ KHÔNG bao giờ bị ẩn, kể cả khi hộp bám đáy chật
+     (CLAUDE.md mục 1.2) — chỉ thu nhỏ lại. */
+  .trangxe-phai .disclaimer { padding: var(--sp-2); font-size: 11px; }
+  .slider-nut { opacity: .92; }
+}

@@ -16,6 +16,10 @@ export const TOKENS_PER_MONTH = 10     // 10 token / 1 xe / 1 tháng
 // ─── Cờ tính năng ───
 // Bật cờ nào là việc của luồng sở hữu tính năng đó, không phải luồng nền tảng.
 export const FLAGS = {
+  // Luồng 06 — nạp tiền THẬT. Chỉ bật khi trang "Chính sách hoàn token"
+  // (luồng 12) đã lên. Edge Function create-topup còn một cổng riêng nữa
+  // (biến môi trường NAP_TIEN_THAT) — tắt cờ này không đủ, và ngược lại.
+  nap_tien_that: false,
   day_tin: false,        // luồng 07 — hạ tầng sẵn, chưa bật
   tru_theo_lead: false,  // trừ token theo lượt lấy số — hạ tầng sẵn, chưa bật
   danh_gia: false,       // luồng 09 — chỉ bật khi có đánh giá THẬT
