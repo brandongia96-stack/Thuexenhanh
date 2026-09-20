@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+Disallow: /quan-tri/
+Disallow: /chu-xe/
+Disallow: /tai-khoan
+Disallow: /kiem-duyet
+Disallow: /thong-bao
+Disallow: /da-luu
+
+Sitemap: https://thuexenhanh.com/sitemap.xml
