@@ -231,9 +231,34 @@ function kiemTraLuatCode(files) {
   return { chan, canhBao }
 }
 
-/** Quét secret trong các file git đang theo dõi. Đây là hàng rào cuối trước khi lộ key. */
-async function kiemTraSecret() {
+/**
+ * Repo trên GitHub đang public hay private?
+ * Hỏi API không đăng nhập: 200 = public, 404 = private (hoặc không tồn tại).
+ * Trả `null` khi không xác định được (mất mạng, remote không phải GitHub).
+ */
+async function repoCongKhai(remote) {
+  if (!remote) return null
+  const m = remote.match(/github\.com[:/]([^/]+)\/(.+?)(?:\.git)?$/i)
+  if (!m) return null
+  try {
+    const r = await fetch(`https://api.github.com/repos/${m[1]}/${m[2]}`, {
+      headers: { accept: 'application/vnd.github+json' },
+      signal: AbortSignal.timeout(6000),
+    })
+    if (r.status === 404) return 'private'
+    if (!r.ok) return null
+    const j = await r.json()
+    return j.private ? 'private' : 'public'
+  } catch { return null }
+}
+
+/**
+ * Quét secret trong các file git đang theo dõi. Đây là hàng rào cuối trước khi lộ key.
+ * `hienTrang` là 'public' | 'private' | null — quyết định mức độ của khoá Firebase.
+ */
+async function kiemTraSecret(hienTrang) {
   const chan = []
+  const canhBao = []
   const ls = await git('ls-files', '-z')
   const files = ls.out.split('\0').filter(Boolean)
 
@@ -262,17 +287,27 @@ async function kiemTraSecret() {
         f, 'LUONG-CHAT/13-deploy.md §B3'))
     }
     // Khoá web Firebase/Google vốn được thiết kế để lộ ra ngoài — BÌNH THƯỜNG nếu
-    // rules chặt. Nhưng CLAUDE.md §9 ghi rõ v0.1 KHÔNG có Firestore rules, ai cũng
-    // gọi setDoc/deleteDoc được. Lộ config = mở cửa thẳng vào CSDL cũ.
+    // security rules chặt. Nhưng CLAUDE.md §9 ghi rõ v0.1 KHÔNG có Firestore rules,
+    // ai cũng gọi setDoc/deleteDoc được. Nên mức độ phụ thuộc repo public hay private.
     if (/\bAIza[0-9A-Za-z_-]{30,}/.test(txt)) {
-      chan.push(loi('khoa-firebase', 'Có cấu hình Firebase/Google API trong repo',
-        'Khoá loại này an toàn khi security rules chặt. CLAUDE.md §9 ghi v0.1 KHÔNG có '
-        + 'Firestore rules — ai cũng ghi/xoá được. Chỉ đẩy lên khi repo private, hoặc '
-        + 'xoá dự án Firebase cũ, hoặc gỡ khoá khỏi file.',
-        f, 'CLAUDE.md §9'))
+      if (hienTrang === 'public') {
+        chan.push(loi('khoa-firebase', 'Repo ĐANG PUBLIC mà có cấu hình Firebase trong file',
+          'CLAUDE.md §9 ghi v0.1 không có Firestore rules — ai đọc được khoá này là '
+          + 'ghi/xoá được CSDL cũ. Đổi repo sang private, hoặc xoá dự án Firebase cũ, '
+          + 'hoặc gỡ khoá khỏi file.',
+          f, 'CLAUDE.md §9'))
+      } else {
+        canhBao.push(loi('khoa-firebase', 'Có cấu hình Firebase v0.1 trong repo',
+          hienTrang === 'private'
+            ? 'Repo private nên khoá không lộ ra ngoài. Vẫn nên vào Firebase Console '
+              + 'tắt dự án cũ nếu không dùng nữa — v0.1 không có Firestore rules.'
+            : 'Không xác định được repo public hay private (mất mạng?). Nếu repo public '
+              + 'thì đây là lỗ hổng — v0.1 không có Firestore rules.',
+          f, 'CLAUDE.md §9'))
+      }
     }
   }
-  return chan
+  return { chan, canhBao }
 }
 
 /** Đọc dist/index.html, gzip đúng các asset tải ở lần đầu. */
@@ -382,9 +417,15 @@ async function quet(bao) {
   chan.push(...kq.chan)
   canhBao.push(...kq.canhBao)
 
-  // 6. Secret
+  // 6. Secret — mức độ của khoá Firebase phụ thuộc repo public hay private
+  bao('hien-trang', 'Hỏi GitHub xem repo public hay private…')
+  const hienTrang = await repoCongKhai(g.remote)
+  g.hienTrang = hienTrang
+
   bao('secret', 'Quét secret trong file git theo dõi…')
-  chan.push(...(await kiemTraSecret()))
+  const kqSecret = await kiemTraSecret(hienTrang)
+  chan.push(...kqSecret.chan)
+  canhBao.push(...kqSecret.canhBao)
 
   // 7. Build thật
   bao('build', 'Chạy `npm run build`… (chậm nhất, ~10s)')

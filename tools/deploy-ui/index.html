@@ -249,7 +249,11 @@ function veChips() {
   c.push(`<span class="chip">nhánh <code>${esc(g.branch || '?')}</code></span>`)
   c.push(`<span class="chip">HEAD <code>${esc(g.headNgan || '?')}</code></span>`)
   if (g.remote) {
-    c.push(`<span class="chip ok">origin đã nối</span>`)
+    const ten = (g.remote.match(/github\.com[:/](.+?)(?:\.git)?$/i) || [, 'origin'])[1]
+    c.push(`<span class="chip ok">${esc(ten)}</span>`)
+    if (g.hienTrang === 'public') c.push(`<span class="chip" style="background:var(--m-red-bg);border-color:#fecdd3;color:#9f1239">⚠ repo ĐANG PUBLIC</span>`)
+    else if (g.hienTrang === 'private') c.push(`<span class="chip ok">private</span>`)
+    else if (g.hienTrang === null && KQ) c.push(`<span class="chip warn">không rõ public/private</span>`)
   } else {
     c.push(`<span class="chip warn">chưa có remote origin</span>`)
   }
