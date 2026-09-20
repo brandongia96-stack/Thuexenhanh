@@ -63,4 +63,4 @@ Quy tắc:
 | 10 | Trang quản trị | ⬜ | |
 | 11 | Thông báo | ⬜ | |
 | 12 | Pháp lý & trang tĩnh | ⬜ | |
-| 13 | Triển khai GitHub + Cloudflare | ⬜ | |
+| 13 | Triển khai GitHub + Cloudflare | 🟨 hạ tầng repo xong, chờ tạo repo GitHub + nối Cloudflare (xem `DEPLOY.md`) | |
