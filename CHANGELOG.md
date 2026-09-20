@@ -22,6 +22,7 @@ Quy tắc:
 
 | Ngày | Luồng | Nội dung | File |
 |---|---|---|---|
+| 2026-09-20 | 13 deploy | Chuẩn bị hạ tầng Cloudflare Pages: `_redirects` (hết 404 khi F5), `_headers` (cache + bảo mật), `.nvmrc`=20, dọn `thu-luong-02.html`, quét sạch secret, viết `DEPLOY.md` | `public/_redirects`, `public/_headers`, `.nvmrc`, `DEPLOY.md` |
 | 2026-09-20 | nền tảng | Thêm luồng 13 (deploy): brief GitHub + Cloudflare Pages. Đổi hosting Netlify/Vercel → Cloudflare Pages | `LUONG-CHAT/13-deploy.md`, `CLAUDE.md` |
 | 2026-09-12 | 01 nền tảng | 🔒 Bổ sung theo `HIEU-NANG.md`: view `listing_card`, bảng `events_daily` + hàm gộp/dọn, cột ảnh 4 cỡ + `blur_base64`, index keyset | `contracts/schema.sql`, `contracts/api.md` |
 | 2026-09-12 | 01 nền tảng | Tải trễ `@supabase/supabase-js` + tách gói theo route: gói đầu 146,8 → **58,9 KB gzip** | `src/lib/supabase.js`, `src/App.jsx` |
