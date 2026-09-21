@@ -58,7 +58,7 @@ Thêm một chốt: trước khi commit, công cụ so HEAD hiện tại với H
 | `lo-key` | JWT thật trong file git theo dõi | 13-deploy §A1 |
 | `env-theo-doi` | File `.env` bị git theo dõi | 13-deploy §A1 |
 | `service-role-vite` | `service_role` đặt vào biến `VITE_*` | 13-deploy §B3 |
-| `khoa-firebase` | Khoá Firebase `AIza...` **khi repo đang public** | CLAUDE.md §9 |
+| `khoa-firebase` | Khoá Firebase `AIza...` khi repo public **và khoá chưa lên GitHub** | CLAUDE.md §9 |
 | `thieu-redirects` | Thiếu `dist/_redirects` → F5 ra 404 | 13-deploy §B4 |
 | `thieu-headers` | Thiếu `dist/_headers` | 13-deploy §B4 |
 | `vuot-ngan-sach` | JS lần đầu > 150 KB gzip | HIEU-NANG §0 |
@@ -77,11 +77,19 @@ Mã màu viết cứng · `select("*")` · `.range()` (OFFSET) · `<img>` thiế
 
 Mỗi lần quét, công cụ hỏi GitHub API xem repo đang public hay private rồi hiện lên chip đầu trang. Trạng thái này quyết định mức độ của `khoa-firebase`:
 
-| Repo | Khoá Firebase v0.1 |
-|---|---|
-| public | **chặn** — ai cũng đọc được khoá, mà v0.1 không có Firestore rules |
-| private | cảnh báo — vẫn nên tắt dự án Firebase cũ |
-| không rõ (mất mạng) | cảnh báo, nói rõ là không kiểm tra được |
+| Repo | Khoá đã lên GitHub? | Mức |
+|---|---|---|
+| public | **chưa** | **chặn** — chặn bây giờ là còn ngăn kịp |
+| public | rồi | cảnh báo — chặn không thu hồi được gì nữa |
+| private | — | cảnh báo — vẫn nên tắt dự án Firebase cũ |
+| không rõ (mất mạng) | — | **chặn** — không kiểm được thì không cho qua |
+
+**Luật chung của mọi phép chặn trong công cụ này: chỉ chặn khi chặn còn cứu được.**
+Chặn một việc đã rồi không bảo vệ được gì, chỉ tập cho người dùng thói quen bỏ qua
+cảnh báo — rồi lần sau có lỗi thật cũng bỏ qua nốt.
+
+Để biết khoá đã lộ chưa, công cụ tải thử chính file đó qua `raw.githubusercontent.com`
+ở các nhánh `main` / `master` / `dev`.
 
 ---
 

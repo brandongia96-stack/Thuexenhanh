@@ -253,10 +253,37 @@ async function repoCongKhai(remote) {
 }
 
 /**
+ * File này đã nằm công khai trên GitHub chưa?
+ *
+ * Chặn chỉ có giá trị khi khoá CHƯA lộ — lúc đó chặn là ngăn được thật. Lộ rồi thì
+ * chặn không thu hồi được gì, chỉ tập cho người dùng thói quen bỏ qua cảnh báo, rồi
+ * lần sau lỗi thật cũng bỏ qua nốt.
+ *
+ * Trả `true` khi CHẮC CHẮN đã lộ. Không kiểm được thì trả `false` để chặn cho an toàn.
+ */
+async function daLoTrenRemote(remote, duongDan, mau) {
+  if (!remote) return false
+  const m = remote.match(/github\.com[:/]([^/]+)\/(.+?)(?:\.git)?$/i)
+  if (!m) return false
+  const tep = duongDan.split('/').map(encodeURIComponent).join('/')
+  for (const nhanh of ['main', 'master', 'dev']) {
+    try {
+      const r = await fetch(
+        `https://raw.githubusercontent.com/${m[1]}/${m[2]}/${nhanh}/${tep}`,
+        { signal: AbortSignal.timeout(6000) },
+      )
+      if (!r.ok) continue
+      if (mau.test(await r.text())) return true
+    } catch { /* mất mạng hoặc nhánh không có: thử nhánh kế */ }
+  }
+  return false
+}
+
+/**
  * Quét secret trong các file git đang theo dõi. Đây là hàng rào cuối trước khi lộ key.
  * `hienTrang` là 'public' | 'private' | null — quyết định mức độ của khoá Firebase.
  */
-async function kiemTraSecret(hienTrang) {
+async function kiemTraSecret(hienTrang, remote) {
   const chan = []
   const canhBao = []
   const ls = await git('ls-files', '-z')
@@ -289,23 +316,34 @@ async function kiemTraSecret(hienTrang) {
     // Khoá web Firebase/Google vốn được thiết kế để lộ ra ngoài — BÌNH THƯỜNG nếu
     // security rules chặt. Nhưng CLAUDE.md §9 ghi rõ v0.1 KHÔNG có Firestore rules,
     // ai cũng gọi setDoc/deleteDoc được. Nên mức độ phụ thuộc repo public hay private.
-    if (/\bAIza[0-9A-Za-z_-]{30,}/.test(txt)) {
-      if (hienTrang === 'public') {
-        chan.push(loi('khoa-firebase', 'Repo ĐANG PUBLIC mà có cấu hình Firebase trong file',
-          'Khoá web Firebase vốn công khai theo thiết kế — nguy hiểm hay không là do '
-          + 'security rules của dự án, KHÔNG phải do khoá bị lộ. CLAUDE.md §9 ghi v0.1 '
-          + 'không có rules; kiểm lại ở Firebase Console để biết thực tế.\n\n'
-          + 'Lưu ý: gỡ khoá khỏi file BÂY GIỜ không xoá nó khỏi lịch sử git, và cũng '
-          + 'không thu hồi được thứ đã đẩy lên repo công khai. Cách thật sự có tác dụng '
-          + 'là siết rules hoặc xoá dự án Firebase cũ.',
+    const reAIza = /\bAIza[0-9A-Za-z_-]{30,}/
+    if (reAIza.test(txt)) {
+      // Repo public mà khoá CHƯA lên mạng: chặn là ngăn được thật.
+      // Khoá đã lên mạng rồi: chặn vô nghĩa, hạ xuống cảnh báo và chỉ đúng việc cần làm.
+      const daLo = hienTrang === 'public' && await daLoTrenRemote(remote, f, reAIza)
+      if (hienTrang === 'public' && !daLo) {
+        chan.push(loi('khoa-firebase', 'Repo ĐANG PUBLIC và khoá Firebase CHƯA lộ — đừng đẩy',
+          'Khoá web Firebase vốn công khai theo thiết kế; nguy hiểm hay không là do '
+          + 'security rules. Nhưng khoá này CHƯA có trên GitHub, nên chặn bây giờ là '
+          + 'còn ngăn kịp.\n\n'
+          + 'Chọn một: đổi repo sang private, siết rules ở Firebase Console, hoặc gỡ '
+          + 'khoá khỏi file TRƯỚC khi đẩy.',
           f, 'CLAUDE.md §9'))
       } else {
-        canhBao.push(loi('khoa-firebase', 'Có cấu hình Firebase v0.1 trong repo',
-          hienTrang === 'private'
-            ? 'Repo private nên khoá không lộ thêm. Vẫn nên vào Firebase Console tắt dự '
-              + 'án cũ nếu không dùng nữa — v0.2 đã chạy Supabase.'
-            : 'Không xác định được repo public hay private (mất mạng?). Nếu repo public '
-              + 'thì cần kiểm lại security rules của dự án Firebase cũ.',
+        canhBao.push(loi('khoa-firebase',
+          daLo ? 'Khoá Firebase v0.1 ĐÃ nằm công khai trên GitHub'
+               : 'Có cấu hình Firebase v0.1 trong repo',
+          daLo
+            ? 'Khoá này đã đẩy lên repo công khai từ trước, ai cũng tải về được. Chặn '
+              + 'thêm lần đẩy này không thu hồi được gì, nên chỉ cảnh báo.\n\n'
+              + 'Việc THẬT SỰ có tác dụng, cả hai đều ở Firebase Console:\n'
+              + '  1. Siết Firestore rules của dự án cũ (hoặc xoá hẳn dự án — v0.2 đã dùng Supabase)\n'
+              + '  2. Đổi repo sang private chỉ chặn lộ THÊM, không gỡ được thứ đã lộ'
+            : hienTrang === 'private'
+              ? 'Repo private nên khoá không lộ thêm. Vẫn nên vào Firebase Console tắt dự '
+                + 'án cũ nếu không dùng nữa — v0.2 đã chạy Supabase.'
+              : 'Không xác định được repo public hay private (mất mạng?). Nếu repo public '
+                + 'thì cần kiểm lại security rules của dự án Firebase cũ.',
           f, 'CLAUDE.md §9'))
       }
     }
@@ -426,7 +464,7 @@ async function quet(bao) {
   g.hienTrang = hienTrang
 
   bao('secret', 'Quét secret trong file git theo dõi…')
-  const kqSecret = await kiemTraSecret(hienTrang)
+  const kqSecret = await kiemTraSecret(hienTrang, g.remote)
   chan.push(...kqSecret.chan)
   canhBao.push(...kqSecret.canhBao)
 
