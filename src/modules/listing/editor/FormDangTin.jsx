@@ -20,7 +20,7 @@ import './FormDangTin.css'
 export default function FormDangTin({ dieuKhien, onXong }) {
   const {
     goi, doiGoi,
-    form, doiTruong, doiTienNghi,
+    form, doiTruong, doiTienNghi, chonTatCaTienNghi,
     anh, doiAnh,
     ngayChan, setNgayChan,
     tin, trangThai, khoaSua, guiDuyetDuoc,
@@ -121,7 +121,19 @@ export default function FormDangTin({ dieuKhien, onXong }) {
           {/* Tiện nghi đi kèm nhóm kỹ thuật, chỉ ở gói Đầy Đủ. */}
           {n.key === 'ky_thuat' && (
             <div className="stack">
-              <span className="field-label">Tiện nghi trên xe</span>
+              <div className="row" style={{ justifyContent: 'space-between' }}>
+                <span className="field-label">Tiện nghi trên xe</span>
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-sm"
+                  disabled={khoaSua}
+                  onClick={() => chonTatCaTienNghi(
+                    form.amenity_codes?.length === AMENITIES.length ? [] : AMENITIES.map((a) => a.code),
+                  )}
+                >
+                  {form.amenity_codes?.length === AMENITIES.length ? 'Bỏ chọn tất cả' : 'Chọn tất cả'}
+                </button>
+              </div>
               <div className="fdt-tien-nghi">
                 {AMENITIES.map((a) => {
                   const chon = form.amenity_codes?.includes(a.code)

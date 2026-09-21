@@ -27,6 +27,10 @@ export function isStaff(roles) {
 export function canAccess(path, roles) {
   if (path.startsWith('/quan-tri')) return hasRole(roles, ROLE.ADMIN)
   if (path.startsWith('/kiem-duyet')) return isStaff(roles)
+  // Trang đăng tin mở cho MỌI tài khoản đã đăng nhập: đăng tin đầu tiên chính là
+  // việc biến khách thành chủ xe. Vai trò `chu_xe` do trigger listings_grant_owner_role
+  // (0010) cấp phía server khi bản nháp đầu được tạo — client không tự cấp được.
+  if (path === '/chu-xe/dang-tin') return true
   if (path.startsWith('/chu-xe')) return hasRole(roles, ROLE.CHU_XE) || isStaff(roles)
   return true
 }

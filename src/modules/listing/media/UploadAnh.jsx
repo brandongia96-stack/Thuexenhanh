@@ -201,7 +201,7 @@ export default function UploadAnh({ danhSach = [], onChange, toiDa = SO_ANH_TOI_
           <div className="empty">
             <ImagePlus size={22} strokeWidth={1.8} />
             <span className="empty-title">Chưa có ảnh nào</span>
-            <span className="t-small">Tin có ảnh thật được khách bấm vào nhiều hơn hẳn tin không ảnh.</span>
+            <span className="t-small">Thêm ảnh thật của xe để khách biết chiếc xe trông thế nào.</span>
           </div>
         )
       )}

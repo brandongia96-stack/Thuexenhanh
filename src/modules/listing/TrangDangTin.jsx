@@ -17,7 +17,7 @@ import KhoiHienThi from './lifecycle/KhoiHienThi'
 export default function TrangDangTin() {
   const { id } = useParams()
   const navigate = useNavigate()
-  const { user, profile, loading } = useAuth()
+  const { user, profile, loading, reload } = useAuth()
 
   const dieuKhien = useFormDangTin({
     listingId: id ?? null,
@@ -76,7 +76,11 @@ export default function TrangDangTin() {
 
       <FormDangTin
         dieuKhien={dieuKhien}
-        onXong={(listingId, viec) => {
+        onXong={async (listingId, viec) => {
+          // Tin đầu tiên vừa biến khách thành chủ xe (trigger phía server). Nạp lại
+          // vai trò TRƯỚC khi chuyển trang, nếu không RequireRole còn nhớ vai trò cũ
+          // và chặn ngay trang sửa tin.
+          if (!id) await reload()
           // Gửi duyệt xong thì về danh sách xe của tôi — chủ xe cần thấy tin
           // của mình đang ở trạng thái nào, chứ không phải ngồi lại trong form.
           if (viec === 'duyet') navigate('/chu-xe', { replace: true })

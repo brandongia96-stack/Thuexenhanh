@@ -13,6 +13,11 @@ import {
   luuAnhMoi, sapXepAnh, xoaAnh, luuNgayChan,
 } from '../listingApi'
 
+// Biển số ô tô: 2 số tỉnh + 1–2 chữ + 4–5 số, bỏ qua dấu chấm/gạch/khoảng trắng.
+// Cùng quy tắc với submit_listing() phía server (0010) — server kiểm lại, đây chỉ để báo sớm.
+const BIEN_SO = /^[0-9]{2}[A-Z]{1,2}[0-9]{4,5}$/
+const chuanBienSo = (s) => String(s ?? '').replace(/[^0-9A-Za-z]/g, '').toUpperCase()
+
 const FORM_RONG = {
   brand_text: '', model_text: '', year: '', plate: '', color: '', seats: '',
   transmission: '', fuel: '', fuel_consumption: '', body_style: '', description: '',
@@ -95,6 +100,11 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
     setLoiTruong((truoc) => (truoc[ten] ? { ...truoc, [ten]: undefined } : truoc))
   }, [])
 
+  // "Chọn tất cả" / "Bỏ chọn": bấm một lần thay vì 13 lần.
+  const chonTatCaTienNghi = useCallback((codes) => {
+    setForm((truoc) => ({ ...truoc, amenity_codes: codes }))
+  }, [])
+
   const doiTienNghi = useCallback((code) => {
     setForm((truoc) => {
       const dang = truoc.amenity_codes ?? []
@@ -121,7 +131,8 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
 
   const truongCuaGoi = useMemo(() => new Set(tenTruongCuaGoi(form, goi)), [form, goi])
 
-  function kiemTra() {
+  // choDuyet: gửi duyệt thì biển số BẮT BUỘC; lưu nháp thì cho để trống nhưng đã nhập là phải đúng.
+  function kiemTra(choDuyet = false) {
     const { ok, fields } = validateListing(form)
     // Chỉ báo lỗi ở trường gói hiện tại đang hiện. Bắt lỗi một ô người ta
     // không nhìn thấy là bế tắc — bấm lưu mãi không được mà không biết vì sao.
@@ -133,9 +144,13 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
       loc.province = loc.province_id
       delete loc.province_id
     }
+    const bienSo = chuanBienSo(form.plate)
+    if (bienSo && !BIEN_SO.test(bienSo)) loc.plate = 'Biển số chưa đúng dạng, ví dụ 51H-123.45'
+    else if (!bienSo && choDuyet) loc.plate = 'Nhập biển số xe để gửi duyệt'
+
     setLoiTruong(loc)
     setLoiChung(null)
-    return ok || Object.keys(loc).length === 0
+    return Object.keys(loc).length === 0
   }
 
   /** Lưu nội dung + ảnh + lịch chặn. Trả về id của tin. */
@@ -192,7 +207,7 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
       await napLaiSauLuu(id)
       return id
     } catch (e) {
-      setLoiChung(e.message ?? 'Không lưu được, thử lại giúp em')
+      setLoiChung(e.message ?? 'Không lưu được, thử lại nhé')
       return null
     } finally {
       setDangLuu(null)
@@ -205,7 +220,7 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
    * việc đó là của Edge Function sau khi trừ token (luồng 06).
    */
   async function luuVaGuiDuyet() {
-    if (!kiemTra()) return null
+    if (!kiemTra(true)) return null
     setDangLuu('duyet')
     setLoiChung(null)
     try {
@@ -213,7 +228,7 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
       await guiDuyet(id)
       return id
     } catch (e) {
-      setLoiChung(e.message ?? 'Không gửi duyệt được, thử lại giúp em')
+      setLoiChung(e.message ?? 'Không gửi duyệt được, thử lại nhé')
       return null
     } finally {
       setDangLuu(null)
@@ -225,7 +240,7 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
 
   return {
     goi, doiGoi,
-    form, doiTruong, doiTienNghi,
+    form, doiTruong, doiTienNghi, chonTatCaTienNghi,
     anh, doiAnh,
     ngayChan, setNgayChan,
     tin, trangThai,

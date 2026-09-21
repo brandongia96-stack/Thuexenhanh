@@ -42,22 +42,22 @@ export function nhomTruong(form, goi = GOI.DAY_DU) {
     {
       key: 'xe',
       title: 'Chiếc xe',
-      desc: 'Khách tìm xe bằng mấy trường này, điền đúng thì tin dễ được thấy.',
+      desc: 'Khách lọc và tìm xe theo những thông tin này, nên điền đúng như giấy tờ xe.',
       fields: [
         { name: 'brand_text', label: 'Hãng xe', type: 'select', required: true, options: chon(BRANDS) },
         { name: 'model_text', label: 'Dòng xe', type: 'select', required: true, options: chon(modelsOf(form.brand_text)), disabled: !form.brand_text, hint: form.brand_text ? null : 'Chọn hãng xe trước' },
         { name: 'year', label: 'Năm sản xuất', type: 'select', required: true, options: chon(YEARS) },
         { name: 'seats', label: 'Số chỗ', type: 'select', required: true, options: SEAT_OPTIONS.map((s) => ({ value: s, label: `${s} chỗ` })) },
-        // Hộp số nằm ở gói Cơ Bản vì đây là bộ lọc khách dùng nhiều nhất
+        // Hộp số nằm ở gói Cơ Bản vì là một bộ lọc chính của trang tìm kiếm
         // (luồng 04), và lib/validate.js coi là bắt buộc cho mọi tin.
         { name: 'transmission', label: 'Hộp số', type: 'select', required: true, options: TRANSMISSIONS },
-        { name: 'plate', label: 'Biển số xe', type: 'text', placeholder: '51A-123.45', hint: 'Chỉ dùng để đối chiếu khi xét tích xanh. Khách không nhìn thấy biển số.' },
+        { name: 'plate', label: 'Biển số xe', type: 'text', placeholder: '51A-123.45', hint: 'Bắt buộc khi gửi duyệt. Dùng để đối chiếu giấy tờ và chống đăng trùng một xe.' },
       ],
     },
     {
       key: 'gia',
       title: 'Giá thuê',
-      desc: 'Ghi đúng giá thật. Báo một đằng gọi một nẻo là lý do bị báo cáo nhiều nhất.',
+      desc: 'Ghi đúng giá thật. Khách gọi mà nghe báo giá khác là một lý do để khách báo cáo tin.',
       fields: [
         { name: 'price_per_day', label: 'Giá theo ngày', type: 'money', required: true, suffix: 'đ / ngày' },
         { name: 'deposit_note', label: 'Tiền cọc', type: 'text', placeholder: 'VD: 15 triệu hoặc xe máy + giấy tờ', hint: 'Ghi bằng lời cũng được. App không giữ tiền cọc, hai bên tự thoả thuận.' },
