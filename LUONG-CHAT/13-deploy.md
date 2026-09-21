@@ -111,20 +111,32 @@ npm run build && ls dist/_redirects dist/_headers
 
 ## Phần C — Cập nhật Supabase (quên là đăng nhập hỏng)
 
-Sau khi có tên miền Cloudflare, vào Supabase → **Authentication → URL Configuration**:
+Supabase **chỉ chấp nhận `redirectTo` nếu nó khớp danh sách Redirect URLs**.
+Không khớp thì nó **âm thầm bỏ qua** và dùng Site URL — khách bị đẩy sang
+đúng cái địa chỉ sai đó, rồi báo `bad_oauth_state` vì origin mới không có
+`code_verifier` của PKCE.
+
+Supabase → **Authentication → URL Configuration**:
 
 - **Site URL**: tên miền production
-- **Redirect URLs**: thêm cả ba dạng
+- **Redirect URLs**, thêm đủ cả bốn, **bắt buộc có `/**` ở cuối**:
   - `https://<tenmien>/**`
   - `https://<repo>.pages.dev/**`
   - `https://*.<repo>.pages.dev/**` ← bản xem trước theo nhánh
-  - `http://localhost:5173/**` ← giữ để dev
+  - `http://localhost:5173/**` ← cổng dev của Vite, giữ lại để dev
 
-Và trong **Google Cloud Console** (OAuth client): thêm đúng các origin đó vào *Authorized JavaScript origins* + *Authorized redirect URIs*.
+> ⚠️ Mặc định Supabase điền sẵn Site URL là `http://localhost:3000` — **sai cổng**,
+> dự án này dùng **5173**. Đây chính là lỗi gặp ngày 21/09.
 
-**Bỏ bước này thì đăng nhập Google chạy ở máy nhưng chết trên production.** Đây là lỗi hay gặp nhất.
+**Google Cloud Console:** với luồng OAuth do Supabase đứng giữa, Google **chỉ
+cần callback của Supabase**, không cần origin của app:
 
----
+```
+https://<project-ref>.supabase.co/auth/v1/callback
+```
+
+Đổi xong nhớ **xoá cookie + localStorage** rồi đăng nhập lại — phiên hỏng cũ
+còn kẹt sẽ gây lỗi tiếp.
 
 ## Phần D — Tên miền riêng
 
