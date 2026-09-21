@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { SlidersHorizontal, SearchX, WifiOff } from 'lucide-react'
+import { SlidersHorizontal, SearchX, WifiOff, ChevronDown, X, LayoutGrid, List } from 'lucide-react'
 
 import EmptyState from '../../../components/EmptyState'
 import TheXe from '../the-xe/TheXe'
@@ -19,6 +19,19 @@ import './TimKiem.css'
 // Số thẻ đầu tiên tải ảnh ngay (không lazy) — vừa màn hình đầu trên điện thoại
 // và máy tính. Ảnh đầu tiên nhìn thấy quyết định LCP (HIEU-NANG.md mục 1.3).
 const SO_THE_UU_TIEN = 2
+
+// Điện thoại (dưới mức này) bộ lọc là bảng trượt từ đáy; từ mức này là cột bên trái.
+// Phải khớp với @media trong TimKiem.css.
+const MAN_HINH_DIEN_THOAI = '(max-width: 899px)'
+
+const KHOA_KIEU_XEM = 'txn_kieu_xem'
+function docKieuXem() {
+  try {
+    return localStorage.getItem(KHOA_KIEU_XEM) === 'ds' ? 'ds' : 'luoi'
+  } catch {
+    return 'luoi' // chế độ riêng tư chặn localStorage: dùng mặc định, không vỡ
+  }
+}
 
 /**
  * Trang tìm kiếm `/thue-xe`.
@@ -46,7 +59,13 @@ export default function TrangTimKiem() {
   const [loiThem, setLoiThem] = useState(false)
   const [lanThu, setLanThu] = useState(0)
   const [bangDiaGioi, setBangDiaGioi] = useState(null)
-  const [moLoc, setMoLoc] = useState(false) // chỉ dùng trên điện thoại
+  const [moLoc, setMoLoc] = useState(false) // bảng lọc trượt từ đáy — chỉ có ở điện thoại
+  // Kiểu xem là sở thích của khách, không phải bộ lọc: không vào URL, không đổi
+  // khoá cache, nên đổi kiểu không gọi lại mạng.
+  const [kieuXem, setKieuXem] = useState(docKieuXem)
+  const nutMoLoc = useRef(null)
+  const nutDongLoc = useRef(null)
+  const chamXuong = useRef(0)
 
   const acThem = useRef(null)
 
@@ -54,6 +73,41 @@ export default function TrangTimKiem() {
     document.title = 'Thuê xe tự lái | Thuexenhanh'
     taiTenDiaGioi().then(setBangDiaGioi).catch(() => {})
   }, [])
+
+  function doiKieuXem(k) {
+    setKieuXem(k)
+    try {
+      localStorage.setItem(KHOA_KIEU_XEM, k)
+    } catch {
+      /* không lưu được thì lần sau về mặc định, không sao */
+    }
+  }
+
+  // Bảng lọc trên điện thoại: khoá cuộn nền, Esc để đóng, tự đóng khi xoay/kéo rộng
+  // màn hình (không thì nền bị khoá cuộn mà bảng đã biến thành cột bên trái).
+  useEffect(() => {
+    if (!moLoc) return
+    const mql = window.matchMedia(MAN_HINH_DIEN_THOAI)
+    if (!mql.matches) {
+      setMoLoc(false)
+      return
+    }
+    const cu = document.documentElement.style.overflow
+    document.documentElement.style.overflow = 'hidden'
+    nutDongLoc.current?.focus()
+
+    const dong = () => setMoLoc(false)
+    const phim = (e) => e.key === 'Escape' && dong()
+    const doiMan = (e) => !e.matches && dong()
+    window.addEventListener('keydown', phim)
+    mql.addEventListener('change', doiMan)
+    return () => {
+      document.documentElement.style.overflow = cu
+      window.removeEventListener('keydown', phim)
+      mql.removeEventListener('change', doiMan)
+      nutMoLoc.current?.focus() // trả tiêu điểm về nút đã mở bảng
+    }
+  }, [moLoc])
 
   const doiLoc = useCallback((moi) => {
     // replace: gõ và bấm lọc liên tục không được chất đống lịch sử trình duyệt,
@@ -170,22 +224,61 @@ export default function TrangTimKiem() {
         >
           {SAP_XEP.map((x) => <option key={x.value} value={x.value}>{x.label}</option>)}
         </select>
+        {/* Chỉ máy tính bảng trở lên: điện thoại luôn xem dạng lưới 1 cột. */}
         <button
           type="button"
-          className="btn btn-ghost tk-nutloc"
-          aria-expanded={moLoc}
-          onClick={() => setMoLoc((v) => !v)}
+          className="btn btn-ghost tk-doixem"
+          onClick={() => doiKieuXem(kieuXem === 'ds' ? 'luoi' : 'ds')}
+          aria-label={kieuXem === 'ds' ? 'Chuyển sang dạng lưới' : 'Chuyển sang dạng danh sách'}
+          title={kieuXem === 'ds' ? 'Dạng lưới' : 'Dạng danh sách'}
         >
-          <SlidersHorizontal size={16} strokeWidth={2} />
-          Bộ lọc{soBoLoc > 0 ? ` (${soBoLoc})` : ''}
+          {kieuXem === 'ds' ? <LayoutGrid size={18} strokeWidth={2} /> : <List size={18} strokeWidth={2} />}
         </button>
       </div>
 
       <ChipLoc loc={loc} onDoi={doiLoc} />
 
       <div className="tk-luoi">
-        <aside className={'tk-loc card card-pad' + (moLoc ? ' mo' : '')}>
-          <BoLoc loc={loc} onDoi={doiLoc} />
+        {/* Nền tối phía sau bảng lọc trên điện thoại; bấm vào là đóng. */}
+        {moLoc && <div className="tk-nen" onClick={() => setMoLoc(false)} aria-hidden="true" />}
+
+        <aside
+          className={'tk-loc card' + (moLoc ? ' mo' : '')}
+          {...(moLoc ? { role: 'dialog', 'aria-modal': 'true', 'aria-label': 'Bộ lọc' } : {})}
+        >
+          {/* Đầu + chân bảng chỉ hiện trên điện thoại. Vuốt xuống ở phần đầu để đóng. */}
+          <div
+            className="tk-loc-dau"
+            onTouchStart={(e) => { chamXuong.current = e.touches[0].clientY }}
+            onTouchEnd={(e) => { if (e.changedTouches[0].clientY - chamXuong.current > 60) setMoLoc(false) }}
+          >
+            <span className="tk-loc-keo" aria-hidden="true" />
+            <div className="tk-loc-tieude">
+              <h2 className="t-h3">Bộ lọc</h2>
+              <button ref={nutDongLoc} type="button" className="tk-loc-dong" onClick={() => setMoLoc(false)} aria-label="Đóng bộ lọc">
+                <X size={20} strokeWidth={2} />
+              </button>
+            </div>
+          </div>
+
+          <div className="tk-loc-than">
+            <BoLoc loc={loc} onDoi={doiLoc} />
+          </div>
+
+          <div className="tk-loc-chan">
+            <button
+              type="button"
+              className="btn btn-ghost"
+              disabled={!coLoc}
+              onClick={() => doiLoc({ ...locRong(), xep: loc.xep })}
+            >
+              Xoá tất cả
+            </button>
+            {/* Bộ lọc áp dụng ngay khi chọn (nằm trong URL); nút này chỉ đóng bảng. */}
+            <button type="button" className="btn btn-primary" onClick={() => setMoLoc(false)}>
+              Xem kết quả
+            </button>
+          </div>
         </aside>
 
         <section className="tk-ketqua" aria-busy={dangTai} aria-label="Kết quả tìm kiếm">
@@ -213,7 +306,7 @@ export default function TrangTimKiem() {
 
           {!dangTai && !loi && items.length > 0 && (
             <>
-              <div className="grid-cards tk-the">
+              <div className={'grid-cards tk-the' + (kieuXem === 'ds' ? ' tk-ds' : '')}>
                 {items.map((the, i) => (
                   <TheXe key={the.id} the={the} bangDiaGioi={bangDiaGioi} uuTien={i < SO_THE_UU_TIEN} />
                 ))}
@@ -233,6 +326,24 @@ export default function TrangTimKiem() {
             </>
           )}
         </section>
+      </div>
+
+      {/* Thanh lọc cố định đáy — chỉ điện thoại, nằm gọn tầm ngón cái (mẫu Mioto). */}
+      <div className="tk-thanh">
+        <button
+          ref={nutMoLoc}
+          type="button"
+          className="tk-thanh-nut"
+          aria-expanded={moLoc}
+          onClick={() => setMoLoc(true)}
+        >
+          <SlidersHorizontal size={18} strokeWidth={2} aria-hidden="true" />
+          <span className="tk-thanh-chu">
+            <strong>{loc.quan ? `${loc.quan}, ${loc.tinh}` : loc.tinh || 'Tất cả địa điểm'}</strong>
+            <span>{soBoLoc > 0 ? `${soBoLoc} bộ lọc đang bật` : 'Bấm để lọc xe'}</span>
+          </span>
+          <ChevronDown size={18} strokeWidth={2} aria-hidden="true" style={{ transform: 'rotate(180deg)' }} />
+        </button>
       </div>
     </div>
   )

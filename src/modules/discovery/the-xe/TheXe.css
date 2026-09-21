@@ -1,28 +1,87 @@
-/* Thẻ xe dùng chung — luồng 04. (Gộp từ saved/DaLuu.css của luồng 05.) */
+/* Thẻ xe dùng chung — luồng 04. Chỉ dùng token, không hardcode màu.
+   Giao diện tham chiếu: _archive/giao-dien-dev (CarCard). */
 
 .thexe { display: flex; flex-direction: column; overflow: hidden; }
 
+/* Tin đã xác minh: viền xanh mảnh. Xét theo giấy tờ, miễn phí — không bán (CLAUDE.md 1.2). */
+.thexe-xacminh { box-shadow: 0 0 0 1.5px var(--m-green-ok), var(--shadow-sm); }
+.thexe-xacminh.card-hover:hover { box-shadow: 0 0 0 1.5px var(--m-green-ok), var(--shadow-lg); }
+
+/* ─── Ảnh ─── */
 .thexe-anh {
   position: relative;
-  aspect-ratio: 4 / 3;
-  background: var(--m-bg) center / cover no-repeat;
+  aspect-ratio: 16 / 9;
+  background: var(--m-bg) center / cover no-repeat; /* ảnh mờ base64 đặt inline */
+  flex: none;
 }
-.thexe-anh img {
+.thexe-lien { position: absolute; inset: 0; display: block; }
+.thexe-lien img {
   width: 100%; height: 100%; object-fit: cover;
-  /* Ảnh mờ base64 nằm ở nền, ảnh nét hiện đè lên: chuyển mượt 200ms
-     (HIEU-NANG.md mục 6). */
+  /* Ảnh mờ ở nền, ảnh nét hiện đè: chuyển mượt 200ms (HIEU-NANG.md mục 6). */
   animation: hienAnh .2s ease;
 }
 @keyframes hienAnh { from { opacity: 0 } to { opacity: 1 } }
 
-.thexe-than { display: flex; flex-direction: column; gap: var(--sp-2); padding: var(--sp-4); }
+/* Hai nút nổi góc phải ảnh. */
+.thexe-nut {
+  position: absolute; top: var(--sp-2); right: var(--sp-2);
+  display: flex; gap: var(--sp-2); z-index: 1;
+}
+.thexe-btn,
+.thexe .nutluu {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 36px; height: 36px; padding: 0;
+  border-radius: var(--r-full);
+  background: var(--m-surface); color: var(--m-mid);
+  box-shadow: var(--shadow-md);
+  transition: color var(--t-fast), background var(--t-fast), transform var(--t-fast);
+}
+.thexe-btn:hover, .thexe .nutluu:hover { background: var(--m-bg); color: var(--m-dark); }
+.thexe-btn:active, .thexe .nutluu:active { transform: scale(.94); }
+.thexe-btn.xong { color: var(--m-green-ok); background: var(--m-green-ok-bg); }
+.thexe-btn.loi { color: var(--m-red); background: var(--m-red-bg); }
+/* Tim đổi màu tức thì khi bấm (HIEU-NANG.md mục 6). */
+.thexe .nutluu.daluu { color: var(--m-red); background: var(--m-red-bg); }
+.thexe .nutluu svg { transition: transform var(--t-fast); }
+.thexe .nutluu.daluu svg { transform: scale(1.1); }
 
-.thexe-dong { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-2); }
-.thexe-dong .t-h3 { transition: color var(--t-fast); }
-.thexe-dong .t-h3:hover { color: var(--m-green); }
+/* ─── Thân thẻ ─── */
+.thexe-than { display: flex; flex-direction: column; gap: var(--sp-3); padding: var(--sp-4); flex: 1; }
+.thexe-dau { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.thexe-ten {
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  transition: color var(--t-fast);
+}
+.thexe-ten:hover { color: var(--m-green); }
+.thexe-dang { display: inline-flex; align-items: center; gap: 4px; }
 
-.thexe-meta { display: flex; flex-wrap: wrap; gap: var(--sp-1) var(--sp-3); }
-.thexe-meta span { display: inline-flex; align-items: center; gap: 4px; }
+/* Lưới thông số: mỗi thứ một ô xám. */
+.thexe-thongso { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-2) var(--sp-2); }
+.thexe-thongso span {
+  display: flex; align-items: center; gap: var(--sp-2); min-width: 0;
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-sm);
+  background: var(--m-bg); color: var(--m-mid);
+  font-size: 12px; font-weight: 500;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.thexe-thongso svg { flex: none; color: var(--m-subtle); }
+.thexe-noi { grid-column: 1 / -1; }
 
-.thexe-chan { display: flex; align-items: baseline; gap: var(--sp-1); flex-wrap: wrap; }
-.thexe-chan .badge { margin-left: auto; align-self: center; }
+/* Đẩy chân thẻ xuống đáy để các thẻ cùng hàng thẳng hàng nhau. */
+.thexe-chan {
+  display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2);
+  margin-top: auto; padding-top: var(--sp-3);
+  border-top: 1px solid var(--m-border);
+}
+.thexe-gia { display: flex; align-items: baseline; gap: 6px; }
+.thexe-gia strong { font-size: 20px; font-weight: 800; letter-spacing: -.02em; color: var(--m-red); }
+.thexe-gia span { font-size: 12px; font-weight: 500; color: var(--m-subtle); }
+
+/* ─── Dạng danh sách (ngang), chỉ từ máy tính bảng trở lên ─── */
+@media (min-width: 768px) {
+  .tk-ds .thexe { flex-direction: row; }
+  .tk-ds .thexe-anh { aspect-ratio: auto; width: 320px; min-height: 200px; }
+  .tk-ds .thexe-than { justify-content: center; }
+  .tk-ds .thexe-chan { margin-top: var(--sp-1); }
+}

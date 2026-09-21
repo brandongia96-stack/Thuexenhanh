@@ -1,31 +1,102 @@
-/* Trang tìm kiếm /thue-xe — luồng 04. Chỉ dùng token, không hardcode màu. */
+/* Trang tìm kiếm /thue-xe — luồng 04. Chỉ dùng token, không hardcode màu.
+   Giao diện tham chiếu: _archive/giao-dien-dev (Overview). */
 
 .tk-dau { display: flex; flex-wrap: wrap; gap: var(--sp-3); align-items: center; }
 .tk-timkiem { flex: 1 1 320px; min-width: 0; }
 .tk-xep { width: auto; min-width: 170px; }
-.tk-nutloc { display: none; }
+
+/* Nút đổi lưới ↔ danh sách: chỉ từ 768px, dưới đó luôn là 1 cột. */
+.tk-doixem { display: none; width: 44px; padding: 0; }
+@media (min-width: 768px) { .tk-doixem { display: inline-flex; } }
 
 .tk-luoi { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: var(--sp-6); align-items: start; }
-.tk-loc { position: sticky; top: calc(var(--h-header) + var(--sp-4)); max-height: calc(100vh - var(--h-header) - var(--sp-8)); overflow-y: auto; }
 .tk-ketqua { min-width: 0; display: flex; flex-direction: column; gap: var(--sp-4); }
+
+/* ─── Bảng bộ lọc: cột bên trái trên máy tính ─── */
+.tk-loc {
+  position: sticky; top: calc(var(--h-header) + var(--sp-4));
+  max-height: calc(100vh - var(--h-header) - var(--sp-8));
+  overflow-y: auto;
+}
+.tk-loc-than { padding: var(--sp-5); }
+.tk-loc-dau, .tk-loc-chan, .tk-nen, .tk-thanh { display: none; }
 
 /* Danh sách dài: trình duyệt bỏ qua dựng/vẽ thẻ ngoài màn hình. Đây là cách
    nhẹ thay cho virtualize (HIEU-NANG.md mục 4) — DOM vẫn còn, nhưng layout và
    paint thì không tốn. `auto` nhớ chiều cao thật sau lần dựng đầu → thanh cuộn
    không nhảy. */
-.tk-the .thexe { content-visibility: auto; contain-intrinsic-size: auto 340px; }
+.tk-the .thexe { content-visibility: auto; contain-intrinsic-size: auto 400px; }
+.tk-ds .thexe { contain-intrinsic-size: auto 210px; }
+
+/* Dạng danh sách: mỗi hàng một thẻ (thẻ tự chuyển ngang từ 768px, xem TheXe.css). */
+.tk-ds { grid-template-columns: minmax(0, 1fr); }
 
 .tk-moc { height: 1px; }
 .tk-them { display: flex; align-items: center; justify-content: center; gap: var(--sp-3); }
 
-.tk-khung-anh { aspect-ratio: 4 / 3; border-radius: 0; }
+.tk-khung-anh { aspect-ratio: 16 / 9; border-radius: 0; }
 .tk-khung-chu { display: flex; flex-direction: column; gap: var(--sp-2); }
 
-/* Điện thoại: bộ lọc thu gọn sau nút, mở ra ngay dưới thanh tìm kiếm. */
+/* ─── Điện thoại: bộ lọc là bảng trượt từ đáy + thanh cố định dưới đáy ─── */
 @media (max-width: 899px) {
+  .tk { padding-bottom: calc(var(--sp-10) + 72px); } /* chừa chỗ cho thanh cố định */
   .tk-luoi { grid-template-columns: minmax(0, 1fr); }
-  .tk-nutloc { display: inline-flex; }
+  .tk-xep { flex: 1 1 100%; }
+
+  .tk-thanh {
+    display: block; position: fixed; left: 0; right: 0; bottom: 0;
+    z-index: var(--z-header);
+    padding: var(--sp-3) var(--sp-4) max(var(--sp-3), env(safe-area-inset-bottom));
+    background: var(--m-bg); border-top: 1px solid var(--m-border);
+    box-shadow: var(--shadow-lg);
+  }
+  .tk-thanh-nut {
+    display: flex; align-items: center; gap: var(--sp-3);
+    width: 100%; max-width: 560px; margin: 0 auto;
+    padding: var(--sp-2) var(--sp-4); min-height: 52px;
+    background: var(--m-surface); border: 1px solid var(--m-border);
+    border-radius: var(--r-xl); box-shadow: var(--shadow-sm); text-align: left;
+    color: var(--m-dark);
+  }
+  .tk-thanh-chu { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+  .tk-thanh-chu strong {
+    font-size: 15px; font-weight: 600;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .tk-thanh-chu span { font-size: 13px; color: var(--m-subtle); }
+
+  .tk-nen {
+    display: block; position: fixed; inset: 0; z-index: calc(var(--z-sheet) - 1);
+    background: var(--m-dark); opacity: .5;
+  }
+
+  /* Ẩn hẳn khi chưa mở: không để bảng nằm ngoài màn hình mà vẫn nhận tiêu điểm. */
   .tk-loc { display: none; position: static; max-height: none; }
-  .tk-loc.mo { display: block; }
-  .tk-xep { flex: 1 1 0; }
+  .tk-loc.mo {
+    display: flex; flex-direction: column;
+    position: fixed; left: 0; right: 0; bottom: 0; top: auto;
+    z-index: var(--z-sheet);
+    max-height: 88vh;
+    border-radius: var(--r-xl) var(--r-xl) 0 0;
+    box-shadow: var(--shadow-xl);
+    overflow: hidden;
+    animation: tkTruot var(--t-mid);
+  }
+  .tk-loc.mo .tk-loc-than { flex: 1; overflow-y: auto; overscroll-behavior: contain; }
+
+  .tk-loc-dau { display: block; padding: var(--sp-2) var(--sp-5) 0; touch-action: pan-y; }
+  .tk-loc-keo { display: block; width: 40px; height: 4px; margin: 0 auto var(--sp-2); border-radius: var(--r-full); background: var(--m-border); }
+  .tk-loc-tieude { display: flex; align-items: center; justify-content: space-between; padding-bottom: var(--sp-2); }
+  .tk-loc-dong {
+    display: inline-flex; align-items: center; justify-content: center;
+    width: 36px; height: 36px; border-radius: var(--r-full); color: var(--m-mid);
+  }
+  .tk-loc-dong:hover { background: var(--m-bg); }
+
+  .tk-loc-chan {
+    display: flex; gap: var(--sp-3); padding: var(--sp-3) var(--sp-5) max(var(--sp-3), env(safe-area-inset-bottom));
+    border-top: 1px solid var(--m-border); background: var(--m-surface);
+  }
+  .tk-loc-chan .btn-primary { flex: 1; }
 }
+@keyframes tkTruot { from { transform: translateY(100%) } to { transform: none } }
