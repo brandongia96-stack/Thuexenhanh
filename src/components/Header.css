@@ -25,6 +25,15 @@
   font-size: 17px;
   color: var(--m-green);
   letter-spacing: -.02em;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+.hd-logo-img {
+  width: 36px;
+  height: 36px;
+  border-radius: var(--r-sm);
+  object-fit: contain;
 }
 
 .hd-nav {
@@ -56,7 +65,15 @@
 }
 
 @media (max-width: 640px) {
-  .hd-inner { gap: var(--sp-3); padding: 0 var(--sp-3); }
-  .hd-logo span { display: none; }
+  .hd-inner { gap: var(--sp-2); padding: 0 var(--sp-3); }
   .hd-nav { gap: 0; }
+  /* "Thuê xe" từng bị xuống 2 dòng ở 375px. Giữ một dòng, thu padding cho vừa. */
+  .hd-link { white-space: nowrap; padding: 0 var(--sp-2); }
+  .hd-right { gap: var(--sp-1); }
+  .hd-right .btn-sm { padding: 0 var(--sp-2); }
+}
+
+/* Chỉ ẩn chữ cạnh logo khi thật sự hết chỗ (điện thoại hẹp). */
+@media (max-width: 520px) {
+  .hd-logo span { display: none; }
 }
