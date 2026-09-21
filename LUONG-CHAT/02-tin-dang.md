@@ -5,6 +5,15 @@
 **Phụ thuộc:** 01 · **Chặn:** 03, 04, 05, 08
 **Bắt buộc đọc thêm:** `HIEU-NANG.md` mục 1 (ảnh)
 
+> ## 🎨 Giao diện lấy mẫu từ đâu
+>
+> Bê **`CarForm.jsx` (923 dòng)** từ `_archive/giao-dien-dev/src/modules/` sang — form đăng xe.
+>
+> Đọc `_archive/giao-dien-dev/DOC-TRUOC.md` **trước**. Tóm tắt luật:
+> chỉ bê phần hiển thị, **không bê logic Firebase** (~88 chỗ gọi Firestore);
+> nối vào API Supabase ở `contracts/api.md`; mapbox/recharts **tải trễ**;
+> không bê chuỗi `Vnigo`; tên hiển thị là **"Thuê Xe Nhanh"**.
+
 ---
 
 ## Mục tiêu

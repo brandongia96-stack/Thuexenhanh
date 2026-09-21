@@ -5,6 +5,15 @@
 **Phụ thuộc:** 01, 02 · **Chặn:** không
 **Bắt buộc đọc thêm:** `HIEU-NANG.md` mục 2 (truy vấn), 3 (bundle), 4 (render)
 
+> ## 🎨 Giao diện lấy mẫu từ đâu
+>
+> Bê **`Overview.jsx` (357) + `CarCard.jsx` (317)** từ `_archive/giao-dien-dev/src/modules/` sang — lưới xe, bộ lọc, thẻ xe.
+>
+> Đọc `_archive/giao-dien-dev/DOC-TRUOC.md` **trước**. Tóm tắt luật:
+> chỉ bê phần hiển thị, **không bê logic Firebase** (~88 chỗ gọi Firestore);
+> nối vào API Supabase ở `contracts/api.md`; mapbox/recharts **tải trễ**;
+> không bê chuỗi `Vnigo`; tên hiển thị là **"Thuê Xe Nhanh"**.
+
 ---
 
 ## Mục tiêu

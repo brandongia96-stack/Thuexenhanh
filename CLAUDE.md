@@ -304,6 +304,10 @@ Chi tiết + lý do: `QUYET-DINH.md`.
 8. Chia **12 luồng chat**, mỗi luồng một brief trong `LUONG-CHAT/`.
 9. Marketing / kênh khách hàng: **luồng chat riêng**, không bàn ở luồng nền tảng.
 10. Tích xanh **không bán bằng tiền** — xét theo giấy tờ, miễn phí.
+11. **Giao diện lấy mẫu từ `giale-lab/Thuexenhanh` nhánh `dev`**, đã tải về `_archive/giao-dien-dev/` (chỉ đọc). Phương án **A**: v0.2 làm gốc, bê 4 màn sang.
+12. **Mapbox + Recharts: tải trễ.** Mapbox chỉ tải khi bấm "Xem bản đồ" (515 KB gzip); recharts chỉ ở màn chủ xe/admin (103 KB).
+13. **Tên hiển thị: "Thuê Xe Nhanh".** Tên miền / mã nguồn / project: `thuexenhanh`.
+14. Backend **giữ Supabase** — đã xét lại 21/09 và không đảo.
 
 ---
 

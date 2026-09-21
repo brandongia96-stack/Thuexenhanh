@@ -42,3 +42,49 @@ Ngoài phạm vi (để luồng riêng): marketing, kênh khách hàng, UI từn
 1. **Mở luồng 01 — Nền tảng & CSDL.** Ra `contracts/schema.sql`, `contracts/api.md`, `contracts/tokens.css` và khung React mới. Chặn toàn bộ 11 luồng còn lại.
 2. **Tạo dự án Supabase** (region Singapore) + đăng ký một cổng VietQR (SePay hoặc PayOS) để luồng 06 có cái mà nối.
 3. **Tạo repo GitHub private và đẩy code lên.** Git local mất theo ổ cứng.
+
+---
+
+## Phiên 2026-09-21 — Hợp nhất giao diện
+
+Bối cảnh: anh thấy `dev.thuexenhanh.pages.dev` đẹp hơn hẳn production, định quay
+lại Firebase. Phiên này làm rõ và chốt hướng hợp nhất.
+
+### ✅ Đã chốt
+
+1. **Giữ backend Supabase.** Không quay lại Firebase. Quyết định 12/09 giữ nguyên.
+2. **Cloudflare không phải biến số** — cả bản Firebase lẫn bản Supabase đều đang
+   chạy trên Cloudflare Pages, khác mỗi tên miền phụ.
+3. **Nguồn giao diện: `github.com/giale-lab/Thuexenhanh` nhánh `dev`**
+   (commit `4a47085`, 18/09). Đã tải về `_archive/giao-dien-dev/`.
+4. **Phương án A** — v0.2 làm gốc, bê 4 màn sang (~2.100 dòng):
+   `LandingPage` 495 → luồng 14 · `CarForm` 923 → luồng 02 ·
+   `Overview` 357 + `CarCard` 317 → luồng 04.
+   Lý do chọn A thay vì lấy giale-lab làm gốc: Firebase gọi rải **~88 chỗ trong
+   19 file**, không phải thay một file; và backend v0.2 (6.242 dòng SQL +
+   Edge Functions) không nơi nào khác có.
+5. **Mapbox + Recharts: giữ nhưng TẢI TRỄ.** Đo gzip thật: mapbox 515 KB,
+   recharts 103 KB, tổng JS bản dev 896 KB — gấp 6 lần ngân sách 150 KB.
+   Mapbox chỉ tải khi bấm "Xem bản đồ"; recharts chỉ ở màn chủ xe/admin.
+6. **Tên thương hiệu:** hiển thị cho người dùng là **"Thuê Xe Nhanh"**;
+   tên miền, mã nguồn, project vẫn là **`thuexenhanh`**.
+7. **`Web thue xe - Mainverson` → `_archive/`.** Cũ hơn giale-lab 6 ngày, thiếu
+   Landing và Payment; thứ duy nhất có riêng là `bookingService` (trái nguyên
+   tắc 1.1 — app không có booking).
+
+### ❓ Chưa trả lời được
+
+| Câu hỏi | Vì sao quan trọng |
+|---|---|
+| Repo `giale-lab` còn phát triển song song nữa không? | Hai repo cùng sống sẽ lại lệch nhau như lần này |
+| Chuỗi `Vnigo` trong giale-lab có cần sửa không? | Chỉ cần nếu bản dev còn phục vụ người thật |
+| Ngân sách hạ tầng mỗi tháng? | Em ước 25–50 USD, anh chưa xác nhận |
+| Cắt module nào khỏi bản đầu? | 34 module, một người làm |
+| Chủ xe đầu tiên là ai, 100 khách đầu từ đâu? | Để luồng marketing riêng |
+
+### ▶️ 3 việc tiếp theo
+
+1. **Luồng 01 — tạo dự án Supabase thật.** Vẫn là nút thắt: 6 luồng đã viết xong
+   code đang nằm chờ.
+2. **Luồng 04 — bê `Overview` + `CarCard`.** Sửa `/thue-xe` đang là `<ChuaLam />`.
+3. **Luồng 14 — bê `LandingPage`** + SEO meta + logo thật từ `_scratch/ban-sao-dev-pages/`.

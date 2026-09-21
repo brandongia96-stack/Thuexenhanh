@@ -5,6 +5,15 @@
 **Phụ thuộc:** 01 · **Nên làm sau:** 04 (để có ô tìm kiếm dùng lại)
 **Model đề xuất:** Sonnet 5
 
+> ## 🎨 Giao diện lấy mẫu từ đâu
+>
+> Bê **`LandingPage.jsx` (495 dòng)** từ `_archive/giao-dien-dev/src/modules/` sang — trang chủ.
+>
+> Đọc `_archive/giao-dien-dev/DOC-TRUOC.md` **trước**. Tóm tắt luật:
+> chỉ bê phần hiển thị, **không bê logic Firebase** (~88 chỗ gọi Firestore);
+> nối vào API Supabase ở `contracts/api.md`; mapbox/recharts **tải trễ**;
+> không bê chuỗi `Vnigo`; tên hiển thị là **"Thuê Xe Nhanh"**.
+
 ---
 
 ## Mục tiêu
