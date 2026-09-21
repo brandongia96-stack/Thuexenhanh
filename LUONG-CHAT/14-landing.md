@@ -12,7 +12,7 @@
 > Đọc `_archive/giao-dien-dev/DOC-TRUOC.md` **trước**. Tóm tắt luật:
 > chỉ bê phần hiển thị, **không bê logic Firebase** (~88 chỗ gọi Firestore);
 > nối vào API Supabase ở `contracts/api.md`; mapbox/recharts **tải trễ**;
-> không bê chuỗi `Vnigo`; tên hiển thị là **"Thuê Xe Nhanh"**.
+> tên hiển thị là **"Thuê Xe Nhanh"**.
 
 ---
 
@@ -86,7 +86,7 @@ Thêm `public/robots.txt` và `public/sitemap.xml` (tạm liệt kê các trang 
 
 ## 5. Logo & favicon
 
-Bản `dev` đã có `/logo.png` và `/logo-white.png`. Lấy về đặt vào `public/`, kèm `favicon.ico`, `apple-touch-icon.png`, `og-image.jpg` (1200×630).
+Logo đã có sẵn ở `public/` (`logo.webp`, `logo.png`), kèm `favicon.ico`, `apple-touch-icon.png`, `og-image.jpg` (1200×630).
 
 Nếu không lấy được file gốc → **hỏi anh**, đừng tự vẽ logo mới.
 

@@ -12,7 +12,7 @@
 > Đọc `_archive/giao-dien-dev/DOC-TRUOC.md` **trước**. Tóm tắt luật:
 > chỉ bê phần hiển thị, **không bê logic Firebase** (~88 chỗ gọi Firestore);
 > nối vào API Supabase ở `contracts/api.md`; mapbox/recharts **tải trễ**;
-> không bê chuỗi `Vnigo`; tên hiển thị là **"Thuê Xe Nhanh"**.
+> tên hiển thị là **"Thuê Xe Nhanh"**.
 
 ---
 

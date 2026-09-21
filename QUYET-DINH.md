@@ -80,7 +80,6 @@ lại Firebase. Phiên này làm rõ và chốt hướng hợp nhất.
 
 | Câu hỏi | Vì sao quan trọng |
 |---|---|
-| Chuỗi `Vnigo` trong giale-lab có cần sửa không? | Chỉ cần nếu bản dev còn phục vụ người thật |
 | Ngân sách hạ tầng mỗi tháng? | Em ước 25–50 USD, anh chưa xác nhận |
 | Cắt module nào khỏi bản đầu? | 34 module, một người làm |
 | Chủ xe đầu tiên là ai, 100 khách đầu từ đâu? | Để luồng marketing riêng |
