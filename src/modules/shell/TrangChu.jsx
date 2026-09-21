@@ -1,13 +1,15 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Phone, ShieldCheck, Wallet, Search } from 'lucide-react'
+import { Phone, ShieldCheck, Wallet, MapPin } from 'lucide-react'
 
 import { PROVINCES, DISTRICTS } from '../../data/provinces'
 import { TOKEN_VND, TOKENS_PER_MONTH } from '../../lib/config'
 import { trySupabase } from '../../lib/supabase'
 import { taiTenDiaGioi } from '../discovery/diaGioi'
-import TheXeDaLuu from '../discovery/saved/TheXeDaLuu'
-import '../discovery/saved/DaLuu.css'
+import TheXe from '../discovery/the-xe/TheXe'
+import OTimKiem from '../discovery/search/OTimKiem'
+import { duongDanTimKiem } from '../discovery/filter/loc'
+import './TrangChu.css'
 
 // Cột thẻ xe — khớp view `listing_card`, cấm select * (HIEU-NANG.md mục 2.1).
 const COT_THE =
@@ -16,13 +18,15 @@ const COT_THE =
   'cover_thumb,cover_blur,cover_width,cover_height'
 
 /**
- * Trang chủ: hero có ô tìm kiếm → xe mới đăng (chỉ khi có tin thật) → khối chủ xe.
- * Không ảnh mẫu, không số liệu bịa (CLAUDE.md 1.2).
+ * Trang chủ: hero (chữ + ô tìm kiếm) → cách hoạt động → xe mới đăng (chỉ khi có
+ * tin thật) → khối chủ xe. Bố cục theo mẫu dev nhưng KHÔNG ảnh xe mẫu, không số
+ * liệu bịa, không câu cam kết app không làm được (CLAUDE.md 1.2).
  */
 export default function TrangChu() {
   return (
-    <div className="page stack" style={{ gap: 'var(--sp-8)' }}>
+    <div className="page stack tc">
       <Hero />
+      <BaBuoc />
       <XeMoiDang />
       <KhoiChuXe />
     </div>
@@ -35,31 +39,29 @@ function Hero() {
   const [quan, setQuan] = useState('')
   const dsQuan = DISTRICTS[tinh] ?? []
 
-  function tim(e) {
-    e.preventDefault()
-    // TODO(luồng 04): thay ô địa điểm này bằng component lọc của luồng 04 và
-    // dùng đúng tên tham số URL của nó. Tạm dùng ?tinh=&quan= (tên hiển thị).
-    const q = new URLSearchParams()
-    if (tinh) q.set('tinh', tinh)
-    if (quan) q.set('quan', quan)
-    const s = q.toString()
-    dieuHuong(s ? `/thue-xe?${s}` : '/thue-xe')
+  // Dùng đúng ô tìm kiếm + hàm dựng URL của luồng 04: gõ "xe số tự động quận 7"
+  // là tự đoán ra bộ lọc; tỉnh/quận chọn ở đây đi kèm làm bộ lọc sẵn.
+  function tim(cau) {
+    dieuHuong(duongDanTimKiem(cau, { tinh, quan }))
   }
 
   return (
-    <section className="stack" style={{ gap: 'var(--sp-4)', paddingTop: 'var(--sp-6)' }}>
-      <h1 className="t-h1">Thuê xe tự lái, gọi thẳng chủ xe</h1>
-      <p className="t-body" style={{ maxWidth: 560 }}>
-        Chủ xe đăng tin, khách thuê tìm xe. Bạn xem số điện thoại, gọi trực tiếp và tự
-        thoả thuận với nhau.
-      </p>
+    <section className="tc-hero">
+      <div>
+        <span className="tc-nhan">Thuê xe tự lái</span>
+        <h1 className="tc-h1">Gọi thẳng chủ xe,<br />tự thoả thuận giá</h1>
+        <p className="tc-mota">
+          Chủ xe đăng tin, khách thuê tìm xe. Bạn xem số điện thoại, gọi trực tiếp và tự
+          thoả thuận với nhau. Không qua trung gian, không mất hoa hồng.
+        </p>
+        <p style={{ marginTop: 'var(--sp-4)' }}>
+          <Link to="/chu-xe/dang-tin" className="tc-lienket">Bạn có xe cho thuê? Đăng tin →</Link>
+        </p>
+      </div>
 
-      <form
-        onSubmit={tim}
-        className="card card-pad"
-        style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--sp-3)', alignItems: 'flex-end' }}
-      >
-        <label className="field" style={{ flex: '1 1 200px' }}>
+      <div className="tc-tim">
+        <div className="tc-tim-tieude">Tìm xe</div>
+        <label className="field">
           <span className="field-label">Tỉnh / thành phố</span>
           <select
             className="select"
@@ -71,7 +73,7 @@ function Hero() {
           </select>
         </label>
         {dsQuan.length > 0 && (
-          <label className="field" style={{ flex: '1 1 200px' }}>
+          <label className="field">
             <span className="field-label">Quận / huyện</span>
             <select className="select" value={quan} onChange={(e) => setQuan(e.target.value)}>
               <option value="">Tất cả</option>
@@ -79,15 +81,30 @@ function Hero() {
             </select>
           </label>
         )}
-        <button type="submit" className="btn btn-primary btn-lg" style={{ flex: '0 0 auto' }}>
-          <Search size={18} strokeWidth={2} /> Tìm xe
-        </button>
-      </form>
+        <OTimKiem onGui={tim} />
+      </div>
+    </section>
+  )
+}
 
-      <div>
-        <Link to="/chu-xe/dang-tin" className="t-small" style={{ color: 'var(--m-green)', fontWeight: 600 }}>
-          Bạn có xe cho thuê? Đăng tin →
-        </Link>
+/** Mô tả đúng cách app hoạt động — không hứa thêm gì. */
+function BaBuoc() {
+  const buoc = [
+    ['1', 'Tìm xe', 'Chọn địa điểm, xem ảnh và giá thuê theo ngày do chủ xe đăng.'],
+    ['2', 'Xem số điện thoại', 'Bấm xem số của chủ xe ngay trên trang xe.'],
+    ['3', 'Gọi và thoả thuận', 'Hai bên tự trao đổi giá, giấy tờ, cách giao nhận xe.'],
+  ]
+  return (
+    <section className="stack">
+      <h2 className="tc-h2">Cách hoạt động</h2>
+      <div className="tc-buoc">
+        {buoc.map(([so, ten, mota]) => (
+          <div key={so} className="card card-pad stack" style={{ gap: 'var(--sp-2)' }}>
+            <div className="tc-buoc-so">{so}</div>
+            <div className="t-h3">{ten}</div>
+            <p className="t-small">{mota}</p>
+          </div>
+        ))}
       </div>
     </section>
   )
@@ -120,15 +137,13 @@ function XeMoiDang() {
   if (ds.length === 0) return null
 
   return (
-    <section className="stack" style={{ gap: 'var(--sp-4)' }}>
-      <div className="row" style={{ justifyContent: 'space-between', alignItems: 'baseline' }}>
-        <h2 className="t-h2">Xe mới đăng</h2>
-        <Link to="/thue-xe" className="t-small" style={{ color: 'var(--m-green)', fontWeight: 600 }}>
-          Xem tất cả
-        </Link>
+    <section className="stack">
+      <div className="tc-dau">
+        <h2 className="tc-h2">Xe mới đăng</h2>
+        <Link to="/thue-xe" className="tc-lienket">Xem tất cả →</Link>
       </div>
       <div className="grid-cards">
-        {ds.map((the) => <TheXeDaLuu key={the.id} the={the} bangDiaGioi={bang} />)}
+        {ds.map((the) => <TheXe key={the.id} the={the} bangDiaGioi={bang} />)}
       </div>
     </section>
   )
@@ -137,13 +152,16 @@ function XeMoiDang() {
 function KhoiChuXe() {
   const phi = (TOKENS_PER_MONTH * TOKEN_VND).toLocaleString('vi-VN')
   return (
-    <section className="stack" style={{ gap: 'var(--sp-4)' }}>
-      <h2 className="t-h2">Bạn có xe cho thuê?</h2>
+    <section className="stack">
+      <div>
+        <span className="tc-nhan">Dành cho chủ xe</span>
+        <h2 className="tc-h2">Đăng xe, giữ trọn tiền thuê</h2>
+      </div>
       <div className="grid-cards">
         <Diem
           icon={Wallet}
           title="Không hoa hồng"
-          desc="Chủ xe giữ trọn tiền thuê. Tiền thuê là chuyện của hai bên, chúng tôi không đứng giữa dòng tiền."
+          desc="Tiền thuê xe là chuyện của hai bên. Chúng tôi không đứng giữa dòng tiền."
         />
         <Diem
           icon={Phone}
@@ -156,8 +174,13 @@ function KhoiChuXe() {
           desc="Xác minh xét theo giấy tờ, không bán bằng tiền."
         />
       </div>
-      <div>
-        <Link to="/chu-xe/dang-tin" className="btn btn-primary btn-lg">Đăng xe của bạn</Link>
+
+      <div className="tc-cta">
+        <h2>Có xe nhàn rỗi? Đăng tin ngay</h2>
+        <p>Tạo tin, chờ duyệt, rồi khách gọi thẳng cho bạn.</p>
+        <Link to="/chu-xe/dang-tin" className="btn btn-lg">
+          <MapPin size={18} strokeWidth={2} /> Đăng xe của bạn
+        </Link>
       </div>
       <p className="t-small">Giao dịch thuê xe do hai bên tự thoả thuận.</p>
     </section>
@@ -166,8 +189,8 @@ function KhoiChuXe() {
 
 function Diem({ icon: Icon, title, desc }) {
   return (
-    <div className="card card-pad stack" style={{ gap: 'var(--sp-2)' }}>
-      <Icon size={22} strokeWidth={1.8} color="var(--m-green)" />
+    <div className="card card-pad stack tc-the" style={{ gap: 'var(--sp-3)' }}>
+      <div className="tc-icon"><Icon size={24} strokeWidth={1.8} color="var(--m-green)" /></div>
       <div className="t-h3">{title}</div>
       <p className="t-small">{desc}</p>
     </div>
