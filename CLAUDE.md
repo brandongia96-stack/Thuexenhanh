@@ -11,6 +11,7 @@ Tài liệu gốc cho mọi luồng chat. **Đọc file này + `CHANGELOG.md` tr
 | **Ngôn ngữ** | Tiếng Việt. Claude xưng "em", gọi user là "anh". |
 | **Code cũ (v0.1)** | `Web thue xe/` — **đóng băng, chỉ đọc tham chiếu** |
 | **Code mới (v0.2)** | dựng ở luồng 01 |
+| **Nguồn giao diện** | `github.com/giale-lab/Thuexenhanh` nhánh `dev` — Firebase, đã chia module, có Landing + Payment + Admin |
 
 ---
 
@@ -272,6 +273,8 @@ Các file này **tuyệt đối không đọc** trừ khi anh yêu cầu thẳng
 | `node_modules/` | — |
 | `Web thue xe.rar` | 47 MB |
 | `_backup/*.zip` | — |
+| `_archive/` | codebase cũ đã lưu trữ — xem `_archive/README.md` |
+| `_scratch/` | file thử nghiệm tạm |
 
 Cần tham chiếu code cũ → đọc **đúng khoảng dòng** brief đã ghi, không đọc cả `App.jsx` 131 KB.
 

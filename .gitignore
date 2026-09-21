@@ -44,3 +44,6 @@ tools/deploy-ui/.snapshot.json
 
 # Thu muc tam cua Supabase CLI
 supabase/.temp/
+
+# Codebase cu, chi de tra cuu - khong theo doi, khong doc
+_archive/
