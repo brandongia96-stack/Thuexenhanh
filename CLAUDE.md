@@ -11,6 +11,7 @@ Tài liệu gốc cho mọi luồng chat. **Đọc file này + `CHANGELOG.md` tr
 | **Ngôn ngữ** | Tiếng Việt. Claude xưng "em", gọi user là "anh". |
 | **Code cũ (v0.1)** | `Web thue xe/` — **đóng băng, chỉ đọc tham chiếu** |
 | **Code mới (v0.2)** | dựng ở luồng 01 |
+| **Repo chính** | `github.com/brandongia96-stack/Thuexenhanh` — **nơi duy nhất được phát triển** |
 | **Nguồn giao diện** | `github.com/giale-lab/Thuexenhanh` nhánh `dev` — Firebase, đã chia module, có Landing + Payment + Admin |
 
 ---
@@ -308,6 +309,7 @@ Chi tiết + lý do: `QUYET-DINH.md`.
 12. **Mapbox + Recharts: tải trễ.** Mapbox chỉ tải khi bấm "Xem bản đồ" (515 KB gzip); recharts chỉ ở màn chủ xe/admin (103 KB).
 13. **Tên hiển thị: "Thuê Xe Nhanh".** Tên miền / mã nguồn / project: `thuexenhanh`.
 14. Backend **giữ Supabase** — đã xét lại 21/09 và không đảo.
+15. **Repo chính duy nhất: `github.com/brandongia96-stack/Thuexenhanh`.** `giale-lab/Thuexenhanh` ngừng phát triển song song, chỉ còn là nguồn tham chiếu giao diện ở `_archive/giao-dien-dev/`.
 
 ---
 

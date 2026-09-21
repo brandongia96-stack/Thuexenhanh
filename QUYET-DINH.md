@@ -68,6 +68,10 @@ lại Firebase. Phiên này làm rõ và chốt hướng hợp nhất.
    Mapbox chỉ tải khi bấm "Xem bản đồ"; recharts chỉ ở màn chủ xe/admin.
 6. **Tên thương hiệu:** hiển thị cho người dùng là **"Thuê Xe Nhanh"**;
    tên miền, mã nguồn, project vẫn là **`thuexenhanh`**.
+8. **Repo chính duy nhất: `github.com/brandongia96-stack/Thuexenhanh`.**
+   `giale-lab/Thuexenhanh` **ngừng phát triển song song** — chỉ còn là nguồn
+   tham chiếu giao diện để ở `_archive/giao-dien-dev/`, chỉ đọc.
+9. **Logo đã nén:** 1.725 KB → `logo.webp` **3,8 KB**; trọn bộ asset 79,3 KB.
 7. **`Web thue xe - Mainverson` → `_archive/`.** Cũ hơn giale-lab 6 ngày, thiếu
    Landing và Payment; thứ duy nhất có riêng là `bookingService` (trái nguyên
    tắc 1.1 — app không có booking).
@@ -76,7 +80,6 @@ lại Firebase. Phiên này làm rõ và chốt hướng hợp nhất.
 
 | Câu hỏi | Vì sao quan trọng |
 |---|---|
-| Repo `giale-lab` còn phát triển song song nữa không? | Hai repo cùng sống sẽ lại lệch nhau như lần này |
 | Chuỗi `Vnigo` trong giale-lab có cần sửa không? | Chỉ cần nếu bản dev còn phục vụ người thật |
 | Ngân sách hạ tầng mỗi tháng? | Em ước 25–50 USD, anh chưa xác nhận |
 | Cắt module nào khỏi bản đầu? | 34 module, một người làm |
