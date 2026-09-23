@@ -82,6 +82,12 @@ Repo GitHub private của anh: <dán URL vào đây>
 
 ### Câu dùng chung
 
+Cập nhật một luồng **đang mở sẵn** — nó không tự thấy thay đổi mới:
+```
+Đọc lại CLAUDE.md mục 0. Có thay đổi mới. Nói cho anh biết cái gì
+ảnh hưởng tới luồng này, rồi mới làm tiếp.
+```
+
 Khi luồng đi lạc phạm vi:
 ```
 Dừng. Việc này ngoài phạm vi brief. Ghi lại vào CHANGELOG rồi báo anh.

@@ -1,6 +1,6 @@
 # CLAUDE.md — Thuexenhanh
 
-Tài liệu gốc cho mọi luồng chat. **Đọc file này + `CHANGELOG.md` trước khi sửa bất cứ thứ gì.**
+Tài liệu gốc cho mọi luồng chat. **Đọc §0 bên dưới trước tiên** — 6 thay đổi mới nhất, thay cho việc đọc hết `CHANGELOG.md`.
 
 | | |
 |---|---|
@@ -13,6 +13,31 @@ Tài liệu gốc cho mọi luồng chat. **Đọc file này + `CHANGELOG.md` tr
 | **Code mới (v0.2)** | dựng ở luồng 01 |
 | **Repo chính** | `github.com/brandongia96-stack/Thuexenhanh` — **nơi duy nhất được phát triển** |
 | **Nguồn giao diện** | `github.com/giale-lab/Thuexenhanh` nhánh `dev` — Firebase, đã chia module, có Landing + Payment + Admin |
+
+---
+
+## 0. 📢 Đọc trước — thay đổi mới nhất
+
+> Mục này **thay cho việc đọc hết `CHANGELOG.md`**. Chỉ giữ 6 dòng gần nhất.
+> Luồng đang mở sẵn **không tự thấy** thay đổi — anh dán câu này vào để nó cập nhật:
+>
+> ```
+> Đọc lại CLAUDE.md mục 0. Có thay đổi mới. Nói cho anh biết cái gì
+> ảnh hưởng tới luồng này, rồi mới làm tiếp.
+> ```
+
+| Ngày | Thay đổi | Ảnh hưởng tới |
+|---|---|---|
+| 23/09 | **Biến môi trường Supabase ĐÃ đặt xong trên Cloudflare Pages** — đã kiểm chứng trong bundle production. Không phải làm lại | 13 |
+| 23/09 | ⚠️ **Site URL của Supabase đang sai**: `localhost:3000`, dự án chạy cổng **5173** → đăng nhập Google báo `bad_oauth_state`. Mẹo tạm: `npm run dev -- --port 3000`. Sửa thật: thêm Redirect URLs trong dashboard | 01, 13 |
+| 21/09 | **Logo thật đã có trong `public/`** — `logo.webp` 3,8 KB, favicon, og-image, PWA. Trọn bộ 79,3 KB. Đừng đi tìm nữa | 14 |
+| 21/09 | **Nguồn giao diện ở `_archive/giao-dien-dev/`** — đọc `DOC-TRUOC.md` trước khi bê. Chỉ bê hiển thị, không bê Firebase | 02, 04, 14 |
+| 21/09 | **Mapbox + Recharts: tải trễ bắt buộc** (515 + 103 KB gzip) | 03, 04, 05, 10 |
+| 21/09 | **Tên hiển thị: "Thuê Xe Nhanh"**. Tên miền/mã nguồn: `thuexenhanh` | 12, 14 |
+
+**Luật:** chỉ **luồng nền tảng** được sửa mục này. Mỗi lần có quyết định hoặc phát
+hiện **ảnh hưởng tới luồng khác** → thêm một dòng ở đầu bảng, xoá dòng cuối nếu quá 6.
+Việc riêng trong một luồng thì chỉ ghi `CHANGELOG.md`, **không đưa lên đây**.
 
 ---
 
