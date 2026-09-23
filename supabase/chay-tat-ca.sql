@@ -6,7 +6,7 @@
 --
 -- Bọc trong BEGIN/COMMIT: lỗi ở bất kỳ đâu là huỷ sạch toàn bộ, CSDL trở lại
 -- như trước khi chạy. Không có chuyện vào được một nửa rồi mắc kẹt.
--- Gồm 10 file: 0001_init.sql, 0002_auth_hooks.sql, 0003_seed_static.sql, 0004_billing.sql, 0005_trust.sql, 0006_legal_consent.sql, 0007_notify.sql, 0008_admin.sql, 0009_grants.sql, 0010_submit_and_owner_role.sql
+-- Gồm 11 file: 0001_init.sql, 0002_auth_hooks.sql, 0003_seed_static.sql, 0004_billing.sql, 0005_trust.sql, 0006_legal_consent.sql, 0007_notify.sql, 0008_admin.sql, 0009_grants.sql, 0010_bao_ve_sdt.sql, 0010_submit_and_owner_role.sql
 -- ============================================================
 
 begin;
@@ -728,6 +728,14 @@ grant usage, select          on all sequences in schema public to anon, authenti
 alter default privileges in schema public grant select         on tables    to anon, authenticated;
 alter default privileges in schema public grant insert, update on tables    to authenticated;
 alter default privileges in schema public grant usage, select  on sequences to anon, authenticated;
+
+-- ⚠️ `listings` là NGOẠI LỆ của câu `grant select on all tables` ở trên.
+-- Ba cột `contact_phone`, `contact_zalo`, `plate` bị hạ quyền ở
+-- `supabase/migrations/0010_bao_ve_sdt.sql`, vì để anon đọc thẳng số điện
+-- thoại là bỏ qua Edge Function `reveal-phone` — tức bỏ qua việc đếm lượt
+-- lấy số, thứ app đem bán cho chủ xe.
+-- Client muốn lấy 3 cột đó: gọi `reveal-phone` (khách), hoặc hàm
+-- `listing_private(uuid)` (chủ xe sửa tin / người kiểm duyệt).
 
 -- ════════════════════════════════════════════════════════════
 -- ▼ 0002_auth_hooks.sql
@@ -2567,6 +2575,11 @@ grant usage, select  on all sequences in schema public to anon, authenticated;
 
 -- Không cấp `delete` cho ai: luật "không xoá cứng" (CLAUDE.md 1.3).
 revoke delete on all tables in schema public from anon, authenticated;
+-- ⚠️ CẢNH BÁO: câu `grant select on all tables` ở trên cấp lại quyền đọc MỌI
+-- cột của `listings`, kể cả contact_phone / contact_zalo / plate.
+-- `0010_bao_ve_sdt.sql` chạy sau sẽ hạ lại, nên kết quả cuối vẫn kín.
+-- Nhưng ĐỪNG chạy riêng file này rồi dừng — sẽ mở toang số điện thoại.
+-- Sửa quyền của `listings` thì sửa ở 0010, không sửa ở đây.
 
 -- ── 2. Thu hồi quyền gọi hàm nhạy cảm ──
 -- Revoke theo TÊN hàm, quét từ pg_proc, nên không sợ gõ sai chữ ký
@@ -2617,6 +2630,118 @@ end $blk$;
 -- `has_role` CỐ Ý để mở: mọi policy RLS đều gọi nó khi đánh giá quyền. Khoá
 -- nó lại là khoá luôn cả những câu đọc hợp lệ. Nó chỉ trả true/false cho
 -- CHÍNH người đang gọi (dùng auth.uid() bên trong), không lộ gì của ai khác.
+
+-- ════════════════════════════════════════════════════════════
+-- ▼ 0010_bao_ve_sdt.sql
+-- ════════════════════════════════════════════════════════════
+do $$ begin raise notice 'Đang chạy: 0010_bao_ve_sdt.sql'; end $$;
+
+-- ============================================================
+-- Luồng 01 — VÁ RÒ RỈ SỐ ĐIỆN THOẠI. Chạy SAU 0009.
+--
+-- Lỗ hổng (kiểm chứng 23/09): `anon` gọi thẳng
+--   GET /rest/v1/listings?select=contact_phone,contact_zalo,plate
+-- là lấy sạch số của mọi chủ xe trong một request, bỏ qua Edge Function
+-- `reveal-phone`. Tức là bỏ qua luôn việc đếm lượt lấy số — mà lượt lấy số
+-- CHÍNH LÀ hàng hoá đem bán cho chủ xe. Rò chỗ này là phá cách app kiếm tiền,
+-- không chỉ là lộ dữ liệu.
+--
+-- Vì sao RLS không cứu được: RLS lọc theo DÒNG, không theo CỘT. Policy
+-- `listings_public_read` cho đọc mọi tin `dang_hien_thi` — đúng ý đồ, nhưng
+-- khi đã đọc được dòng thì đọc được MỌI cột của dòng đó. Chặn theo cột phải
+-- dùng quyền cấp cột, là việc của GRANT chứ không phải của RLS.
+--
+-- Vì sao chỉ `revoke select (cột)` là KHÔNG ĐỦ: Postgres coi quyền cấp ở mức
+-- BẢNG bao trùm mọi cột. Còn `grant select on listings` thì revoke từng cột
+-- không hạ được gì. Bắt buộc hạ quyền bảng trước, rồi cấp lại từng cột.
+-- ============================================================
+
+-- ── 1. Hạ quyền mức bảng, cấp lại từng cột trừ 3 cột nhạy cảm ──
+do $blk$
+declare
+  -- Thêm cột nhạy cảm mới thì thêm tên vào đây. Cột thường không cần đụng:
+  -- danh sách cấp phát sinh động nên luồng sau thêm cột là tự có quyền.
+  cam  text[] := array['contact_phone', 'contact_zalo', 'plate'];
+  cot  text;
+  ds   text;
+begin
+  select string_agg(quote_ident(column_name), ', ' order by ordinal_position)
+  into ds
+  from information_schema.columns
+  where table_schema = 'public' and table_name = 'listings'
+    and not (column_name = any(cam));
+
+  if ds is null then
+    raise exception 'Không đọc được cột của bảng listings';
+  end if;
+
+  -- Thứ tự bắt buộc: hạ bảng TRƯỚC, cấp cột SAU.
+  revoke select on listings from anon, authenticated;
+  execute format('grant select (%s) on listings to anon, authenticated', ds);
+
+  foreach cot in array cam loop
+    raise notice 'Đã khoá cột listings.%', cot;
+  end loop;
+end $blk$;
+
+-- service_role vẫn đọc đủ: Edge Function `reveal-phone` cần 3 cột đó.
+grant select on listings to service_role;
+
+-- ── 2. Đường đọc HỢP LỆ cho chủ xe và người kiểm duyệt ──
+--
+-- Chủ xe sửa tin của mình thì phải thấy lại số đã nhập; người kiểm duyệt phải
+-- thấy biển số và số điện thoại để đối chiếu giấy tờ. Hai nhu cầu đó thật,
+-- nên mở đúng một cửa hẹp thay vì trả lại quyền cột cho cả role.
+--
+-- `security definer` để hàm đọc được 3 cột vừa khoá; bù lại hàm TỰ kiểm
+-- người gọi. Không nhận `p_actor` từ client — lấy thẳng `auth.uid()`, nên
+-- không ai mạo danh được bằng cách truyền id người khác vào.
+create or replace function listing_private(p_id uuid)
+returns table (contact_phone text, contact_zalo text, plate text)
+language plpgsql stable security definer set search_path = public as $fn$
+declare v_owner uuid;
+begin
+  if auth.uid() is null then
+    raise exception 'chua_dang_nhap';
+  end if;
+
+  select l.owner_id into v_owner from listings l
+  where l.id = p_id and l.deleted_at is null;
+
+  if v_owner is null then
+    raise exception 'khong_tim_thay';
+  end if;
+
+  if v_owner <> auth.uid() and not has_role('kiem_duyet') and not has_role('admin') then
+    raise exception 'khong_co_quyen';
+  end if;
+
+  return query
+  select l.contact_phone, l.contact_zalo, l.plate
+  from listings l where l.id = p_id;
+end $fn$;
+
+revoke all on function listing_private(uuid) from public, anon;
+grant execute on function listing_private(uuid) to authenticated, service_role;
+
+-- ── 3. Kiểm ngay tại chỗ, không đợi ai nhớ chạy ──
+-- Chạy migration mà quyền không thay đổi thì phải nổ ngay, đừng để im lặng
+-- rồi vài tuần sau mới phát hiện số vẫn rò.
+do $blk$
+declare n int;
+begin
+  select count(*) into n
+  from information_schema.column_privileges
+  where table_schema = 'public' and table_name = 'listings'
+    and grantee in ('anon', 'authenticated')
+    and column_name in ('contact_phone', 'contact_zalo', 'plate')
+    and privilege_type = 'SELECT';
+
+  if n > 0 then
+    raise exception 'VÁ HỎNG — anon/authenticated vẫn còn % quyền đọc cột nhạy cảm', n;
+  end if;
+  raise notice 'OK — anon và authenticated không còn đọc được contact_phone/contact_zalo/plate.';
+end $blk$;
 
 -- ════════════════════════════════════════════════════════════
 -- ▼ 0010_submit_and_owner_role.sql

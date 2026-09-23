@@ -707,3 +707,11 @@ grant usage, select          on all sequences in schema public to anon, authenti
 alter default privileges in schema public grant select         on tables    to anon, authenticated;
 alter default privileges in schema public grant insert, update on tables    to authenticated;
 alter default privileges in schema public grant usage, select  on sequences to anon, authenticated;
+
+-- ⚠️ `listings` là NGOẠI LỆ của câu `grant select on all tables` ở trên.
+-- Ba cột `contact_phone`, `contact_zalo`, `plate` bị hạ quyền ở
+-- `supabase/migrations/0010_bao_ve_sdt.sql`, vì để anon đọc thẳng số điện
+-- thoại là bỏ qua Edge Function `reveal-phone` — tức bỏ qua việc đếm lượt
+-- lấy số, thứ app đem bán cho chủ xe.
+-- Client muốn lấy 3 cột đó: gọi `reveal-phone` (khách), hoặc hàm
+-- `listing_private(uuid)` (chủ xe sửa tin / người kiểm duyệt).

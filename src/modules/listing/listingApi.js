@@ -147,7 +147,16 @@ export async function hangSangForm(l) {
 // Đọc
 // ─────────────────────────────────────────────
 
-/** Một tin đầy đủ để sửa: kèm ảnh và lịch chặn ngày. RLS lo phần quyền. */
+/**
+ * Một tin đầy đủ để sửa: kèm ảnh và lịch chặn ngày. RLS lo phần quyền.
+ *
+ * `contact_phone` / `contact_zalo` / `plate` KHÔNG nằm trong `select *` nữa —
+ * `anon` và `authenticated` đã bị hạ quyền đọc 3 cột đó ở
+ * `supabase/migrations/0010_bao_ve_sdt.sql`, vì để đọc thẳng là bỏ qua
+ * `reveal-phone`, tức bỏ qua việc đếm lượt lấy số.
+ * Chủ xe sửa tin vẫn cần thấy lại số mình đã nhập, nên lấy qua hàm
+ * `listing_private` — hàm tự kiểm người gọi bằng `auth.uid()`.
+ */
 export async function docTin(id) {
   const sb = await getSupabase()
   const { data, error } = await sb
@@ -159,8 +168,21 @@ export async function docTin(id) {
   if (error) throw error
   if (!data) return null
 
+  // Lỗi ở đây không được làm hỏng cả màn sửa tin: form vẫn mở được, ba ô đó
+  // trống và chủ xe nhập lại. Mất form đang sửa khó chịu hơn nhiều.
+  let rieng = {}
+  try {
+    const { data: r } = await sb.rpc('listing_private', { p_id: id })
+    if (r?.[0]) rieng = r[0]
+  } catch {
+    /* bỏ qua: xem chú thích trên */
+  }
+
   return {
     ...data,
+    contact_phone: rieng.contact_phone ?? null,
+    contact_zalo: rieng.contact_zalo ?? null,
+    plate: rieng.plate ?? null,
     listing_images: (data.listing_images ?? [])
       .filter((a) => !a.deleted_at)
       .sort((a, b) => a.sort_order - b.sort_order),

@@ -28,7 +28,7 @@ Tài liệu gốc cho mọi luồng chat. **Đọc §0 bên dưới trước ti�
 
 | Ngày | Thay đổi | Ảnh hưởng tới |
 |---|---|---|
-| 23/09 | 🛑 **CHƯA SỬA — rò số điện thoại:** `anon` đọc thắng được `contact_phone` / `contact_zalo` / `plate` qua REST, bỏ qua `reveal-phone` — **phá toàn bộ cơ chế thu tiền**. Chưa lộ vì CSDL đang **0 tin**. ĐÃ KIỂM CHỨNG 23/09. **Cấm nạp demo 10 xe / mở cho người thật trước khi vá** | **01** (quyết), 02, 03, 05, 10 |
+| 23/09 | ⏳ **Rò số điện thoại — ĐÃ CÓ BẢN VÁ, CHỜ CHẠY:** `0010_bao_ve_sdt.sql` hạ quyền đọc `contact_phone`/`contact_zalo`/`plate` của `anon`+`authenticated`; chủ xe và kiểm duyệt lấy qua hàm `listing_private`. Client đã sửa (`listingApi.docTin`, `adminApi.hangDuyet`). **Chạy migration trên Supabase xong mới được nạp demo / mở cho người thật** | **01** (chạy), 02, 10 |
 | 23/09 | **Biến môi trường Supabase ĐÃ đặt xong trên Cloudflare Pages** — đã kiểm chứng trong bundle production. Không phải làm lại | 13 |
 | 23/09 | ⚠️ **Site URL của Supabase đang sai**: `localhost:3000`, dự án chạy cổng **5173** → đăng nhập Google báo `bad_oauth_state`. Mẹo tạm: `npm run dev -- --port 3000`. Sửa thật: thêm Redirect URLs trong dashboard | 01, 13 |
 | 21/09 | **Logo thật đã có trong `public/`** — `logo.webp` 3,8 KB, favicon, og-image, PWA. Trọn bộ 79,3 KB. Đừng đi tìm nữa | 14 |

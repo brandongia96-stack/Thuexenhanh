@@ -25,6 +25,11 @@ grant usage, select  on all sequences in schema public to anon, authenticated;
 
 -- Không cấp `delete` cho ai: luật "không xoá cứng" (CLAUDE.md 1.3).
 revoke delete on all tables in schema public from anon, authenticated;
+-- ⚠️ CẢNH BÁO: câu `grant select on all tables` ở trên cấp lại quyền đọc MỌI
+-- cột của `listings`, kể cả contact_phone / contact_zalo / plate.
+-- `0010_bao_ve_sdt.sql` chạy sau sẽ hạ lại, nên kết quả cuối vẫn kín.
+-- Nhưng ĐỪNG chạy riêng file này rồi dừng — sẽ mở toang số điện thoại.
+-- Sửa quyền của `listings` thì sửa ở 0010, không sửa ở đây.
 
 -- ── 2. Thu hồi quyền gọi hàm nhạy cảm ──
 -- Revoke theo TÊN hàm, quét từ pg_proc, nên không sợ gõ sai chữ ký

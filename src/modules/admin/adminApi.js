@@ -40,11 +40,36 @@ function goiTrang(data, limit) {
 // Bỏ ký tự làm hỏng bộ lọc PostgREST `or`/`ilike`.
 const lamSach = (s) => String(s ?? '').replace(/[%,()"\\]/g, ' ').trim().slice(0, 60)
 
+/**
+ * Ghép `contact_phone` / `contact_zalo` / `plate` vào danh sách tin, tại chỗ.
+ *
+ * Ba cột đó không select thẳng được (xem `0010_bao_ve_sdt.sql`). Một lần gọi
+ * cho cả trang, không phải mỗi tin một vòng mạng.
+ *
+ * Không ném lỗi: thiếu số thì màn duyệt hiện thiếu ô đó, còn hơn trắng cả
+ * hàng chờ. Hàm SQL tự lọc theo quyền nên tin không được phép xem sẽ vắng mặt.
+ */
+async function ghepCotRieng(sb, tins) {
+  if (!tins?.length) return tins
+  try {
+    const { data, error } = await sb.rpc('listing_private_many', { p_ids: tins.map((t) => t.id) })
+    if (error) return tins
+    const bang = new Map((data ?? []).map((r) => [r.id, r]))
+    for (const t of tins) Object.assign(t, bang.get(t.id) ?? {})
+  } catch {
+    /* bỏ qua: xem chú thích trên */
+  }
+  return tins
+}
+
 // ─── HÀNG ĐỢI DUYỆT TIN ───
 
+// `plate` và `contact_phone` KHÔNG select thẳng được nữa: anon/authenticated đã
+// bị hạ quyền đọc 3 cột nhạy cảm ở `0010_bao_ve_sdt.sql`. Người kiểm duyệt vẫn
+// cần chúng để đối chiếu giấy tờ, nên lấy qua `listing_private_many` bên dưới.
 const COT_TIN_CHO =
-  'id,owner_id,brand_text,model_text,year,plate,color,seats,transmission,fuel,' +
-  'price_per_day,description,contact_phone,province_id,address_text,created_at,' +
+  'id,owner_id,brand_text,model_text,year,color,seats,transmission,fuel,' +
+  'price_per_day,description,province_id,address_text,created_at,' +
   'owner:users!listings_owner_id_fkey(full_name,phone,verify_status),' +
   'listing_images(url_thumb,url_medium,sort_order,deleted_at),' +
   'moderation_queue(status,created_at)'
@@ -68,6 +93,7 @@ export async function hangDuyet({ cursor = null, limit = TRANG } = {}) {
     const moi = [...(t.moderation_queue ?? [])].sort((a, b) => b.created_at.localeCompare(a.created_at))[0]
     return moi?.status !== 'da_duyet'
   })
+  await ghepCotRieng(sb, chuaDuyet)
   return goiTrang(chuaDuyet, limit)
 }
 
