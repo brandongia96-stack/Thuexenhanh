@@ -22,6 +22,7 @@ Quy tắc:
 
 | Ngày | Luồng | Nội dung | File |
 |---|---|---|---|
+| 2026-09-23 | 01 nền tảng | ✅ Đã CHẠY `0010` trên Supabase thật và kiểm chứng bằng REST với anon key: 3 cột nhạy cảm + `select=*` đều trả `42501`; `listing_card`, cột công khai, `brands`, `provinces` vẫn 200; `anon` không gọi được `listing_private`/`listing_private_many` | — |
 | 2026-09-23 | 01 nền tảng | 🔒 ⚠️ Vá rò số điện thoại: `0010_bao_ve_sdt.sql` hạ quyền BẢNG rồi cấp lại theo CỘT trên `listings`, trừ `contact_phone`/`contact_zalo`/`plate`. RLS lọc theo dòng nên không chặn được theo cột — phải dùng quyền cấp cột. Thêm `listing_private(uuid)` + `listing_private_many(uuid[])` (security definer, tự kiểm `auth.uid()`) làm đường hợp lệ cho chủ xe và kiểm duyệt. Có phép tự kiểm cuối file: vá không ăn thì migration nổ ngay | `supabase/migrations/0010_bao_ve_sdt.sql`, `contracts/schema.sql`, `supabase/migrations/0009_grants.sql` |
 | 2026-09-23 | 01 nền tảng | Sửa 2 chỗ client sẽ vỡ vì bản vá trên: `docTin` bỏ `select *` lấy 3 cột qua RPC; hàng chờ duyệt của admin lấy cả trang bằng một lần gọi `listing_private_many`. Cả hai nuốt lỗi để không làm trắng màn hình | `src/modules/listing/listingApi.js`, `src/modules/admin/adminApi.js` |
 | 2026-09-23 | ⚠️ nền tảng | **Kiểm chứng lại rò rỉ số điện thoại (luồng 02 báo 21/09): VẪN CHƯA SỬA.** Gọi REST bằng anon key: 3 cột `contact_phone`/`contact_zalo`/`plate` không bị chặn quyền, trả `[]` chỉ vì `listings` = **0 dòng** (`provinces` = 39 dòng làm đối chứng). Nạp demo là lộ ngay. Đưa lên §0 | `CLAUDE.md` |
