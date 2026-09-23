@@ -22,6 +22,7 @@ Quy tắc:
 
 | Ngày | Luồng | Nội dung | File |
 |---|---|---|---|
+| 2026-09-23 | ⚠️ nền tảng | **Kiểm chứng lại rò rỉ số điện thoại (luồng 02 báo 21/09): VẪN CHƯA SỬA.** Gọi REST bằng anon key: 3 cột `contact_phone`/`contact_zalo`/`plate` không bị chặn quyền, trả `[]` chỉ vì `listings` = **0 dòng** (`provinces` = 39 dòng làm đối chứng). Nạp demo là lộ ngay. Đưa lên §0 | `CLAUDE.md` |
 | 2026-09-23 | nền tảng | Thêm `CLAUDE.md` **§0 — bảng tin thay đổi** (6 dòng gần nhất + cột "ảnh hưởng tới luồng nào"), vá lỗ hổng luồng đang mở không thấy quyết định mới. Xác minh biến môi trường Supabase ĐÃ có trong bundle production — hướng dẫn "nối Cloudflare với Supabase" đã cũ | `CLAUDE.md`, `LUONG-CHAT/00-HUONG-DAN.md` |
 | 2026-09-21 | 13 deploy | Sửa phép chặn `khoa-firebase`: chỉ chặn khi chặn còn cứu được. Khoá `AIza` v0.1 đã nằm công khai trên GitHub ở cả `main` và `dev` (tải được qua `raw.githubusercontent`) nên chặn thêm là vô nghĩa → hạ xuống cảnh báo. Thêm `daLoTrenRemote()`; khoá **chưa** lên mạng hoặc **không kiểm được** thì vẫn chặn. Đã thử đủ 3 nhánh | `tools/deploy-ui/{server.mjs,README.md}` |
 | 2026-09-21 | nền tảng | Header: thay icon xe hơi bằng logo thật (`<picture>` WebP + PNG dự phòng, 36×36, không lazy, `fetchpriority=high`), chữ "Thuê Xe Nhanh" (chỉ ẩn ≤520px, trước ẩn ≤640px). Sửa luôn lỗi có sẵn: "Thuê xe" bị xuống 2 dòng ở 375px. Đã xem 320–600px + desktop, không tràn ngang; gói đầu vẫn 58,9 KB gzip | `src/components/Header.{jsx,css}` |
