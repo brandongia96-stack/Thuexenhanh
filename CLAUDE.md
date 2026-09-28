@@ -28,12 +28,12 @@ Tài liệu gốc cho mọi luồng chat. **Đọc §0 bên dưới trước ti�
 
 | Ngày | Thay đổi | Ảnh hưởng tới |
 |---|---|---|
+| 28/09 | **Hướng xe điện + bảng tính tổng tiền** — xem `NGHIEN-CUU-XE-DIEN.md`. Luồng 01 thêm cột xe điện + đổi cọc/phí giao xe từ chữ sang số **trước**, các luồng khác chờ | **01**, 02, 04, 05, 14 |
 | 23/09 | ✅ **Rò số điện thoại ĐÃ VÁ XONG** (`0010_bao_ve_sdt.sql`, đã chạy trên Supabase, kiểm chứng bằng REST): `anon`/`authenticated` nhận `42501` khi đọc `contact_phone`/`contact_zalo`/`plate`, và cả khi `select=*`. Khách lấy số qua `reveal-phone`; chủ xe + kiểm duyệt qua `listing_private`. **`select=*` trên `listings` nay LUÔN lỗi** — luồng nào còn dùng phải liệt kê cột | 02, 03, 05, 10 |
 | 28/09 | 🛑 **`VITE_SUPABASE_ANON_KEY` trên Cloudflare bị CẮT CỤT** — giá trị lưu là `sb_publishable_…` (chuỗi rút gọn mà giao diện Cloudflare hiển thị, bị copy nhầm) thay vì key thật 46 ký tự. Supabase trả **`Invalid API key`** → toàn bộ web trống, hiện "Chưa tải được danh sách xe". Sửa: dán key đầy đủ cho **cả Production và Preview** rồi **Retry deployment**. *Bài học: giá trị biến phải kiểm bằng độ dài, không nhìn UI — Cloudflare cắt bớt khi hiển thị* | **13**, mọi luồng UI |
 | 23/09 | ⚠️ **Site URL của Supabase đang sai**: `localhost:3000`, dự án chạy cổng **5173** → đăng nhập Google báo `bad_oauth_state`. Mẹo tạm: `npm run dev -- --port 3000`. Sửa thật: thêm Redirect URLs trong dashboard | 01, 13 |
 | 21/09 | **Logo thật đã có trong `public/`** — `logo.webp` 3,8 KB, favicon, og-image, PWA. Trọn bộ 79,3 KB. Đừng đi tìm nữa | 14 |
 | 21/09 | **Nguồn giao diện ở `_archive/giao-dien-dev/`** — đọc `DOC-TRUOC.md` trước khi bê. Chỉ bê hiển thị, không bê Firebase | 02, 04, 14 |
-| 21/09 | **Mapbox + Recharts: tải trễ bắt buộc** (515 + 103 KB gzip) | 03, 04, 05, 10 |
 
 **Luật:** chỉ **luồng nền tảng** được sửa mục này. Mỗi lần có quyết định hoặc phát
 hiện **ảnh hưởng tới luồng khác** → thêm một dòng ở đầu bảng, xoá dòng cuối nếu quá 6.
