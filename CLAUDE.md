@@ -29,7 +29,7 @@ Tài liệu gốc cho mọi luồng chat. **Đọc §0 bên dưới trước ti�
 | Ngày | Thay đổi | Ảnh hưởng tới |
 |---|---|---|
 | 23/09 | ✅ **Rò số điện thoại ĐÃ VÁ XONG** (`0010_bao_ve_sdt.sql`, đã chạy trên Supabase, kiểm chứng bằng REST): `anon`/`authenticated` nhận `42501` khi đọc `contact_phone`/`contact_zalo`/`plate`, và cả khi `select=*`. Khách lấy số qua `reveal-phone`; chủ xe + kiểm duyệt qua `listing_private`. **`select=*` trên `listings` nay LUÔN lỗi** — luồng nào còn dùng phải liệt kê cột | 02, 03, 05, 10 |
-| 23/09 | **Biến môi trường Supabase ĐÃ đặt xong trên Cloudflare Pages** — đã kiểm chứng trong bundle production. Không phải làm lại | 13 |
+| 28/09 | 🛑 **THIẾU `VITE_SUPABASE_ANON_KEY` trên Cloudflare Pages** — bundle production chỉ có `VITE_SUPABASE_URL`. Key rỗng → mọi truy vấn **401 "No API key found"** → toàn bộ web trống, hiện "Chưa tải được danh sách xe". Thêm biến cho **cả Production và Preview** rồi **deploy lại** (biến chỉ ăn vào bản build mới). *Đính chính ghi chú 23/09: lần đó chỉ kiểm URL, chưa kiểm key* | **13**, 01, mọi luồng UI |
 | 23/09 | ⚠️ **Site URL của Supabase đang sai**: `localhost:3000`, dự án chạy cổng **5173** → đăng nhập Google báo `bad_oauth_state`. Mẹo tạm: `npm run dev -- --port 3000`. Sửa thật: thêm Redirect URLs trong dashboard | 01, 13 |
 | 21/09 | **Logo thật đã có trong `public/`** — `logo.webp` 3,8 KB, favicon, og-image, PWA. Trọn bộ 79,3 KB. Đừng đi tìm nữa | 14 |
 | 21/09 | **Nguồn giao diện ở `_archive/giao-dien-dev/`** — đọc `DOC-TRUOC.md` trước khi bê. Chỉ bê hiển thị, không bê Firebase | 02, 04, 14 |
