@@ -147,6 +147,18 @@ export async function hangSangForm(l) {
 // Đọc
 // ─────────────────────────────────────────────
 
+// Mọi cột của `listings` TRỪ 3 cột nhạy cảm (contact_phone, contact_zalo, plate) và
+// `search_tsv` (chỉ để tìm kiếm, nặng, client không cần). Phải LIỆT KÊ: sau
+// 0010_bao_ve_sdt.sql, `select=*` trên bảng này luôn bị Postgres từ chối
+// (42501) vì trong `*` có cột đã bị thu quyền — không phải "trả về ít cột hơn".
+// Thêm cột mới vào `listings` mà form cần đọc thì thêm tên vào đây.
+const COT_TIN =
+  'id,owner_id,status,reject_reason,brand_id,model_id,brand_text,model_text,year,color,' +
+  'seats,transmission,fuel,fuel_consumption,body_style,description,price_per_day,' +
+  'price_per_month,deposit_note,delivery_fee_note,limit_km_per_day,extra_km_fee,' +
+  'province_id,district_id,address_text,lat,lng,amenity_codes,is_verified,' +
+  'published_at,expires_at,created_at,updated_at,deleted_at'
+
 /**
  * Một tin đầy đủ để sửa: kèm ảnh và lịch chặn ngày. RLS lo phần quyền.
  *
@@ -161,7 +173,7 @@ export async function docTin(id) {
   const sb = await getSupabase()
   const { data, error } = await sb
     .from('listings')
-    .select('*, listing_images(*), listing_blocked_dates(*)')
+    .select(COT_TIN + ', listing_images(*), listing_blocked_dates(*)')
     .eq('id', id)
     .is('deleted_at', null)
     .maybeSingle()
