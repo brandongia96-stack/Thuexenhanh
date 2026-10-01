@@ -25,6 +25,8 @@ const HoiDap = lazy(() => import('./modules/legal/HoiDap'))
 // không phải tải slider ảnh, hộp liên hệ hay 13 icon tiện nghi.
 const TrangXe = lazy(() => import('./modules/discovery/listing-page/TrangXe'))
 const TrangTimKiem = lazy(() => import('./modules/discovery/search/TrangTimKiem'))
+// Luồng 14 — trang SEO theo dòng xe × tỉnh (NGHIEN-CUU-XE-DIEN.md mục 2 đợt 2 #6).
+const TrangDongXe = lazy(() => import('./modules/shell/seo-xe/TrangDongXe'))
 const TrangDaLuu = lazy(() => import('./modules/discovery/saved/TrangDaLuu'))
 // Luồng 06 — ví token. Chỉ chủ xe vào, nên tuyệt đối không nằm ở gói đầu:
 // khách thuê không bao giờ phải tải code của sổ ví và màn QR chuyển khoản.
@@ -51,6 +53,11 @@ export default function App() {
 
               {/* ── Khách thuê ── */}
               <Route path="/thue-xe" element={<TrangTimKiem />} />
+              {/* Phải đứng sau "/thue-xe" ở trên — route tĩnh luôn thắng route
+                  động cùng tiền tố trong react-router v6, nhưng để rõ ràng vẫn
+                  xếp đúng thứ tự đọc. */}
+              <Route path="/thue-xe/:dongXe" element={<TrangDongXe />} />
+              <Route path="/thue-xe/:dongXe/:tinh" element={<TrangDongXe />} />
               <Route path="/xe/:id" element={<TrangXe />} />
               {/* Xe đã lưu thuộc luồng 05 (module discovery/saved), không phải 04. */}
               <Route path="/da-luu" element={<TrangDaLuu />} />
