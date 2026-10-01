@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Phone, ShieldCheck, Wallet, MapPin } from 'lucide-react'
+import { Phone, ShieldCheck, Wallet, MapPin, Zap } from 'lucide-react'
 
 import { PROVINCES, DISTRICTS } from '../../data/provinces'
 import { TOKEN_VND, TOKENS_PER_MONTH } from '../../lib/config'
@@ -17,16 +17,24 @@ const COT_THE =
   'province_id,district_id,is_verified,published_at,owner_id,' +
   'cover_thumb,cover_blur,cover_width,cover_height'
 
+// Dưới ngưỡng này thì ẩn cả khối "Thuê xe điện" — vài xe lẻ tẻ không đủ để
+// gọi là một mục trên trang chủ, và tránh lộ danh tính chủ xe hiếm hoi
+// (NGHIEN-CUU-XE-DIEN.md mục 6: cấm số liệu không tính từ tin thật, nhưng
+// cũng không nên phô trương số nhỏ như thể đã nhiều).
+const NGUONG_XE_DIEN = 3
+
 /**
- * Trang chủ: hero (chữ + ô tìm kiếm) → cách hoạt động → xe mới đăng (chỉ khi có
- * tin thật) → khối chủ xe. Bố cục theo mẫu dev nhưng KHÔNG ảnh xe mẫu, không số
- * liệu bịa, không câu cam kết app không làm được (CLAUDE.md 1.2).
+ * Trang chủ: hero (chữ + ô tìm kiếm) → cách hoạt động → thuê xe điện (chỉ khi
+ * đủ tin thật) → xe mới đăng (chỉ khi có tin thật) → khối chủ xe. Bố cục theo
+ * mẫu dev nhưng KHÔNG ảnh xe mẫu, không số liệu bịa, không câu cam kết app
+ * không làm được (CLAUDE.md 1.2).
  */
 export default function TrangChu() {
   return (
     <div className="page stack tc">
       <Hero />
       <BaBuoc />
+      <XeDien />
       <XeMoiDang />
       <KhoiChuXe />
     </div>
@@ -105,6 +113,73 @@ function BaBuoc() {
             <p className="t-small">{mota}</p>
           </div>
         ))}
+      </div>
+    </section>
+  )
+}
+
+/**
+ * Khối "Thuê xe điện" (NGHIEN-CUU-XE-DIEN.md mục 2 đợt 2 #5).
+ * Mọi con số TÍNH TỪ TIN THẬT đang hiển thị, không hardcode. Chưa đủ
+ * `NGUONG_XE_DIEN` tin — hoặc cột xe điện chưa có trên CSDL (migration 0012
+ * chưa chạy, `error` 42703) — thì ẩn cả khối, im lặng, không báo lỗi khách.
+ */
+function XeDien() {
+  const [tk, setTk] = useState(null) // { ds, tongSo, freeSac, kmMin, kmMax }
+  const [bang, setBang] = useState({ tinh: {}, quan: {} })
+
+  useEffect(() => {
+    let huy = false
+    ;(async () => {
+      const sb = await trySupabase()
+      if (!sb) return
+      const { data, error } = await sb
+        .from('listing_card')
+        .select(COT_THE + ',ev_range_km,charge_policy')
+        .eq('status', 'dang_hien_thi')
+        .eq('fuel', 'dien')
+        .order('published_at', { ascending: false })
+        .limit(24)
+      if (error || !data || data.length < NGUONG_XE_DIEN || huy) return
+
+      const coQuangDuong = data.map((x) => x.ev_range_km).filter((x) => x != null)
+      const ten = await taiTenDiaGioi()
+      if (huy) return
+      setBang(ten)
+      setTk({
+        ds: data.slice(0, 4),
+        tongSo: data.length,
+        freeSac: data.filter((x) => x.charge_policy === 'mien_phi' || x.charge_policy === 'mien_phi_gioi_han').length,
+        kmMin: coQuangDuong.length ? Math.min(...coQuangDuong) : null,
+        kmMax: coQuangDuong.length ? Math.max(...coQuangDuong) : null,
+      })
+    })()
+    return () => { huy = true }
+  }, [])
+
+  if (!tk) return null
+
+  return (
+    <section className="stack">
+      <div className="tc-dau">
+        <div>
+          <span className="tc-nhan"><Zap size={14} strokeWidth={2} style={{ verticalAlign: '-2px' }} /> Xe điện</span>
+          <h2 className="tc-h2">Thuê xe điện</h2>
+        </div>
+        <Link to={duongDanTimKiem('', { nl: 'dien' })} className="tc-lienket">Xem tất cả →</Link>
+      </div>
+      <p className="t-body">
+        Đang có {tk.tongSo} xe điện cho thuê trên Thuexenhanh
+        {tk.freeSac > 0 && `, ${tk.freeSac} xe được chủ xe cam kết free sạc`}
+        {tk.kmMin != null && (
+          tk.kmMin === tk.kmMax
+            ? ` — quãng đường ${tk.kmMin} km mỗi lần sạc đầy theo chủ xe khai`
+            : ` — quãng đường ${tk.kmMin}–${tk.kmMax} km mỗi lần sạc đầy theo chủ xe khai`
+        )}.
+      </p>
+      <p className="t-small">Chính sách sạc do từng chủ xe cam kết, không phải của hãng xe.</p>
+      <div className="grid-cards">
+        {tk.ds.map((the) => <TheXe key={the.id} the={the} bangDiaGioi={bang} />)}
       </div>
     </section>
   )
