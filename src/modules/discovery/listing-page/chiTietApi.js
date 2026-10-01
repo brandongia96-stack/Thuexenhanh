@@ -22,9 +22,18 @@ const COT = [
   'id', 'owner_id', 'status',
   'brand_text', 'model_text', 'year', 'color', 'seats', 'transmission',
   'fuel', 'fuel_consumption', 'body_style', 'description',
-  'price_per_day', 'price_per_month', 'deposit_note', 'delivery_fee_note',
+  'price_per_day', 'price_per_month', 'price_per_hour',
   'limit_km_per_day', 'extra_km_fee',
+  // Chi phí số (NGHIEN-CUU-XE-DIEN.md mục 3) — dùng cho bảng tính tổng tiền.
+  // Cột `*_note` GIỮ NGUYÊN song song: số để tính, chữ để đọc, không thay nhau.
+  'deposit_amount', 'deposit_note',
+  'collateral_required', 'collateral_note',
+  'delivery_fee', 'delivery_radius_km', 'delivery_fee_note',
   'province_id', 'district_id', 'address_text', 'lat', 'lng',
+  // Xe điện — null hết với xe xăng. Số liệu do CHỦ XE KHAI (không phải hãng).
+  'ev_range_km', 'battery_kwh', 'charge_policy', 'free_charge_km',
+  'charge_fee_per_pct', 'pickup_min_pct', 'return_min_pct',
+  'has_portable_charger', 'battery_ownership',
   'amenity_codes', 'is_verified', 'published_at', 'expires_at', 'created_at',
 ].join(',')
 

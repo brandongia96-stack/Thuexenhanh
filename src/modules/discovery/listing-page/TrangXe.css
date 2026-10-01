@@ -208,6 +208,50 @@
   width: 36px; height: 36px; padding: 0; border-radius: var(--r-full);
 }
 
+/* ─── Bảng tính tổng tiền (NGHIEN-CUU-XE-DIEN.md mục 4) ─── */
+.banggia { display: flex; flex-direction: column; gap: var(--sp-4); }
+
+.banggia-nhap {
+  display: grid; gap: var(--sp-3);
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  padding: var(--sp-4); background: var(--m-bg); border-radius: var(--r-md);
+}
+.banggia-checkbox {
+  display: flex; align-items: center; gap: var(--sp-2);
+  font-size: 14px; font-weight: 600; color: var(--m-dark);
+  align-self: end; padding-bottom: 2px;
+}
+
+.banggia-trong {
+  display: flex; align-items: center; gap: var(--sp-2);
+}
+
+.banggia-dong { display: flex; flex-direction: column; gap: var(--sp-3); }
+.banggia-dong-dau {
+  display: flex; justify-content: space-between; gap: var(--sp-3);
+  font-size: 15px; font-weight: 600; color: var(--m-dark);
+}
+.banggia-ghichu { display: block; color: var(--m-amber); }
+
+.banggia-tong {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-top: var(--sp-3); border-top: 1px solid var(--m-border);
+  font-size: 15px; font-weight: 700;
+}
+
+.banggia-rieng {
+  display: flex; justify-content: space-between; gap: var(--sp-3);
+  font-size: 14px; color: var(--m-mid);
+}
+
+.banggia-mienTru {
+  display: flex; align-items: flex-start; gap: var(--sp-2);
+  padding: var(--sp-3); background: var(--m-bg); border-radius: var(--r-md);
+  line-height: 1.6;
+}
+
+.banggia-dachep { color: var(--m-green-ok); text-align: center; }
+
 /* ─── Điện thoại ─── */
 @media (max-width: 900px) {
   .trangxe-luoi { grid-template-columns: 1fr; }

@@ -13,6 +13,7 @@ import SliderAnh from './listing-page/SliderAnh'
 import {
   KhoiThongSo, KhoiTienNghi, KhoiGia, KhoiMoTa, KhoiLichBan, BanDo, KhoiDanhGia,
 } from './listing-page/KhoiThongTin'
+import BangTinhTongTien from './listing-page/BangTinhTongTien'
 import HopLienHe from './contact/HopLienHe'
 import { VerifiedBadge } from '../../components/Badge'
 import { formatVnd } from '../../lib/format'
@@ -77,6 +78,29 @@ const TIN_CO_BAN = {
   is_verified: false,
 }
 
+// Tin xe điện — để nhìn bảng tính tổng tiền chạy đúng luật 4 (sạc pin).
+const TIN_DIEN = {
+  ...TIN,
+  id: 'thu-xe-dien',
+  brand_text: 'VinFast',
+  model_text: 'VF 8',
+  fuel: 'dien',
+  fuel_consumption: 5, // km / 1% pin (NGHIEN-CUU-XE-DIEN.md mục 3)
+  ev_range_km: 420,
+  battery_kwh: 87.7,
+  charge_policy: 'mien_phi_gioi_han',
+  free_charge_km: 200,
+  charge_fee_per_pct: 10000,
+  battery_ownership: 'mua',
+  has_portable_charger: true,
+  price_per_hour: 120000,
+  deposit_amount: 10000000,
+  collateral_required: true,
+  collateral_note: 'CCCD gốc',
+  delivery_fee: 100000,
+  delivery_radius_km: 10,
+}
+
 function MotTin({ tin, conHienThi }) {
   const ten = `${tin.brand_text} ${tin.model_text} ${tin.year}`
   return (
@@ -94,6 +118,7 @@ function MotTin({ tin, conHienThi }) {
           <KhoiThongSo tin={tin} />
           <KhoiTienNghi codes={tin.amenity_codes} />
           <KhoiGia tin={tin} />
+          <BangTinhTongTien tin={tin} userId={null} conHienThi={conHienThi} />
           <KhoiMoTa text={tin.description} />
           <KhoiLichBan khoang={tin.ngayChan} />
           <BanDo tin={tin} />
@@ -118,6 +143,8 @@ function Thu() {
     <>
       <div className="page"><h1 className="t-h1">Thử trang xe (luồng 05) — tin đầy đủ</h1></div>
       <MotTin tin={TIN} conHienThi />
+      <div className="page"><h1 className="t-h1">Xe điện — bảng tính phải tính được sạc pin</h1></div>
+      <MotTin tin={TIN_DIEN} conHienThi />
       <div className="page"><h1 className="t-h1">Tin gói Cơ Bản — khối thiếu dữ liệu phải BIẾN MẤT</h1></div>
       <MotTin tin={TIN_CO_BAN} conHienThi />
       <div className="page"><h1 className="t-h1">Tin đã hết hạn — không được hiện số</h1></div>

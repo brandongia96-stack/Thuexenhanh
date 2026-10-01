@@ -13,6 +13,7 @@ import SliderAnh from './SliderAnh'
 import {
   KhoiThongSo, KhoiTienNghi, KhoiGia, KhoiMoTa, KhoiLichBan, BanDo, KhoiDanhGia,
 } from './KhoiThongTin'
+import BangTinhTongTien from './BangTinhTongTien'
 import HopLienHe from '../contact/HopLienHe'
 import NutLuu from '../saved/NutLuu'
 import { ghiXemTin } from '../ghiSuKien'
@@ -127,6 +128,7 @@ export default function TrangXe() {
           <KhoiThongSo tin={tin} />
           <KhoiTienNghi codes={tin.amenity_codes} />
           <KhoiGia tin={tin} />
+          <BangTinhTongTien tin={tin} userId={user?.id ?? null} conHienThi={conSong} />
           <KhoiMoTa text={tin.description} />
           <KhoiLichBan khoang={tin.ngayChan} />
           <BanDo tin={tin} />
