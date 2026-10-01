@@ -3,11 +3,10 @@
 // contracts/api.md mục 2: `reference_price_now` — CẤM hardcode giá trong code,
 // bảng rỗng (admin luồng 10 chưa nhập) thì ẩn cả khối ước tính, không hiện 0đ.
 //
-// ⚠️ Giả định mã `code`: schema chỉ cho ví dụ ('xang_ron95', 'dien_sinh_hoat_bac_3'),
-// chưa chốt danh sách đầy đủ. Em tạm dùng 'xang_ron95' cho xăng, 'dau_do' cho
-// dầu — nếu luồng 10 nhập giá dưới mã khác thì khối ước tính nhiên liệu sẽ
-// ẩn (đúng luật graceful degradation, không vỡ trang) nhưng không BAO GIỜ hiện
-// số. Cần đồng bộ lại mã này với luồng 01/10 khi có bảng mã chính thức.
+// Mã `code` đã CHỐT ở contracts/api.md mục 2 (bảng "Mã reference_prices.code
+// đã chốt"): 'xang_ron95' cho xăng, 'dau_do' cho dầu. Luồng 10 nhập giá phải
+// dùng đúng 2 mã này — lệch mã thì khối ước tính tự ẩn (graceful
+// degradation), không BAO GIỜ hiện số sai.
 const MA_GIA_THEO_NHIEN_LIEU = {
   xang: 'xang_ron95',
   dau: 'dau_do',
