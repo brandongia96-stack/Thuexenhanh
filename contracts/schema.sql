@@ -16,6 +16,11 @@ create type listing_status    as enum ('nhap', 'cho_duyet', 'tu_choi', 'dang_hie
 create type transmission      as enum ('so_san', 'so_tu_dong');
 create type fuel_type         as enum ('xang', 'dau', 'dien', 'hybrid');
 create type verify_status     as enum ('chua_gui', 'cho_xet', 'da_xac_minh', 'tu_choi');
+-- Xe điện: chính sách sạc. Khách PHẢI biết trước mình trả tiền sạc kiểu gì,
+-- vì đây là khác biệt lớn nhất giữa thuê xe điện và thuê xe xăng.
+create type charge_policy     as enum ('mien_phi', 'mien_phi_gioi_han', 'tinh_theo_phan_tram', 'khach_tu_sac');
+-- Pin thuê thường kèm giới hạn km của hãng -> khách phải biết trước khi gọi.
+create type battery_ownership as enum ('mua', 'thue');
 -- Sổ ví: chỉ ghi thêm. nap/hoan/tang = tăng; tieu/thu_hoi = giảm.
 create type wallet_tx_kind    as enum ('nap', 'tieu', 'hoan', 'thu_hoi', 'tang');
 create type topup_status      as enum ('cho_thanh_toan', 'da_thanh_toan', 'that_bai', 'huy');
@@ -114,6 +119,36 @@ create table amenities (
   deleted_at timestamptz
 );
 
+-- Giá tham chiếu (xăng, điện) cho bảng tính tổng tiền.
+-- CẤM hardcode giá trong code: giá đổi vài tháng một lần, hardcode là bịa số
+-- cũ thành số hiện tại (CLAUDE.md 1.2). Admin sửa ở luồng 10.
+-- `source` + `effective_date` BẮT BUỘC: con số không có nguồn thì khách không
+-- kiểm được, và chính mình sau này cũng không biết lấy ở đâu ra.
+-- Giữ cả lịch sử: mỗi lần đổi giá là một dòng mới, không sửa dòng cũ.
+create table reference_prices (
+  id             serial primary key,
+  code           text not null,      -- 'xang_ron95', 'dien_sinh_hoat_bac_3'
+  label          text not null,      -- tên hiển thị tiếng Việt
+  unit           text not null,      -- 'đ/lít', 'đ/kWh'
+  price          int not null check (price > 0),
+  source         text not null,      -- 'Petrolimex', 'EVN'
+  source_url     text,
+  effective_date date not null,      -- ngày giá này bắt đầu áp dụng
+  created_at     timestamptz not null default now(),
+  updated_at     timestamptz not null default now(),
+  deleted_at     timestamptz,
+  unique (code, effective_date)
+);
+create index reference_prices_now_idx on reference_prices (code, effective_date desc);
+
+-- Giá đang hiệu lực cho mỗi loại: dòng mới nhất mà ngày áp dụng đã tới.
+create view reference_price_now with (security_invoker = true) as
+select distinct on (code)
+  code, label, unit, price, source, source_url, effective_date
+from reference_prices
+where deleted_at is null and effective_date <= current_date
+order by code, effective_date desc;
+
 -- ─────────────────────────────────────────────
 -- 3. TIN ĐĂNG
 -- ─────────────────────────────────────────────
@@ -139,16 +174,44 @@ create table listings (
 
   price_per_day     int not null,
   price_per_month   int,
-  deposit_note      text,
-  delivery_fee_note text,
+  -- Thuê theo giờ: xe điện nội đô hay cho thuê nửa ngày.
+  price_per_hour    int,
   limit_km_per_day  int,
   extra_km_fee      int,
+
+  -- ── Chi phí: SỐ để tính được, note để giải thích thêm ──
+  -- Cột `*_note` cũ GIỮ NGUYÊN, không bỏ: có thứ chỉ nói bằng lời mới đủ
+  -- ("cọc 5 triệu hoặc xe máy có cà vẹt"). Số dùng cho bảng tính và bộ lọc,
+  -- chữ dùng để đọc. Hai thứ bổ sung nhau, không thay thế nhau.
+  deposit_amount    int,            -- cọc TIỀN, đơn vị VNĐ
+  deposit_note      text,
+  -- Thế chấp KHÁC cọc tiền: giữ xe máy, giữ giấy tờ. Lọc riêng vì nhiều khách
+  -- loại thẳng xe nào đòi thế chấp.
+  collateral_required boolean not null default false,
+  collateral_note   text,
+  delivery_fee      int,            -- VNĐ cho một lần giao xe
+  delivery_radius_km int,           -- giao trong bán kính bao nhiêu km
+  delivery_fee_note text,
 
   province_id       int references provinces(id),
   district_id       int references districts(id),
   address_text      text,
   lat               numeric(9,6),
   lng               numeric(9,6),
+
+  -- ── Xe điện (NGHIEN-CUU-XE-DIEN.md mục 3) ──
+  -- Tất cả đều null với xe xăng. Giao diện ẩn cả khối khi `fuel` <> 'dien'.
+  -- Số liệu do CHỦ XE KHAI, không phải thông số hãng — hiển thị phải nói rõ
+  -- điều đó, đừng để khách tưởng là cam kết của app (CLAUDE.md 1.2).
+  ev_range_km       int,            -- quãng đường khi đầy pin, chủ xe khai
+  battery_kwh       numeric(5,1),   -- dung lượng pin
+  charge_policy     charge_policy,
+  free_charge_km    int,            -- chỉ dùng khi charge_policy = mien_phi_gioi_han
+  charge_fee_per_pct int,           -- VNĐ cho mỗi 1% pin khách dùng
+  pickup_min_pct    int,            -- giao xe tối thiểu bao nhiêu % pin
+  return_min_pct    int,            -- trả xe tối thiểu bao nhiêu % pin
+  has_portable_charger boolean,
+  battery_ownership battery_ownership,
 
   amenity_codes     text[] not null default '{}',
   -- Số hiện sau khi khách bấm "Xem số điện thoại". KHÔNG có nút đặt xe.
@@ -261,6 +324,12 @@ select
   -- select nên search_tsv không bao giờ bị tải về trong payload.
   l.amenity_codes,
   l.search_tsv,
+  -- Xe điện: CHỈ 3 trường, đúng thứ cần cho thẻ và bộ lọc.
+  -- Thẻ xe nhân với 20 tin mỗi trang, thêm cột là thêm byte cho mọi khách
+  -- (HIEU-NANG.md mục 2.1). Thông số pin đầy đủ để ở trang chi tiết.
+  l.ev_range_km,
+  l.charge_policy,
+  l.collateral_required,
   -- Ảnh: chỉ bản thumb + blur nhúng sẵn. Tuyệt đối không trả ảnh gốc.
   i.url_thumb   as cover_thumb,
   i.blur_base64 as cover_blur,
@@ -569,7 +638,7 @@ begin
     'users','user_roles','brands','models','provinces','districts','amenities',
     'listings','listing_images','listing_blocked_dates','saved_listings',
     'wallets','topups','charges','boosts',
-    'reviews','reports','moderation_queue','otp_codes','notifications','events_daily'
+    'reviews','reports','moderation_queue','otp_codes','notifications','events_daily','reference_prices'
   ] loop
     execute format('create trigger %I_touch before update on %I for each row execute function touch_updated_at()', t, t);
   end loop;
@@ -604,7 +673,7 @@ begin
     'users','user_roles','brands','models','provinces','districts','amenities',
     'listings','listing_images','listing_blocked_dates','listing_events','saved_listings',
     'wallets','wallet_transactions','topups','charges','boosts',
-    'reviews','reports','moderation_queue','otp_codes','user_consents','events','events_daily','notifications','admin_actions'
+    'reviews','reports','moderation_queue','otp_codes','user_consents','events','events_daily','notifications','admin_actions','reference_prices'
   ] loop
     execute format('alter table %I enable row level security', t);
   end loop;
@@ -614,7 +683,7 @@ end $blk$;
 do $blk$
 declare t text;
 begin
-  foreach t in array array['brands','models','provinces','districts','amenities'] loop
+  foreach t in array array['brands','models','provinces','districts','amenities','reference_prices'] loop
     execute format('create policy %I on %I for select using (deleted_at is null)', t || '_read', t);
     execute format('create policy %I on %I for all using (has_role(''admin''))', t || '_admin', t);
   end loop;

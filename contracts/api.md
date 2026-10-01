@@ -46,9 +46,30 @@ type Listing = {
 
   price_per_day: number       // VNĐ/ngày
   price_per_month: number | null
-  deposit_note: string | null
+  price_per_hour: number | null
   limit_km_per_day: number | null
   extra_km_fee: number | null
+
+  // Chi phí: SỐ để tính, note để giải thích. Hai thứ bổ sung nhau.
+  deposit_amount: number | null       // cọc TIỀN, VNĐ
+  deposit_note: string | null
+  collateral_required: boolean        // thế chấp (xe máy, giấy tờ) — KHÁC cọc tiền
+  collateral_note: string | null
+  delivery_fee: number | null
+  delivery_radius_km: number | null
+  delivery_fee_note: string | null
+
+  // Xe điện — null hết với xe xăng. Số liệu do CHỦ XE KHAI, không phải
+  // thông số hãng; giao diện phải ghi rõ để khách không tưởng app cam kết.
+  ev_range_km: number | null
+  battery_kwh: number | null
+  charge_policy: 'mien_phi' | 'mien_phi_gioi_han' | 'tinh_theo_phan_tram' | 'khach_tu_sac' | null
+  free_charge_km: number | null       // chỉ dùng khi mien_phi_gioi_han
+  charge_fee_per_pct: number | null   // VNĐ cho mỗi 1% pin
+  pickup_min_pct: number | null
+  return_min_pct: number | null
+  has_portable_charger: boolean | null
+  battery_ownership: 'mua' | 'thue' | null
 
   province_id: number | null
   district_id: number | null
@@ -82,6 +103,10 @@ type ListingCard = {
   published_at: string | null
   expires_at: string | null
   owner_id: Uuid
+  // Xe điện: CHỈ 3 trường. Thẻ nhân 20 tin/trang nên phải nhẹ.
+  ev_range_km: number | null
+  charge_policy: 'mien_phi' | 'mien_phi_gioi_han' | 'tinh_theo_phan_tram' | 'khach_tu_sac' | null
+  collateral_required: boolean
   cover_thumb: string | null   // 400w
   cover_blur: string | null    // base64 20px, < 1KB, hiện ngay, 0 request
   cover_width: number | null   // bắt buộc đặt aspect-ratio -> không vỡ CLS
@@ -140,11 +165,28 @@ supabase.from('wallet_balances').select('*').eq('user_id', uid).single()
 // Số liệu cho chủ xe — ĐỌC TỪ BẢNG TỔNG HỢP, không quét bảng events thô.
 supabase.from('events_daily').select('day,kind,count')
   .eq('listing_id', id).gte('day', tuNgay).order('day')
+
+// Giá xăng/điện đang hiệu lực — cho bảng tính tổng tiền.
+// CẤM hardcode giá trong code: giá đổi vài tháng một lần.
+// Bảng rỗng (chưa ai nhập) -> ẩn cả khối ước tính, KHÔNG hiện số 0.
+supabase.from('reference_price_now').select('code,label,unit,price,source,effective_date')
 ```
 
-Tìm kiếm toàn văn (luồng 04): dùng cột `search_tsv`, khớp chuỗi đã bỏ dấu.
+Mỗi con số giá đều kèm `source` và `effective_date` — hiển thị phải dẫn nguồn,
+vì khách không kiểm được con số thì không tin được bảng tính.
+
+**Mã `reference_prices.code` đã chốt** (luồng 05 đọc, luồng 10 nhập — hai bên
+phải khớp mã, lệch mã thì khối ước tính tự ẩn chứ không báo lỗi):
+
+| `code` | Nhiên liệu | `unit` |
+|---|---|---|
+| `xang_ron95` | Xăng (RON95) | đ/lít |
+| `dau_do` | Dầu (dầu đỏ/diesel) | đ/lít |
+
+Mã khác (vd. giá điện) để sau, chưa cần cho bảng tính hiện tại.
 
 ```js
+// Tìm kiếm toàn văn (luồng 04): dùng cột `search_tsv`, khớp chuỗi đã bỏ dấu.
 // tsquery dựng ở client: bỏ dấu, cắt token, thêm `:*` để khớp tiền tố.
 // Cấu hình PHẢI là 'simple' — khớp với to_tsvector('simple', unaccent(...)) lúc ghi.
 supabase.from('listing_card')
