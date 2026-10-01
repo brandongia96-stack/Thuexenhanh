@@ -6,9 +6,11 @@
 // CSDL luôn khớp đúng các chuỗi này vì form đăng tin chọn từ chính danh sách
 // này (`fieldGroups.js`), không phải chữ tự do.
 
-import { CAR_MODELS } from '../../../data/brands'
-import { PROVINCES } from '../../../data/provinces'
-import { boDau } from '../../discovery/search/chuanHoa'
+// Đuôi `.js` tường minh: Vite chạy như cũ, nhưng `scripts/prerender-seo.mjs`
+// dùng chính file này bằng Node thuần — Node ESM không tự đoán đuôi.
+import { CAR_MODELS } from '../../../data/brands.js'
+import { PROVINCES } from '../../../data/provinces.js'
+import { boDau } from '../../discovery/search/chuanHoa.js'
 
 /** "Mercedes-Benz" → "mercedes-benz". Dùng chung quy tắc bỏ dấu với ô tìm kiếm. */
 export function slugHoa(s) {

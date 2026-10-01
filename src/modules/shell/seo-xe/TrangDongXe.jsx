@@ -8,6 +8,7 @@ import { duongDanTimKiem } from '../../discovery/filter/loc'
 import TheXe from '../../discovery/the-xe/TheXe'
 import { dongXeTuSlug, tinhTuSlug, duongDanDongXe } from './slugXe'
 import { useMeta } from './useMeta'
+import { NGUONG_INDEX, tenDongXe, tieuDeTrang, titleTrang, moTaTrang, cauMoTa } from './noiDungSeo'
 import { formatVndShort } from '../../../lib/format'
 import '../TrangChu.css'
 
@@ -18,10 +19,8 @@ const COT_THE =
   'ev_range_km,charge_policy,' +
   'cover_thumb,cover_blur,cover_width,cover_height'
 
-// Dưới ngưỡng này: trang vẫn hiện (không 404), nhưng `noindex` — tránh Google
-// coi hàng nghìn tổ hợp dòng-xe×tỉnh gần như trống là "thin content"
-// (NGHIEN-CUU-XE-DIEN.md mục 2 đợt 2 #6, ngưỡng do anh chốt 01/10).
-const NGUONG_INDEX = 5
+// NGUONG_INDEX nay o `noiDungSeo.js` — dùng chung với `scripts/prerender-seo.mjs`
+// để trang tĩnh sinh lúc build và trang động lúc chạy không lệch tiêu chí.
 const GIOI_HAN = 20
 
 /**
@@ -66,7 +65,7 @@ function NoiDung({ hang, dong, tenTinh }) {
   const [ds, setDs] = useState([])
   const [bang, setBang] = useState({ tinh: {}, quan: {} })
 
-  const ten = `${hang} ${dong}`
+  const ten = tenDongXe(hang, dong)
 
   useEffect(() => {
     let huy = false
@@ -104,7 +103,7 @@ function NoiDung({ hang, dong, tenTinh }) {
     return () => { huy = true }
   }, [hang, dong, tenTinh])
 
-  const tieuDe = tenTinh ? `Thuê ${ten} tự lái tại ${tenTinh}` : `Thuê ${ten} tự lái`
+  const tieuDe = tieuDeTrang(hang, dong, tenTinh)
   const duDuTin = ds.length >= NGUONG_INDEX
 
   const gia = ds.map((x) => x.price_per_day).filter((x) => x != null)
@@ -112,10 +111,8 @@ function NoiDung({ hang, dong, tenTinh }) {
   const giaMax = gia.length ? Math.max(...gia) : null
 
   useMeta({
-    title: `${tieuDe} — Thuexenhanh`,
-    description: ds.length
-      ? `Đang có ${ds.length} xe ${ten} cho thuê${tenTinh ? ` tại ${tenTinh}` : ''} trên Thuexenhanh. Xem số điện thoại, gọi thẳng chủ xe, tự thoả thuận giá.`
-      : `Tìm xe ${ten} cho thuê${tenTinh ? ` tại ${tenTinh}` : ''} trên Thuexenhanh.`,
+    title: titleTrang(hang, dong, tenTinh),
+    description: moTaTrang(hang, dong, tenTinh, ds.length),
     path: duongDanDongXe(hang, dong, tenTinh),
     // Chưa tải xong thì tạm noindex — tránh máy quét thấy trang rỗng đúng lúc
     // đang gọi mạng rồi bỏ qua, lỡ mất lượt crawl.
@@ -135,13 +132,15 @@ function NoiDung({ hang, dong, tenTinh }) {
 
       <div>
         <h1 className="tc-h1" style={{ fontSize: 'clamp(26px, 4vw, 38px)' }}>{tieuDe}</h1>
+        {/* Chữ dựng từ `cauMoTa` dùng chung với prerender — sửa câu thì sửa
+            ở `noiDungSeo.js`, đừng sửa riêng ở đây rồi để hai bản lệch nhau. */}
         {trang === 'xong' && (
           <p className="tc-mota">
-            {ds.length > 0
-              ? <>Đang có <strong>{ds.length}</strong> xe {ten} cho thuê{tenTinh ? ` tại ${tenTinh}` : ''}
-                  {giaMin != null && <> — giá {giaMin === giaMax ? formatVndShort(giaMin) : `${formatVndShort(giaMin)} – ${formatVndShort(giaMax)}`}/ngày</>}.
-                </>
-              : <>Hiện chưa có tin {ten} {tenTinh ? `tại ${tenTinh} ` : ''}đang hiển thị.</>}
+            {cauMoTa(
+              hang, dong, tenTinh, ds.length,
+              giaMin != null ? formatVndShort(giaMin) : null,
+              giaMax != null ? formatVndShort(giaMax) : null,
+            )}
           </p>
         )}
       </div>
