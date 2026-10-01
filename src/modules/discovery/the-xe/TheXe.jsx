@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { MapPin, Users, Cog, Fuel, Clock, Share2, Check, X } from 'lucide-react'
+import { MapPin, Users, Cog, Fuel, Clock, Share2, Check, X, Zap } from 'lucide-react'
 
 import { VerifiedBadge } from '../../../components/Badge'
 import { formatVndShort, timeAgo } from '../../../lib/format'
@@ -40,10 +40,19 @@ function TheXe({ the, bangDiaGioi, uuTien = false }) {
   const hopSo = TRANSMISSIONS.find((x) => x.value === the.transmission)?.label
   const nhienLieu = FUELS.find((x) => x.value === the.fuel)?.label
   const dang = timeAgo(the.published_at)
+  // "Free sạc" = chủ xe khai miễn phí toàn bộ hoặc miễn phí trong giới hạn km
+  // (NGHIEN-CUU-XE-DIEN.md mục 3). Chưa khai (null) thì không hiện gì cả —
+  // đây là lời hứa của CHỦ XE, không phải cam kết của app (CLAUDE.md 1.2).
+  const freeSac = the.charge_policy === 'mien_phi' || the.charge_policy === 'mien_phi_gioi_han'
 
   return (
     <article className={'card card-hover thexe' + (the.is_verified ? ' thexe-xacminh' : '')}>
       <div className="thexe-anh" style={the.cover_blur ? { backgroundImage: `url(${the.cover_blur})` } : undefined}>
+        {freeSac && (
+          <span className="thexe-sac">
+            <Zap size={12} strokeWidth={2} aria-hidden="true" /> Free sạc
+          </span>
+        )}
         {/* Liên kết phủ kín ảnh. Hai nút nổi bên dưới là anh em của nó chứ không
             nằm TRONG nó: nút lồng trong thẻ <a> là HTML sai, đọc màn hình đọc lộn xộn.
             Rê chuột / chạm là nạp trước tin → bấm vào mở gần như tức thì
@@ -85,11 +94,13 @@ function TheXe({ the, bangDiaGioi, uuTien = false }) {
         </div>
 
         {/* Ô nào thiếu dữ liệu thì ẩn ô đó; không có ô nào thì ẩn cả lưới. */}
-        {(the.seats || hopSo || nhienLieu || noi) && (
+        {(the.seats || hopSo || nhienLieu || noi || the.ev_range_km) && (
           <div className="thexe-thongso">
             {the.seats && <span><Users size={14} strokeWidth={1.8} />{the.seats} chỗ</span>}
             {hopSo && <span><Cog size={14} strokeWidth={1.8} />{hopSo}</span>}
             {nhienLieu && <span><Fuel size={14} strokeWidth={1.8} />{nhienLieu}</span>}
+            {/* Quãng đường do chủ xe khai, chưa khai (null) thì ẩn hẳn ô này. */}
+            {the.ev_range_km != null && <span><Zap size={14} strokeWidth={1.8} />{the.ev_range_km} km/sạc</span>}
             {noi && <span className="thexe-noi"><MapPin size={14} strokeWidth={1.8} />{noi}</span>}
           </div>
         )}

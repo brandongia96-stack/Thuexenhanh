@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from 'react'
 import { PROVINCES, districtsOf } from '../../../data/provinces'
 import { BRANDS } from '../../../data/brands'
 import { AMENITIES } from '../../../data/amenities'
@@ -38,6 +39,46 @@ function NhomChon({ tieuDe, muc, on, bam }) {
 
 const MUC_CHO = SEAT_OPTIONS.map((n) => ({ value: n, label: `${n} chỗ` }))
 const MUC_TIEN_NGHI = AMENITIES.map((a) => ({ value: a.code, label: a.name }))
+
+/**
+ * Quãng đường tối thiểu — debounce 400ms, cùng tinh thần HIEU-NANG.md mục 2.5
+ * (ô tìm kiếm): gõ từng chữ số không được gọi mạng liên tục trên 4G.
+ */
+function OSoKmToiThieu({ value, onChange }) {
+  const [text, setText] = useState(value ?? '')
+  const daGui = useRef(value)
+  const hen = useRef(null)
+
+  useEffect(() => {
+    if (value !== daGui.current) {
+      daGui.current = value
+      setText(value ?? '')
+    }
+  }, [value])
+  useEffect(() => () => clearTimeout(hen.current), [])
+
+  function doi(e) {
+    const s = e.target.value
+    setText(s)
+    clearTimeout(hen.current)
+    hen.current = setTimeout(() => {
+      const n = Number(s)
+      const v = s === '' || !Number.isFinite(n) || n < 0 ? null : Math.floor(n)
+      daGui.current = v
+      onChange(v)
+    }, 400)
+  }
+
+  return (
+    <input
+      type="number" inputMode="numeric" min="0" className="input"
+      placeholder="Không giới hạn"
+      value={text}
+      onChange={doi}
+      aria-label="Quãng đường tối thiểu (km/sạc đầy)"
+    />
+  )
+}
 
 /**
  * Bảng bộ lọc DÙNG CHUNG. Không giữ state riêng: nhận `loc`, trả `onDoi(locMoi)`.
@@ -110,6 +151,46 @@ export default function BoLoc({ loc, onDoi }) {
         on={(v) => loc.nl === v}
         bam={(v) => onDoi({ ...loc, nl: loc.nl === v ? '' : v })}
       />
+
+      {/* NGHIEN-CUU-XE-DIEN.md mục 2 đợt 1 #3. "Chỉ xe điện" dùng chung ô `nl`
+          với nhóm Nhiên liệu ở trên — đây chỉ là lối vào nổi bật hơn cho đúng
+          một bộ lọc, không phải trường mới (xe điện là mũi nhọn sản phẩm). */}
+      <section className="boloc-nhom">
+        <h3 className="boloc-tieude">Xe điện</h3>
+        <div className="boloc-chon">
+          <button
+            type="button"
+            className={'chon' + (loc.nl === 'dien' ? ' on' : '')}
+            aria-pressed={loc.nl === 'dien'}
+            onClick={() => onDoi({ ...loc, nl: loc.nl === 'dien' ? '' : 'dien' })}
+          >
+            ⚡ Chỉ xe điện
+          </button>
+          <button
+            type="button"
+            className={'chon' + (loc.sac ? ' on' : '')}
+            aria-pressed={loc.sac}
+            onClick={() => onDoi({ ...loc, sac: !loc.sac })}
+          >
+            Free sạc
+          </button>
+          <button
+            type="button"
+            className={'chon' + (loc.khongTheChap ? ' on' : '')}
+            aria-pressed={loc.khongTheChap}
+            onClick={() => onDoi({ ...loc, khongTheChap: !loc.khongTheChap })}
+          >
+            Miễn thế chấp
+          </button>
+        </div>
+        {/* Quãng đường chỉ có nghĩa với xe điện — ẩn khi chưa chọn "Chỉ xe điện". */}
+        {loc.nl === 'dien' && (
+          <label className="field" style={{ marginTop: 'var(--sp-1)' }}>
+            <span className="field-label">Quãng đường tối thiểu (km/sạc đầy)</span>
+            <OSoKmToiThieu value={loc.kmMin} onChange={(kmMin) => onDoi({ ...loc, kmMin })} />
+          </label>
+        )}
+      </section>
 
       <section className="boloc-nhom">
         <h3 className="boloc-tieude">Hãng xe</h3>

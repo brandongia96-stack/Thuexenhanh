@@ -36,6 +36,10 @@ export const locRong = () => ({
   q: '', tinh: '', quan: '',
   giaMin: null, giaMax: null,
   cho: [], so: '', nl: '', hang: '', tn: [],
+  // Xe điện (NGHIEN-CUU-XE-DIEN.md mục 2 đợt 1 #3). `sac`/`khongTheChap` lọc
+  // trên cột listing_card đã có (charge_policy, collateral_required) — không
+  // phải trường mới. "Chỉ xe điện" KHÔNG có trường riêng, dùng chung `nl='dien'`.
+  sac: false, khongTheChap: false, kmMin: null,
   xep: 'moi',
 })
 
@@ -68,6 +72,9 @@ export function urlSangLoc(sp) {
     nl: FUELS.some((x) => x.value === nl) ? nl : '',
     hang: BRANDS.includes(hang) ? hang : '',
     tn: tach(sp.get('tn')).filter((c) => AMENITY_BY_CODE[c]),
+    sac: sp.get('sac') === '1',
+    khongTheChap: sp.get('tc') === '1',
+    kmMin: soDuong(sp.get('km_tu')),
     xep: SAP_XEP.some((x) => x.value === xep) ? xep : 'moi',
   }
 }
@@ -85,6 +92,9 @@ export function locSangUrl(loc) {
   if (loc.nl) sp.set('nl', loc.nl)
   if (loc.hang) sp.set('hang', loc.hang)
   if (loc.tn?.length) sp.set('tn', [...loc.tn].sort().join(','))
+  if (loc.sac) sp.set('sac', '1')
+  if (loc.khongTheChap) sp.set('tc', '1')
+  if (loc.kmMin != null) sp.set('km_tu', String(loc.kmMin))
   if (loc.xep && loc.xep !== 'moi') sp.set('xep', loc.xep)
   return sp
 }
@@ -288,6 +298,13 @@ export function danhSachChip(loc) {
   }
   if (loc.nl) {
     chips.push({ key: 'nl', label: FUELS.find((x) => x.value === loc.nl)?.label ?? loc.nl, xoa: (l) => ({ ...l, nl: '' }) })
+  }
+  if (loc.sac) chips.push({ key: 'sac', label: '⚡ Free sạc', xoa: (l) => ({ ...l, sac: false }) })
+  if (loc.khongTheChap) {
+    chips.push({ key: 'tc', label: 'Miễn thế chấp', xoa: (l) => ({ ...l, khongTheChap: false }) })
+  }
+  if (loc.kmMin != null) {
+    chips.push({ key: 'km', label: `Từ ${loc.kmMin} km/sạc`, xoa: (l) => ({ ...l, kmMin: null }) })
   }
   if (loc.hang) chips.push({ key: 'hang', label: loc.hang, xoa: (l) => ({ ...l, hang: '' }) })
   for (const c of loc.tn) {

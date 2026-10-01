@@ -14,9 +14,13 @@ export const CO_TRANG = 20
 
 // Cố ý KHÔNG có search_tsv / amenity_codes: hai cột đó chỉ để LỌC, kéo về là
 // phí băng thông cho mỗi thẻ xe.
+// ev_range_km/charge_policy/collateral_required: đúng 3 cột xe điện mà
+// listing_card có (NGHIEN-CUU-XE-DIEN.md mục 3) — dùng cho huy hiệu "Free sạc"
+// + quãng đường trên thẻ, và cho 3 bộ lọc dưới. Không thêm cột nào khác.
 const COT_THE =
   'id,status,brand_text,model_text,year,seats,transmission,fuel,price_per_day,' +
   'province_id,district_id,is_verified,published_at,expires_at,owner_id,' +
+  'ev_range_km,charge_policy,collateral_required,' +
   'cover_thumb,cover_blur,cover_width,cover_height'
 
 // `sap_het_han` vẫn còn hiển thị (chủ xe đã trả phí tới hết hạn).
@@ -66,6 +70,14 @@ export async function timTheXe(loc, { cursor = null, signal } = {}) {
   // Tên hãng trong danh mục không có ký tự đặc biệt của ilike (% _).
   if (loc.hang) q = q.ilike('brand_text', loc.hang)
   if (loc.tn?.length) q = q.contains('amenity_codes', loc.tn)
+  // "Free sạc" = chủ xe miễn phí toàn bộ hoặc miễn phí trong giới hạn km.
+  // charge_policy null ở xe xăng nên tự động không khớp, khỏi cần ép nl='dien'.
+  if (loc.sac) q = q.in('charge_policy', ['mien_phi', 'mien_phi_gioi_han'])
+  // "Miễn thế chấp" là cột chung cho mọi xe (không riêng xe điện) — xem
+  // contracts/schema.sql, cột collateral_required.
+  if (loc.khongTheChap) q = q.eq('collateral_required', false)
+  // ev_range_km null ở xe xăng nên tự loại, khỏi cần ép nl='dien' ở đây.
+  if (loc.kmMin != null) q = q.gte('ev_range_km', loc.kmMin)
 
   const tsq = dungTsQuery(loc.q)
   // Cấu hình 'simple' PHẢI khớp với to_tsvector('simple', unaccent(...)) lúc ghi
