@@ -28,7 +28,7 @@ Tài liệu gốc cho mọi luồng chat. **Đọc §0 bên dưới trước ti�
 
 | Ngày | Thay đổi | Ảnh hưởng tới |
 |---|---|---|
-| 01/10 | 🛑 **CẤM ĐẨY LÊN `main` cho tới khi chạy `0012_xe_dien_va_chi_phi.sql` trên Supabase.** Đo 01/10: Supabase CHƯA có cột `ev_range_km`, `price_per_hour`, bảng `reference_prices` (lỗi 42703/PGRST205). Local có 8 commit chưa đẩy (02/04/05/14) đọc các cột đó — đẩy trước là `/thue-xe` + trang chủ sập lại "Chưa tải được danh sách xe". Thứ tự: chạy 0012 → kiểm REST → mới đẩy | **mọi luồng**, 01, 13 |
+| 01/10 | ✅ **Đã chạy `0012_xe_dien_va_chi_phi.sql` trên Supabase** — kiểm REST: cột xe điện + chi phí dạng số + bảng `reference_prices` đều có, 10 xe demo còn đủ, SĐT vẫn `42501`. **Hết cấm đẩy `main`.** `reference_prices` đang TRỐNG → bảng tính phải ẩn dòng xăng/điện cho tới khi admin nhập giá | 02, 04, 05, 10, 14 |
 | 01/10 | ⚠️ **`npm run build` nay là 2 bước**: `vite build && node scripts/prerender-seo.mjs`. Bước 2 sinh HTML tĩnh cho `/thue-xe/:dongXe[/:tinh]` và **ghi đè `dist/sitemap.xml`** (bản gõ tay trong `public/` đã xoá). Bước 2 KHÔNG làm vỡ build: thiếu env hay mạng hỏng thì bỏ qua và vẫn ghi sitemap trang tĩnh. Cloudflare Pages cần `VITE_SUPABASE_URL`/`ANON_KEY` lúc build thì mới sinh được trang SEO. Muốn build cũ: `npm run build:spa` | **13**, 14 |
 | 01/10 | **Chốt mã `reference_prices.code` cho xăng/dầu**: `xang_ron95` (xăng RON95), `dau_do` (dầu) — xem bảng trong `contracts/api.md` mục 2. Luồng 05 đã dùng đúng 2 mã này, luồng 10 nhập giá admin **phải** dùng đúng mã, lệch mã thì khối ước tính tự ẩn không báo lỗi | 05, 10 |
 | 28/09 | **Hướng xe điện + bảng tính tổng tiền** — xem `NGHIEN-CUU-XE-DIEN.md`. Luồng 01 thêm cột xe điện + đổi cọc/phí giao xe từ chữ sang số **trước**, các luồng khác chờ | **01**, 02, 04, 05, 14 |
