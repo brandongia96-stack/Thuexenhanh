@@ -24,6 +24,27 @@ export default function TruongNhap({ truong, giaTri, loi, onChange }) {
     disabled,
   }
 
+  // Checkbox có khung khác hẳn (hộp vuông + chữ nằm ngang), không phải
+  // "nhãn ở trên, ô ở dưới" như mọi kiểu khác — tách riêng, trả sớm.
+  if (type === 'checkbox') {
+    return (
+      <label className="field field-checkbox" htmlFor={id}>
+        <input
+          {...chung}
+          type="checkbox"
+          checked={Boolean(giaTri)}
+          onChange={(e) => onChange(name, e.target.checked)}
+        />
+        <span className="field-checkbox-ten">{label}</span>
+        {loi ? (
+          <span className="field-error" id={`${id}-loi`}>{loi}</span>
+        ) : hint ? (
+          <span className="field-hint" id={`${id}-hint`}>{hint}</span>
+        ) : null}
+      </label>
+    )
+  }
+
   let o
   if (type === 'select') {
     o = (

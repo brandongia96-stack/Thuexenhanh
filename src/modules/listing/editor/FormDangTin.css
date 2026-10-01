@@ -39,6 +39,21 @@
 
 .field-sao { color: var(--m-red); }
 
+/* ─── Ô đồng ý (checkbox) — khung ngang, không phải nhãn-trên-ô-dưới ─── */
+.field-checkbox {
+  flex-direction: row; align-items: center; flex-wrap: wrap;
+  gap: var(--sp-2);
+  cursor: pointer;
+}
+.field-checkbox input[type='checkbox'] {
+  width: 18px; height: 18px; flex-shrink: 0;
+  accent-color: var(--m-green);
+  cursor: pointer;
+}
+.field-checkbox-ten { font-size: 14px; font-weight: 600; color: var(--m-dark); }
+.field-checkbox .field-hint,
+.field-checkbox .field-error { flex-basis: 100%; }
+
 .field-co-duoi { position: relative; display: flex; align-items: center; }
 .field-co-duoi .input { padding-right: 92px; }
 .field-duoi {

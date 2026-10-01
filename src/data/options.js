@@ -34,6 +34,19 @@ export const LISTING_STATUS = {
   an:            { label: 'Đã ẩn',          tone: 'neutral' },
 }
 
+// Xe điện — khớp enum charge_policy / battery_ownership trong contracts/schema.sql.
+export const CHARGE_POLICY = [
+  { value: 'mien_phi', label: 'Miễn phí sạc' },
+  { value: 'mien_phi_gioi_han', label: 'Miễn phí trong giới hạn km' },
+  { value: 'tinh_theo_phan_tram', label: 'Tính phí theo % pin đã dùng' },
+  { value: 'khach_tu_sac', label: 'Khách tự trả tiền sạc' },
+]
+
+export const BATTERY_OWNERSHIP = [
+  { value: 'mua', label: 'Pin thuộc xe (mua đứt)' },
+  { value: 'thue', label: 'Pin đi thuê riêng' },
+]
+
 export const REPORT_REASONS = [
   { code: 'sai_thong_tin', label: 'Thông tin không đúng thực tế' },
   { code: 'gia_ao',        label: 'Giá ảo, báo giá khác khi gọi' },

@@ -9,7 +9,10 @@
 
 import { BRANDS, modelsOf } from '../../data/brands'
 import { PROVINCES, districtsOf } from '../../data/provinces'
-import { TRANSMISSIONS, FUELS, SEAT_OPTIONS, COLORS, BODY_STYLES, YEARS } from '../../data/options'
+import {
+  TRANSMISSIONS, FUELS, SEAT_OPTIONS, COLORS, BODY_STYLES, YEARS,
+  CHARGE_POLICY, BATTERY_OWNERSHIP,
+} from '../../data/options'
 
 export const GOI = {
   CO_BAN: 'co_ban',
@@ -60,7 +63,11 @@ export function nhomTruong(form, goi = GOI.DAY_DU) {
       desc: 'Ghi đúng giá thật. Khách gọi mà nghe báo giá khác là một lý do để khách báo cáo tin.',
       fields: [
         { name: 'price_per_day', label: 'Giá theo ngày', type: 'money', required: true, suffix: 'đ / ngày' },
-        { name: 'deposit_note', label: 'Tiền cọc', type: 'text', placeholder: 'VD: 15 triệu hoặc xe máy + giấy tờ', hint: 'Ghi bằng lời cũng được. App không giữ tiền cọc, hai bên tự thoả thuận.' },
+        // Gói Đầy Đủ có thêm ô "Tiền cọc" dạng số (them.gia) — khi đó trường
+        // này chỉ còn là ghi chú, nên đổi nhãn để khỏi trùng tên hai ô.
+        goi === GOI.DAY_DU
+          ? { name: 'deposit_note', label: 'Ghi chú thêm về cọc', type: 'text', placeholder: 'VD: hoàn lại khi xe còn nguyên vẹn' }
+          : { name: 'deposit_note', label: 'Tiền cọc', type: 'text', placeholder: 'VD: 15 triệu hoặc xe máy + giấy tờ', hint: 'Ghi bằng lời cũng được. App không giữ tiền cọc, hai bên tự thoả thuận.' },
       ],
     },
     {
@@ -95,14 +102,50 @@ export function nhomTruong(form, goi = GOI.DAY_DU) {
     ],
     gia: [
       { name: 'price_per_month', label: 'Giá theo tháng', type: 'money', suffix: 'đ / tháng', hint: 'Bỏ trống nếu không cho thuê tháng.' },
+      { name: 'price_per_hour', label: 'Giá theo giờ', type: 'money', suffix: 'đ / giờ', hint: 'Bỏ trống nếu không cho thuê theo giờ.' },
       { name: 'limit_km_per_day', label: 'Giới hạn km mỗi ngày', type: 'number', suffix: 'km' },
       { name: 'extra_km_fee', label: 'Phí vượt km', type: 'money', suffix: 'đ / km' },
-      { name: 'delivery_fee_note', label: 'Phí giao xe', type: 'text', placeholder: 'VD: miễn phí trong 10km, ngoài ra 15k/km' },
+      // Số để bảng tính (luồng 05) dùng được; ô ghi chú ở trên vẫn còn cho
+      // những điều kiện chỉ nói bằng lời mới đủ (NGHIEN-CUU-XE-DIEN.md mục 3).
+      { name: 'deposit_amount', label: 'Tiền cọc', type: 'money', suffix: 'đ', hint: 'App không giữ số tiền này — chỉ hiển thị cho khách biết trước khi gọi.' },
+      // Thế chấp KHÁC cọc tiền: giữ xe máy, giữ giấy tờ thay vì tiền.
+      { name: 'collateral_required', label: 'Yêu cầu thế chấp (xe máy / giấy tờ)', type: 'checkbox', hint: 'Khác tiền cọc — đây là giữ vật hoặc giấy tờ.' },
+      ...(form.collateral_required
+        ? [{ name: 'collateral_note', label: 'Thế chấp cụ thể gì', type: 'text', placeholder: 'VD: xe máy có cà vẹt, hoặc CCCD gốc' }]
+        : []),
+      { name: 'delivery_fee', label: 'Phí giao xe', type: 'money', suffix: 'đ / lần' },
+      { name: 'delivery_radius_km', label: 'Bán kính giao miễn phí', type: 'number', suffix: 'km', hint: 'Ngoài bán kính này mới tính phí giao xe.' },
+      { name: 'delivery_fee_note', label: 'Ghi chú thêm về giao xe', type: 'text', placeholder: 'VD: ngoài nội thành tính thêm theo km' },
     ],
     lien_he: [
       { name: 'contact_zalo', label: 'Số Zalo', type: 'tel', hint: 'Bỏ trống nếu dùng chung số điện thoại ở trên.' },
     ],
   }
+
+  // ─── Khối Xe điện — CHỈ hiện khi đã chọn nhiên liệu Điện ───
+  // Số liệu do CHỦ XE KHAI, không phải thông số hãng (CLAUDE.md 1.2) —
+  // nói rõ điều đó ngay trong mô tả khối, đừng để khách tưởng là cam kết.
+  const xeDien = form.fuel === 'dien' ? {
+    key: 'xe_dien',
+    title: 'Xe điện',
+    desc: 'Thông tin do anh tự khai, không phải thông số hãng công bố. Khách thuê xem đây để biết trước chi phí sạc.',
+    fields: [
+      { name: 'ev_range_km', label: 'Quãng đường khi đầy pin', type: 'number', suffix: 'km' },
+      { name: 'battery_kwh', label: 'Dung lượng pin', type: 'number', step: '0.1', suffix: 'kWh' },
+      { name: 'battery_ownership', label: 'Pin', type: 'select', options: BATTERY_OWNERSHIP, hint: 'Pin thuê thường kèm giới hạn km của hãng — khách cần biết trước.' },
+      { name: 'charge_policy', label: 'Chính sách sạc', type: 'select', options: CHARGE_POLICY },
+      // Hai ô dưới chỉ có nghĩa với đúng một lựa chọn chính sách sạc tương ứng.
+      ...(form.charge_policy === 'mien_phi_gioi_han'
+        ? [{ name: 'free_charge_km', label: 'Miễn phí trong', type: 'number', suffix: 'km', hint: 'Đi quá quãng đường này khách tự trả tiền sạc phần vượt.' }]
+        : []),
+      ...(form.charge_policy === 'tinh_theo_phan_tram'
+        ? [{ name: 'charge_fee_per_pct', label: 'Phí sạc', type: 'money', suffix: 'đ / 1% pin' }]
+        : []),
+      { name: 'pickup_min_pct', label: 'Giao xe còn tối thiểu', type: 'number', suffix: '% pin' },
+      { name: 'return_min_pct', label: 'Yêu cầu trả xe còn', type: 'number', suffix: '% pin' },
+      { name: 'has_portable_charger', label: 'Có kèm dây sạc di động', type: 'checkbox' },
+    ],
+  } : null
 
   const kyThuat = {
     key: 'ky_thuat',
@@ -133,6 +176,7 @@ export function nhomTruong(form, goi = GOI.DAY_DU) {
   return [
     boSung(coBan[0]),
     kyThuat,
+    ...(xeDien ? [xeDien] : []),
     boSung(coBan[1]),
     boSung(coBan[2]),
     moTa,

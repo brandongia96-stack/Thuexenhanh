@@ -109,14 +109,33 @@ export async function formSangHang(form, ownerId) {
 
     price_per_day: soHoacNull(form.price_per_day),
     price_per_month: soHoacNull(form.price_per_month),
+    price_per_hour: soHoacNull(form.price_per_hour),
     deposit_note: chuHoacNull(form.deposit_note),
+    deposit_amount: soHoacNull(form.deposit_amount),
+    // not null trong CSDL (0012 migration) — bộ lọc cần true/false rõ ràng,
+    // không được là null "không biết". Luôn gửi boolean, không gửi rỗng.
+    collateral_required: Boolean(form.collateral_required),
+    collateral_note: chuHoacNull(form.collateral_note),
     delivery_fee_note: chuHoacNull(form.delivery_fee_note),
+    delivery_fee: soHoacNull(form.delivery_fee),
+    delivery_radius_km: soHoacNull(form.delivery_radius_km),
     limit_km_per_day: soHoacNull(form.limit_km_per_day),
     extra_km_fee: soHoacNull(form.extra_km_fee),
 
     province_id,
     district_id,
     address_text: chuHoacNull(form.address_text),
+
+    // Xe điện — null hết với xe xăng/dầu, khối trên giao diện tự ẩn.
+    ev_range_km: soHoacNull(form.ev_range_km),
+    battery_kwh: soHoacNull(form.battery_kwh),
+    charge_policy: chuHoacNull(form.charge_policy),
+    free_charge_km: soHoacNull(form.free_charge_km),
+    charge_fee_per_pct: soHoacNull(form.charge_fee_per_pct),
+    pickup_min_pct: soHoacNull(form.pickup_min_pct),
+    return_min_pct: soHoacNull(form.return_min_pct),
+    has_portable_charger: Boolean(form.has_portable_charger),
+    battery_ownership: chuHoacNull(form.battery_ownership),
 
     amenity_codes: Array.isArray(form.amenity_codes) ? form.amenity_codes : [],
     contact_phone: normalizePhone(form.contact_phone),
@@ -136,10 +155,24 @@ export async function hangSangForm(l) {
     seats: l.seats ?? '',
     price_per_day: l.price_per_day ?? '',
     price_per_month: l.price_per_month ?? '',
+    price_per_hour: l.price_per_hour ?? '',
+    deposit_amount: l.deposit_amount ?? '',
+    collateral_required: l.collateral_required ?? false,
+    delivery_fee: l.delivery_fee ?? '',
+    delivery_radius_km: l.delivery_radius_km ?? '',
     limit_km_per_day: l.limit_km_per_day ?? '',
     extra_km_fee: l.extra_km_fee ?? '',
     fuel_consumption: l.fuel_consumption ?? '',
     amenity_codes: l.amenity_codes ?? [],
+
+    // Xe điện
+    ev_range_km: l.ev_range_km ?? '',
+    battery_kwh: l.battery_kwh ?? '',
+    free_charge_km: l.free_charge_km ?? '',
+    charge_fee_per_pct: l.charge_fee_per_pct ?? '',
+    pickup_min_pct: l.pickup_min_pct ?? '',
+    return_min_pct: l.return_min_pct ?? '',
+    has_portable_charger: l.has_portable_charger ?? false,
   }
 }
 
@@ -155,8 +188,13 @@ export async function hangSangForm(l) {
 const COT_TIN =
   'id,owner_id,status,reject_reason,brand_id,model_id,brand_text,model_text,year,color,' +
   'seats,transmission,fuel,fuel_consumption,body_style,description,price_per_day,' +
-  'price_per_month,deposit_note,delivery_fee_note,limit_km_per_day,extra_km_fee,' +
+  'price_per_month,price_per_hour,deposit_note,deposit_amount,collateral_required,' +
+  'collateral_note,delivery_fee_note,delivery_fee,delivery_radius_km,' +
+  'limit_km_per_day,extra_km_fee,' +
   'province_id,district_id,address_text,lat,lng,amenity_codes,is_verified,' +
+  // Xe điện — NGHIEN-CUU-XE-DIEN.md mục 3. Null với xe xăng/dầu.
+  'ev_range_km,battery_kwh,charge_policy,free_charge_km,charge_fee_per_pct,' +
+  'pickup_min_pct,return_min_pct,has_portable_charger,battery_ownership,' +
   'published_at,expires_at,created_at,updated_at,deleted_at'
 
 /**
