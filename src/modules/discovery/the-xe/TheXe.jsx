@@ -110,7 +110,14 @@ function TheXe({ the, bangDiaGioi, uuTien = false }) {
             <strong>{formatVndShort(the.price_per_day)}</strong>
             <span>/ ngày</span>
           </div>
-          <VerifiedBadge verified={the.is_verified} />
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <VerifiedBadge verified={the.is_verified} />
+            {the.khoangCach != null && (
+              <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--m-green)', background: 'var(--m-green-light)', padding: '2px 8px', borderRadius: 12 }}>
+                {the.khoangCach > 20 ? '20+ km' : `${the.khoangCach.toFixed(1)}km`}
+              </span>
+            )}
+          </div>
         </div>
         {/* Cố ý KHÔNG có "5.0 · 15+ chuyến" — v0.1 bịa con số đó.
             Chưa có đánh giá thật (luồng 09) thì không hiện gì cả. */}

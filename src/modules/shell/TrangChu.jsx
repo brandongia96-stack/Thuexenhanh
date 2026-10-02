@@ -34,6 +34,7 @@ export default function TrangChu() {
     <div className="page stack tc">
       <Hero />
       <BaBuoc />
+      <XeGanBan />
       <XeDien />
       <XeMoiDang />
       <KhoiChuXe />
@@ -269,5 +270,76 @@ function Diem({ icon: Icon, title, desc }) {
       <div className="t-h3">{title}</div>
       <p className="t-small">{desc}</p>
     </div>
+  )
+}
+
+
+function XeGanBan() {
+  const [trangThai, setTrangThai] = useState('cho')
+  const [ds, setDs] = useState([])
+  const [bang, setBang] = useState({ tinh: {}, quan: {} })
+
+  function timXeGanDay() {
+    setTrangThai('dang_tim')
+    if (!navigator.geolocation) {
+      setTrangThai('loi_gps')
+      return
+    }
+    navigator.geolocation.getCurrentPosition(async (pos) => {
+      const { latitude: latBan, longitude: lngBan } = pos.coords
+      const sb = await trySupabase()
+      if (!sb) { setTrangThai('khong_co'); return }
+      
+      // Tính khoảng cách TRÊN SERVER (migration 0013): lọc bán kính 50 km,
+      // trả tối đa 8 thẻ kèm distance_km. Không kéo toạ độ của mọi tin về máy.
+      const { data, error } = await sb.rpc('get_nearby_listings', {
+        p_lat: latBan, p_lng: lngBan, p_radius_km: 50, p_limit: 8,
+      })
+      if (error || !data?.length) { setTrangThai('khong_co'); return }
+
+      const dsCuoi = data.map((x) => ({ ...x, khoangCach: Number(x.distance_km) }))
+
+      const ten = await taiTenDiaGioi()
+      setBang(ten)
+      setDs(dsCuoi)
+      setTrangThai('co_xe')
+    }, () => {
+      setTrangThai('loi_gps')
+    }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 })
+  }
+
+  if (trangThai === 'khong_co' || trangThai === 'loi_gps') return null
+
+  return (
+    <section className="stack">
+      <div className="tc-dau">
+        <h2 className="tc-h2">
+          <MapPin size={22} color="var(--m-red)" style={{ verticalAlign: '-4px', marginRight: 4 }} />
+          Xe gần bạn nhất
+        </h2>
+      </div>
+      
+      {trangThai === 'cho' && (
+        <div className="card card-pad empty" style={{ border: '1px dashed var(--m-border)', background: 'var(--m-bg)' }}>
+          <p className="t-body" style={{ color: 'var(--m-dark)' }}>Cho phép định vị để xem các xe đang ở gần bạn nhất (bán kính 50km).</p>
+          <button className="btn btn-primary" onClick={timXeGanDay}>
+            <MapPin size={18} /> Quét radar tìm xe gần đây
+          </button>
+        </div>
+      )}
+
+      {trangThai === 'dang_tim' && (
+        <div className="card card-pad empty" style={{ border: '1px dashed var(--m-border)' }}>
+          <div className="skeleton" style={{ width: 120, height: 40, borderRadius: 20 }}></div>
+          <p className="t-small" style={{ marginTop: 8 }}>Đang lấy toạ độ GPS của bạn...</p>
+        </div>
+      )}
+
+      {trangThai === 'co_xe' && (
+        <div className="grid-cards">
+          {ds.map((the) => <TheXe key={the.id} the={the} bangDiaGioi={bang} />)}
+        </div>
+      )}
+    </section>
   )
 }
