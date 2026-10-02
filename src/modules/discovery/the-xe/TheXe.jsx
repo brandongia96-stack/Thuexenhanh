@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { MapPin, Users, Cog, Fuel, Clock, Share2, Check, X, Zap, Truck } from 'lucide-react'
+import { MapPin, Users, Cog, Fuel, Clock, Share2, Check, X, Zap, Truck, Heart, Eye } from 'lucide-react'
 
 import { VerifiedBadge } from '../../../components/Badge'
 import { formatVndShort, timeAgo } from '../../../lib/format'
@@ -133,16 +133,19 @@ function TheXe({ the, bangDiaGioi, uuTien = false }) {
           </div>
         </div>
         
-        {/* Mock Data - Theo yêu cầu của user, thêm rating ảo để demo */}
+        {/* Mock Data - Theo yêu cầu của user, hiển thị tim và lượt xem ảo để demo */}
         {(() => {
           const m = the.id ? the.id.charCodeAt(the.id.length - 1) : 5
-          const sao = 4 + (m % 10) / 10
-          const chuyen = (m % 30) * 2 + 5
+          const tim = (m % 15) * 3 + 2
+          const xem = tim * (m % 5 + 3) + 12
           return (
-            <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--m-mid)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-              <span style={{ color: '#FFB020' }}>★</span>
-              <strong style={{ color: 'var(--m-dark)' }}>{sao.toFixed(1)}</strong>
-              <span>· {chuyen}+ chuyến</span>
+            <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--m-mid)', display: 'flex', alignItems: 'center', gap: '12px' }}>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Heart size={14} strokeWidth={1.8} /> {tim}
+              </span>
+              <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                <Eye size={14} strokeWidth={1.8} /> {xem}
+              </span>
             </div>
           )
         })()}
