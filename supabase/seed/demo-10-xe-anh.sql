@@ -39,7 +39,7 @@ values
   ('de000000-0000-4000-8000-000000000005', 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?w=400&q=80', 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?w=800&q=80', 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d?w=1600&q=80', 'https://images.unsplash.com/photo-1503736334956-4c8f8e92946d', 800, 450, 1, false),
   
   -- 6. Toyota Innova
-  ('de000000-0000-4000-8000-000000000006', 'https://images.unsplash.com/photo-1503376712351-1f95d10d6118?w=400&q=80', 'https://images.unsplash.com/photo-1503376712351-1f95d10d6118?w=800&q=80', 'https://images.unsplash.com/photo-1503376712351-1f95d10d6118?w=1600&q=80', 'https://images.unsplash.com/photo-1503376712351-1f95d10d6118', 800, 450, 0, true),
+  ('de000000-0000-4000-8000-000000000006', 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=400&q=80', 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=800&q=80', 'https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=1600&q=80', 'https://images.unsplash.com/photo-1580273916550-e323be2ae537', 800, 450, 0, true),
   ('de000000-0000-4000-8000-000000000006', 'https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=400&q=80', 'https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=800&q=80', 'https://images.unsplash.com/photo-1542282088-72c9c27ed0cd?w=1600&q=80', 'https://images.unsplash.com/photo-1542282088-72c9c27ed0cd', 800, 450, 1, false),
   
   -- 7. Ford Ranger
