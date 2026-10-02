@@ -8,12 +8,13 @@
 
 import { memo } from 'react'
 import { Link } from 'react-router-dom'
-import { BarChart3, Car, Pencil, RefreshCw } from 'lucide-react'
+import { BarChart3, Car, ChevronDown, Pencil, Phone, RefreshCw } from 'lucide-react'
 import Badge, { VerifiedBadge } from '../../components/Badge'
-import { formatVnd, formatDate } from '../../lib/format'
+import { formatVnd, formatDate, formatPhone } from '../../lib/format'
 import { coTheGiaHan, coTheSua, loiNhacHan, nhanTrangThai, trangThaiThuc } from '../listing/lifecycle'
 import { coSoLieu, dinhDangTyLe, tyLeLaySo } from './soLieu'
 import { BieuDoNho } from './BieuDo'
+import BieuDo, { ChuGiai } from './BieuDo'
 import { DongSo } from './ChiSo'
 
 function Anh({ xe, uuTien }) {
@@ -45,7 +46,7 @@ function Anh({ xe, uuTien }) {
   )
 }
 
-function TheXe({ xe, soLieu, uuTien = false, dangTaiSoLieu = false }) {
+function TheXe({ xe, soLieu, rieng, uuTien = false, dangTaiSoLieu = false, moRong = false, viTri, onMoRong, onGiaHan }) {
   const status = trangThaiThuc(xe)
   const nhan = nhanTrangThai(status)
   const nhacHan = loiNhacHan(xe)
@@ -55,7 +56,7 @@ function TheXe({ xe, soLieu, uuTien = false, dangTaiSoLieu = false }) {
 
   return (
     <article className="card the-xe">
-      <Link to={`/chu-xe/so-lieu/${xe.id}`} className="the-xe-tren">
+      <div className="the-xe-tren">
         <Anh xe={xe} uuTien={uuTien} />
         <div className="the-xe-dau">
           <div className="row the-xe-nhan">
@@ -68,7 +69,15 @@ function TheXe({ xe, soLieu, uuTien = false, dangTaiSoLieu = false }) {
           </h3>
           <div className="t-price">{formatVnd(xe.price_per_day)}<span className="the-xe-ngay">/ngày</span></div>
         </div>
-      </Link>
+      </div>
+
+      {(rieng?.contact_phone || rieng?.plate) && (
+        // Lấy qua RPC listing_private_many. Thiếu thì ẩn cả dòng.
+        <div className="the-xe-rieng t-small">
+          {rieng.contact_phone && <span><Phone size={13} strokeWidth={1.8} /> {formatPhone(rieng.contact_phone)}</span>}
+          {rieng.plate && <span>Biển số {rieng.plate}</span>}
+        </div>
+      )}
 
       {nhacHan && (
         <div className={`nhac-han nhac-han-${nhacHan.tone}`}>
@@ -78,8 +87,10 @@ function TheXe({ xe, soLieu, uuTien = false, dangTaiSoLieu = false }) {
       )}
 
       <div className="the-xe-so">
-        {dangTaiSoLieu && !soLieu ? (
-          <div className="t-small">Đang lấy số liệu…</div>
+        {!soLieu ? (
+          // Chưa có `soLieu` = đang tải hoặc tải lỗi. KHÔNG được rơi xuống câu
+          // "Chưa có lượt xem nào": đó là khẳng định về dữ liệu, mà lỗi mạng thì chưa biết gì.
+          <div className="t-small">{dangTaiSoLieu ? 'Đang lấy số liệu…' : 'Chưa tải được số liệu'}</div>
         ) : coSoLieu(tong) ? (
           <>
             <div className="the-xe-bang">
@@ -96,10 +107,11 @@ function TheXe({ xe, soLieu, uuTien = false, dangTaiSoLieu = false }) {
       </div>
 
       <div className="the-xe-nut">
-        <Link to={`/chu-xe/so-lieu/${xe.id}`} className="btn btn-ghost btn-sm">
+        <button type="button" className="btn btn-ghost btn-sm" onClick={() => onMoRong?.(xe.id)} aria-expanded={moRong}>
           <BarChart3 size={15} strokeWidth={1.8} />
           Số liệu
-        </Link>
+          <ChevronDown size={14} strokeWidth={2} className={moRong ? 'xoay' : ''} />
+        </button>
         {coTheSua(xe.status) && (
           <Link to={`/chu-xe/tin/${xe.id}`} className="btn btn-ghost btn-sm">
             <Pencil size={15} strokeWidth={1.8} />
@@ -107,14 +119,33 @@ function TheXe({ xe, soLieu, uuTien = false, dangTaiSoLieu = false }) {
           </Link>
         )}
         {coTheGiaHan(status) && (
-          // Gia hạn = trừ token, việc của luồng 06. Ở đây chỉ chuyển tiếp,
-          // màn này tuyệt đối không đụng vào ví.
-          <Link to={`/chu-xe/vi?gia-han=${xe.id}`} className="btn btn-soft btn-sm">
+          // Gia hạn = trừ token, việc của luồng 06: mở HopTraPhi, màn này không đụng vào ví.
+          <button type="button" className="btn btn-soft btn-sm" onClick={() => onGiaHan?.(xe)}>
             <RefreshCw size={15} strokeWidth={1.8} />
             Gia hạn
-          </Link>
+          </button>
         )}
       </div>
+
+      {moRong && (
+        <div className="the-xe-mo">
+          {coSoLieu(tong) ? (
+            <>
+              <BieuDo chuoi={soLieu.chuoi} />
+              <ChuGiai />
+            </>
+          ) : (
+            <p className="t-small">Chưa có lượt xem nào trong 30 ngày qua, nên chưa có biểu đồ để vẽ.</p>
+          )}
+          {viTri && (
+            <p className="t-small">
+              Giá {formatVnd(xe.price_per_day)}/ngày: có {viTri.soXeReHon} trên {viTri.soXeCungTinh - 1} xe
+              cùng tỉnh đang rẻ hơn.
+            </p>
+          )}
+          <p className="t-small">Số liệu gộp theo ngày, cập nhật mỗi đêm, chưa gồm hôm nay.</p>
+        </div>
+      )}
     </article>
   )
 }

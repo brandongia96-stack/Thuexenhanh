@@ -20,6 +20,15 @@ const COT_THE =
   'province_id,district_id,is_verified,published_at,expires_at,' +
   'cover_thumb,cover_blur,cover_width,cover_height'
 
+// Nhóm lọc ở màn "Xe của tôi". Lọc theo cột `status` trong CSDL (server cập nhật
+// theo cron) — lọc ở server vì phân trang keyset không lọc lại phía client được.
+export const NHOM_TRANG_THAI = {
+  tat_ca: null,
+  hien_thi: ['dang_hien_thi', 'sap_het_han'],
+  cho: ['nhap', 'cho_duyet', 'tu_choi'],
+  het_han: ['het_han', 'an'],
+}
+
 // PostgREST: giá trị có dấu `:` `+` trong bộ lọc `or` phải bọc nháy kép.
 const nhay = (v) => `"${v}"`
 
@@ -34,7 +43,7 @@ const nhay = (v) => `"${v}"`
  * @param {string} ownerId
  * @param {{cursor?: {published_at: string|null, id: string}|null, limit?: number}} opts
  */
-export async function danhSachXeCuaToi(ownerId, { cursor = null, limit = TRANG } = {}) {
+export async function danhSachXeCuaToi(ownerId, { cursor = null, limit = TRANG, nhom = 'tat_ca' } = {}) {
   const sb = await getSupabase()
 
   let q = sb
@@ -44,6 +53,8 @@ export async function danhSachXeCuaToi(ownerId, { cursor = null, limit = TRANG }
     .order('published_at', { ascending: false, nullsFirst: true })
     .order('id', { ascending: false })
     .limit(limit + 1) // lấy dư 1 để biết "còn nữa", khỏi phải đếm tổng
+
+  if (NHOM_TRANG_THAI[nhom]) q = q.in('status', NHOM_TRANG_THAI[nhom])
 
   if (cursor) {
     q = cursor.published_at == null
@@ -73,22 +84,6 @@ export async function danhSachXeCuaToi(ownerId, { cursor = null, limit = TRANG }
 }
 
 /**
- * Số dư ví. Đọc view `wallet_balances` — client chỉ được ĐỌC ví,
- * mọi thao tác ghi đi qua Edge Function (contracts/api.md mục 0).
- * Trả `null` khi chủ xe chưa từng có ví: "chưa có ví" khác "có ví, 0 token".
- */
-export async function soDuVi(userId) {
-  const sb = await getSupabase()
-  const { data, error } = await sb
-    .from('wallet_balances')
-    .select('wallet_id,token_da_nap,token_da_tieu,so_du')
-    .eq('user_id', userId)
-    .maybeSingle()
-  if (error) throw error
-  return data ?? null
-}
-
-/**
  * Số liệu N ngày gần nhất cho một nhóm xe.
  *
  * ĐỌC BẢNG GỘP `events_daily`, không đụng bảng `events` thô (HIEU-NANG.md 2.4).
@@ -109,18 +104,6 @@ export async function soLieuNhieuXe(ownerId, listingIds, { soNgay = SO_NGAY } = 
     .gte('day', ngayBatDau(soNgay))
   if (error) throw error
   return data ?? []
-}
-
-/** Một tin đầy đủ hơn cho trang số liệu. Vẫn không lấy `*`. */
-export async function docTheXe(listingId) {
-  const sb = await getSupabase()
-  const { data, error } = await sb
-    .from('listing_card')
-    .select(COT_THE + ',owner_id')
-    .eq('id', listingId)
-    .maybeSingle()
-  if (error) throw error
-  return data ?? null
 }
 
 /**
@@ -161,4 +144,81 @@ export async function viTriGia({ provinceId, pricePerDay, listingId }) {
     // % số xe cùng tỉnh đang rẻ hơn xe này.
     phanTramReHon: Math.round(((reHon.count ?? 0) / Math.max(soXe - 1, 1)) * 100),
   }
+}
+
+/**
+ * Số điện thoại + biển số của chính chủ xe, gom một lần cho cả trang.
+ *
+ * KHÔNG select thẳng `contact_phone`/`plate` từ `listings` (và cũng không có ở
+ * `listing_card`): `0010_bao_ve_sdt.sql` đã hạ quyền đọc 3 cột nhạy cảm, đọc là
+ * `42501`. Hàm RPC `listing_private_many` tự lọc theo `auth.uid()` ngay trong SQL —
+ * tin không phải của mình thì đơn giản không nằm trong kết quả.
+ *
+ * Phần phụ: lỗi thì trả bảng rỗng, màn vẫn dùng được, chỉ ẩn dòng SĐT/biển số.
+ * @returns {Promise<Map<string,{contact_phone:string|null, plate:string|null}>>}
+ */
+export async function thongTinRieng(listingIds) {
+  const ra = new Map()
+  if (!listingIds?.length) return ra
+  try {
+    const sb = await getSupabase()
+    const { data, error } = await sb.rpc('listing_private_many', { p_ids: listingIds })
+    if (error) throw error
+    for (const r of data ?? []) ra.set(r.id, r)
+  } catch (e) {
+    if (import.meta.env.DEV) console.warn('[owner] không lấy được SĐT/biển số:', e?.message)
+  }
+  return ra
+}
+
+/**
+ * Tổng của chủ xe: đếm xe theo nhóm + hạn gần nhất + số tin sắp hết hạn.
+ * Toàn bộ là `count` kiểu `head` (không kéo hàng nào về) trên đúng xe của mình,
+ * đi theo index `(owner_id, status)`.
+ */
+export async function tongQuanXe(ownerId, nguongNgay = 3) {
+  const sb = await getSupabase()
+  const dem = (statuses) =>
+    sb.from('listing_card').select('id', { count: 'exact', head: true })
+      .eq('owner_id', ownerId).in('status', statuses)
+
+  const han = new Date(Date.now() + nguongNgay * 86_400_000).toISOString()
+  const [hien, cho, het, sap, gan] = await Promise.all([
+    dem(NHOM_TRANG_THAI.hien_thi),
+    dem(NHOM_TRANG_THAI.cho),
+    dem(NHOM_TRANG_THAI.het_han),
+    dem(NHOM_TRANG_THAI.hien_thi).lte('expires_at', han),
+    sb.from('listing_card').select('expires_at')
+      .eq('owner_id', ownerId).in('status', NHOM_TRANG_THAI.hien_thi)
+      .not('expires_at', 'is', null)
+      .order('expires_at', { ascending: true }).limit(1),
+  ])
+  for (const r of [hien, cho, het, sap, gan]) if (r.error) throw r.error
+
+  return {
+    dangHien: hien.count ?? 0,
+    cho: cho.count ?? 0,
+    hetHan: het.count ?? 0,
+    sapHetHan: sap.count ?? 0,
+    hetHanGanNhat: gan.data?.[0]?.expires_at ?? null,
+  }
+}
+
+/**
+ * Tổng lượt xem / lấy số 30 ngày của TOÀN BỘ xe của chủ xe (không chỉ trang đang hiện).
+ * Vẫn đọc `events_daily`. Chỉ xin 2 cột, 2 loại sự kiện, tối đa 5.000 hàng.
+ */
+export async function tongSoLieuChuXe(ownerId, { soNgay = SO_NGAY } = {}) {
+  const sb = await getSupabase()
+  const { data, error } = await sb
+    .from('events_daily')
+    .select('kind,count')
+    .eq('owner_id', ownerId)
+    .in('kind', ['view_listing', 'reveal_phone'])
+    .gte('day', ngayBatDau(soNgay))
+    .range(0, 4999)
+  if (error) throw error
+  const tong = { view_listing: 0, reveal_phone: 0 }
+  for (const r of data ?? []) tong[r.kind] += Number(r.count) || 0
+  return tong
 }

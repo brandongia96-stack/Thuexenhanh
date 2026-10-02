@@ -33,6 +33,8 @@ const TrangDaLuu = lazy(() => import('./modules/discovery/saved/TrangDaLuu'))
 const TrangVi = lazy(() => import('./modules/billing/wallet/TrangVi'))
 // Luồng 02 — đăng/sửa tin. Form + nén ảnh + lịch chặn ngày: chỉ chủ xe cần, nên tách gói riêng.
 const TrangDangTin = lazy(() => import('./modules/listing/TrangDangTin'))
+// Luồng 03 — bảng điều khiển chủ xe: danh sách xe + số liệu 30 ngày.
+const TrangChuXe = lazy(() => import('./modules/owner/TrangChuXe'))
 
 /**
  * App.jsx CHỈ làm routing + layout. Dưới 200 dòng.
@@ -73,7 +75,7 @@ export default function App() {
 
               {/* ── Chủ xe ── */}
               <Route path="/chu-xe" element={
-                <RequireRole><ChuaLam ten="Bảng điều khiển chủ xe" luong="03 — Chủ xe" /></RequireRole>
+                <RequireRole><TrangChuXe /></RequireRole>
               } />
               <Route path="/chu-xe/dang-tin" element={
                 <RequireRole><TrangDangTin /></RequireRole>

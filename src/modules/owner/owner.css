@@ -1,0 +1,80 @@
+/* owner/ — bảng điều khiển chủ xe. Chỉ dùng token (contracts/tokens.css). */
+
+.cx-dau { justify-content: space-between; }
+
+.cx-tong {
+  display: grid; gap: var(--sp-3);
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+.chi-so {
+  background: var(--m-surface); border-radius: var(--r-lg);
+  box-shadow: var(--shadow-sm); padding: var(--sp-4);
+  display: flex; flex-direction: column; gap: var(--sp-1);
+}
+.chi-so-nhan { display: flex; align-items: center; gap: 6px; font-size: 13px; font-weight: 600; color: var(--m-mid); }
+.chi-so-gia-tri { font-size: 24px; font-weight: 800; letter-spacing: -.02em; }
+.chi-so-ok .chi-so-gia-tri { color: var(--m-green-ok); }
+
+.cx-canh-bao {
+  display: flex; gap: var(--sp-3); align-items: flex-start;
+  padding: var(--sp-3) var(--sp-4); border-radius: var(--r-md);
+  background: var(--m-amber-bg); color: var(--m-dark); font-size: 14px;
+}
+.cx-canh-bao svg { color: var(--m-amber); flex-shrink: 0; margin-top: 2px; }
+.cx-canh-bao a, .cx-lien-ket { color: var(--m-green-hover); font-weight: 600; text-decoration: underline; }
+
+.cx-tab { display: flex; gap: var(--sp-2); overflow-x: auto; padding-bottom: var(--sp-1); }
+.cx-tab-nut {
+  flex-shrink: 0; height: 36px; padding: 0 var(--sp-4); border-radius: var(--r-full);
+  background: var(--m-surface); color: var(--m-mid); font-weight: 600; font-size: 14px;
+  box-shadow: inset 0 0 0 1px var(--m-border); transition: background var(--t-fast);
+}
+.cx-tab-nut.dang-chon { background: var(--m-green-light); color: var(--m-green-hover); box-shadow: inset 0 0 0 1px var(--m-green-border); }
+
+.cx-luoi { display: grid; gap: var(--sp-4); grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); align-items: start; }
+
+/* ── Thẻ xe ── */
+.the-xe { display: flex; flex-direction: column; }
+.the-xe-tren { display: flex; flex-direction: column; }
+.the-xe-anh {
+  aspect-ratio: 16 / 9; background-size: cover; background-position: center;
+  background-color: var(--m-bg); overflow: hidden;
+}
+.the-xe-anh img { width: 100%; height: 100%; object-fit: cover; }
+.the-xe-anh-trong { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--sp-1); color: var(--m-subtle); }
+.the-xe-dau { padding: var(--sp-4) var(--sp-4) var(--sp-2); display: flex; flex-direction: column; gap: var(--sp-1); }
+.the-xe-nam { font-weight: 500; color: var(--m-subtle); }
+.the-xe-ngay { font-size: 13px; font-weight: 500; color: var(--m-subtle); }
+.the-xe-rieng { display: flex; gap: var(--sp-4); padding: 0 var(--sp-4) var(--sp-2); }
+.the-xe-rieng span { display: inline-flex; align-items: center; gap: 4px; }
+
+.nhac-han { margin: 0 var(--sp-4) var(--sp-2); padding: var(--sp-2) var(--sp-3); border-radius: var(--r-sm); font-size: 13px; font-weight: 600; background: var(--m-bg); color: var(--m-mid); }
+.nhac-han-warn { background: var(--m-amber-bg); color: var(--m-dark); }
+.nhac-han-danger { background: var(--m-red-bg); color: var(--m-red); }
+
+.the-xe-so { padding: 0 var(--sp-4) var(--sp-3); display: flex; flex-direction: column; gap: var(--sp-2); }
+.the-xe-bang { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--sp-2); }
+.dong-so { display: flex; flex-direction: column; }
+.dong-so-gt { font-size: 18px; font-weight: 800; }
+.dong-so-ok { color: var(--m-green-ok); }
+
+.the-xe-nut { display: flex; flex-wrap: wrap; gap: var(--sp-2); padding: 0 var(--sp-4) var(--sp-4); }
+.the-xe-nut .xoay { transform: rotate(180deg); }
+.the-xe-mo { border-top: 1px solid var(--m-border); padding: var(--sp-4); display: flex; flex-direction: column; gap: var(--sp-2); }
+
+/* ── Biểu đồ ── */
+.bd { margin: 0; }
+.bd-svg { width: 100%; height: auto; display: block; }
+.bd-nho { width: 100%; height: 36px; display: block; }
+.bd-luoi { stroke: var(--m-border); stroke-width: 1; stroke-dasharray: 3 3; }
+.bd-truc { stroke: var(--m-border); stroke-width: 1; }
+.bd-nen { fill: var(--m-green-light); }
+.bd-duong { fill: none; stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+.bd-xem { stroke: var(--m-green); }
+.bd-lay-so { stroke: var(--m-green-ok); }
+.bd-xem-cham { fill: var(--m-green); }
+.bd-lay-so-cham { fill: var(--m-green-ok); }
+.bd-chan { display: flex; justify-content: space-between; }
+.bd-chu-giai { display: flex; gap: var(--sp-4); font-size: 12px; color: var(--m-mid); }
+.bd-chu-giai span { display: inline-flex; align-items: center; gap: 6px; }
+.bd-chu-giai i { width: 10px; height: 10px; border-radius: var(--r-full); display: inline-block; }
