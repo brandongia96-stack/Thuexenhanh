@@ -269,6 +269,47 @@ Tích xanh — **xét giấy tờ, miễn phí, không bán**.
 
 ---
 
+## 3b. Bằng chứng đồng ý điều khoản — `user_consents`
+
+Luồng 12 ghi một dòng mỗi lần người dùng tick đồng ý. Đây là **bằng chứng pháp lý**,
+không phải dữ liệu tiện ích — nên bảng chỉ ghi thêm.
+
+```ts
+type UserConsent = {
+  id: Uuid
+  user_id: Uuid
+  document: 'terms' | 'privacy' | 'refund'   // ⚠️ CHECK ở CSDL, giá trị khác bị từ chối
+  version: string                            // 'v1.0' — đổi văn bản thì tăng số
+  accepted_at: string
+  created_at: string
+}
+```
+
+Client tự ghi (RLS lọc theo `auth.uid()`), không cần Edge Function:
+
+```js
+// Ghi — chỉ ghi được dòng của chính mình.
+await supabase.from('user_consents').insert({ document: 'terms', version: 'v1.0', user_id: uid })
+
+// Đọc lại — mỗi người chỉ thấy dòng của mình (admin thấy tất cả, để tra khi tranh chấp).
+await supabase.from('user_consents')
+  .select('document,version,accepted_at')
+  .order('accepted_at', { ascending: false })
+```
+
+Ba luật của bảng này:
+
+1. **Không sửa, không xoá** — kể cả `service_role`. Trigger `user_consents_append_only`
+   chặn ở tầng CSDL, không chỉ dựa vào việc thiếu policy. Đổi văn bản thì tăng
+   `version` và xin đồng ý lại, đừng ghi đè dòng cũ.
+2. **Không có `updated_at` / `deleted_at`** — cố ý trái quy ước chung. Bằng chứng mà
+   có dấu vết sửa đổi thì không còn là bằng chứng.
+3. **`document` bị giới hạn 3 giá trị.** Thêm loại văn bản mới cần tick đồng ý
+   (ví dụ Quy chế hoạt động) thì **phải sửa `CHECK` trong `contracts/schema.sql`
+   trước** — insert giá trị lạ sẽ bị CSDL từ chối, không phải lỗi client.
+
+---
+
 ## 4. Mã lỗi chung
 
 | Mã | Nghĩa |
