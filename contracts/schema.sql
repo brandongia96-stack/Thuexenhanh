@@ -25,6 +25,15 @@ create type battery_ownership as enum ('mua', 'thue');
 create type wallet_tx_kind    as enum ('nap', 'tieu', 'hoan', 'thu_hoi', 'tang');
 create type topup_status      as enum ('cho_thanh_toan', 'da_thanh_toan', 'that_bai', 'huy');
 create type charge_kind       as enum ('dang_tin', 'gia_han', 'day_tin', 'lead');
+-- Vì sao tiền về mà không cộng được token. Bốn nhánh, không gộp làm một:
+-- mỗi nhánh cần một cách xử lý tay khác nhau.
+create type unmatched_reason  as enum (
+  'khong_doc_duoc_ma',     -- nội dung chuyển khoản không có mã đối soát nào
+  'khong_co_yeu_cau_nap',  -- đọc được mã nhưng không có `topups` nào mang mã đó
+  'bi_tu_choi',            -- `credit_topup` từ chối: ví dụ chuyển thiếu tiền
+  'khac'
+);
+create type unmatched_status  as enum ('moi', 'dang_xu_ly', 'da_xu_ly', 'bo_qua');
 create type report_status     as enum ('moi', 'dang_xu_ly', 'da_xu_ly', 'bo_qua');
 create type moderation_status as enum ('cho_duyet', 'da_duyet', 'tu_choi');
 create type notification_kind as enum ('tin_duyet', 'tin_tu_choi', 'sap_het_han', 'het_han', 'nap_thanh_cong', 'tru_token', 'he_thong');
@@ -217,6 +226,13 @@ create table listings (
   -- Số hiện sau khi khách bấm "Xem số điện thoại". KHÔNG có nút đặt xe.
   contact_phone     text not null,
   contact_zalo      text,
+
+  -- Chủ xe tự bật/tắt. Tin sắp hết hạn mà cờ này bật thì cron tự trừ token và
+  -- gia hạn thêm 1 tháng; hết token thì thôi, KHÔNG nợ, KHÔNG tự trừ tiếp
+  -- (CLAUDE.md 1.1: app không đứng giữa dòng tiền).
+  -- Mặc định TẮT: tự động lấy tiền của người ta mà họ không chủ động bật là
+  -- cách nhanh nhất để mất lòng tin.
+  auto_renew        boolean not null default false,
 
   -- Client KHÔNG được ghi 3 cột dưới. Chỉ server/admin.
   is_verified       boolean not null default false,
@@ -448,6 +464,46 @@ create table boosts (
   deleted_at   timestamptz
 );
 
+-- Chuyển khoản về tài khoản nhưng KHÔNG cộng được token.
+--
+-- Vì sao phải có bảng này thay vì `console.error`: đây là tiền thật của một
+-- người thật đang ngồi chờ token. Log của Edge Function hết hạn sau vài ngày
+-- và không ai ngồi đọc; mất dòng log là mất luôn manh mối để trả lại tiền.
+-- Có bảng thì admin tra được, khớp tay được, và chứng minh được là đã xử lý.
+--
+-- `payload` giữ NGUYÊN VĂN webhook: khi phải cãi nhau với ngân hàng hoặc với
+-- khách thì bản ghi tóm tắt không đủ, phải có bản gốc.
+-- Trong đó có tên và số tài khoản người gửi -> dữ liệu cá nhân -> CHỈ admin đọc.
+create table unmatched_transfers (
+  id            uuid primary key default gen_random_uuid(),
+  provider      text not null,                  -- 'sepay', 'payos'…
+  provider_ref  text,                           -- mã giao dịch bên nhà cung cấp
+  reason        unmatched_reason not null,
+  transfer_code text,                           -- mã đối soát đọc được, nếu đọc được
+  vnd_amount    int,
+  content       text,                           -- nội dung chuyển khoản thô
+  payload       jsonb not null default '{}',
+
+  -- Phần người thật xử lý tay
+  status        unmatched_status not null default 'moi',
+  resolved_topup_id uuid references topups(id), -- khớp tay vào yêu cầu nạp nào
+  handled_by    uuid references users(id),
+  handled_at    timestamptz,
+  note          text,
+
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now(),
+  deleted_at    timestamptz
+);
+-- Nhà cung cấp gửi lại webhook là chuyện thường. Khoá này để gửi lại không
+-- sinh ra dòng thứ hai cho cùng một giao dịch.
+create unique index unmatched_transfers_ref_idx
+  on unmatched_transfers (provider, provider_ref)
+  where provider_ref is not null;
+-- Hàng chờ xử lý: cũ nhất trước, vì người chờ lâu nhất phải được trả lời trước.
+create index unmatched_transfers_queue_idx
+  on unmatched_transfers (status, created_at);
+
 -- ─────────────────────────────────────────────
 -- 5. TIN CẬY & KIỂM DUYỆT
 -- ─────────────────────────────────────────────
@@ -637,7 +693,7 @@ begin
   foreach t in array array[
     'users','user_roles','brands','models','provinces','districts','amenities',
     'listings','listing_images','listing_blocked_dates','saved_listings',
-    'wallets','topups','charges','boosts',
+    'wallets','topups','charges','boosts','unmatched_transfers',
     'reviews','reports','moderation_queue','otp_codes','notifications','events_daily','reference_prices'
   ] loop
     execute format('create trigger %I_touch before update on %I for each row execute function touch_updated_at()', t, t);
@@ -672,7 +728,7 @@ begin
   foreach t in array array[
     'users','user_roles','brands','models','provinces','districts','amenities',
     'listings','listing_images','listing_blocked_dates','listing_events','saved_listings',
-    'wallets','wallet_transactions','topups','charges','boosts',
+    'wallets','wallet_transactions','topups','charges','boosts','unmatched_transfers',
     'reviews','reports','moderation_queue','otp_codes','user_consents','events','events_daily','notifications','admin_actions','reference_prices'
   ] loop
     execute format('alter table %I enable row level security', t);
@@ -724,6 +780,9 @@ create policy topups_own    on topups  for select using (user_id = auth.uid());
 create policy topups_create on topups  for insert with check (user_id = auth.uid());
 create policy charges_own   on charges for select using (user_id = auth.uid());
 create policy boosts_read   on boosts  for select using (deleted_at is null);
+-- Chuyển khoản lạc: CHỈ admin. Chứa tên + số tài khoản người gửi.
+-- service_role (Edge Function `bank-webhook`) bỏ qua RLS nên vẫn ghi được.
+create policy unmatched_admin on unmatched_transfers for all using (has_role('admin'));
 
 create policy reviews_read   on reviews for select using (is_public and deleted_at is null);
 create policy reviews_author on reviews for all

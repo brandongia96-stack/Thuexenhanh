@@ -79,6 +79,10 @@ type Listing = {
   contact_phone: string       // CHỈ trả về sau khi gọi reveal_phone
   contact_zalo: string | null
 
+  // Chủ xe tự bật/tắt. Bật thì cron trừ token gia hạn thêm 1 tháng khi tin sắp
+  // hết hạn; hết token thì thôi, KHÔNG nợ. Mặc định tắt.
+  auto_renew: boolean
+
   is_verified: boolean        // chỉ đọc
   published_at: string | null
   expires_at: string | null
@@ -244,8 +248,19 @@ Tạo yêu cầu nạp + sinh mã VietQR động.
 { "topup_id": "uuid", "vnd_amount": 100000, "transfer_code": "TXN8H3K2", "qr_url": "https://..." }
 ```
 
-### `POST /webhook/bank`  *(không cần token người dùng, xác thực bằng chữ ký nhà cung cấp)*
+### `POST /bank-webhook`  *(không cần token người dùng, xác thực bằng khoá nhà cung cấp)*
+
 Đối soát chuyển khoản → cộng token. Idempotent theo `provider_ref`.
+
+> Trước 02/10 mục này ghi `/webhook/bank`. **Sai** — tên Edge Function không
+> chứa dấu `/`, nên đường thật là `${VITE_SUPABASE_URL}/functions/v1/bank-webhook`.
+> Khai sai đường này vào cổng ngân hàng thì webhook rơi vào hư không: tiền về
+> tài khoản mà token không bao giờ được cộng.
+
+Tiền về nhưng **không cộng được token** thì ghi một dòng vào `unmatched_transfers`
+(xem mục 3c) rồi trả `200`. Trả `200` là cố ý: gửi lại cũng không khớp được, để
+nhà cung cấp thử lại mãi chỉ làm nhiễu. Chỉ lỗi hệ thống mới trả `500` để được
+gửi lại — an toàn vì `credit_topup` idempotent.
 
 ### `POST /track`
 Ghi sự kiện phân tích. Không cần đăng nhập.
@@ -307,6 +322,49 @@ Ba luật của bảng này:
 3. **`document` bị giới hạn 3 giá trị.** Thêm loại văn bản mới cần tick đồng ý
    (ví dụ Quy chế hoạt động) thì **phải sửa `CHECK` trong `contracts/schema.sql`
    trước** — insert giá trị lạ sẽ bị CSDL từ chối, không phải lỗi client.
+
+---
+
+## 3c. Chuyển khoản không cộng được token — `unmatched_transfers`
+
+Tiền về tài khoản nhưng không ghép được vào yêu cầu nạp nào. **Bốn nhánh**, mỗi
+nhánh cần một cách xử lý tay khác nhau nên không gộp làm một:
+
+| `reason` | Nghĩa | Xử lý |
+|---|---|---|
+| `khong_doc_duoc_ma` | nội dung chuyển khoản không có mã đối soát | tra theo số tiền + giờ, hỏi khách |
+| `khong_co_yeu_cau_nap` | đọc được mã nhưng không `topups` nào mang mã đó | mã cũ đã huỷ, hoặc khách gõ tay sai |
+| `bi_tu_choi` | `credit_topup` từ chối, ví dụ chuyển thiếu tiền | quyết định cộng bù hay hoàn lại |
+| `khac` | ngoài ba nhánh trên | đọc `payload` |
+
+```ts
+type UnmatchedTransfer = {
+  id: Uuid
+  provider: string            // 'sepay', 'payos'…
+  provider_ref: string | null
+  reason: 'khong_doc_duoc_ma' | 'khong_co_yeu_cau_nap' | 'bi_tu_choi' | 'khac'
+  transfer_code: string | null
+  vnd_amount: number | null
+  content: string | null      // nội dung chuyển khoản thô
+  payload: object             // NGUYÊN VĂN webhook
+  status: 'moi' | 'dang_xu_ly' | 'da_xu_ly' | 'bo_qua'
+  resolved_topup_id: Uuid | null
+  handled_by: Uuid | null
+  handled_at: string | null
+  note: string | null
+  created_at: string
+}
+```
+
+**Ghi:** chỉ `bank-webhook` (chạy bằng `service_role`). Ghi trùng `provider_ref`
+không sinh dòng thứ hai — có khoá duy nhất, vì nhà cung cấp gửi lại là chuyện thường.
+
+**Đọc và sửa:** chỉ `admin`. `payload` chứa tên và số tài khoản người gửi, là dữ
+liệu cá nhân. Màn xử lý tay thuộc luồng 10.
+
+Vì sao không để `console.error` như trước: log Edge Function hết hạn sau vài ngày
+và không ai ngồi đọc. Mất dòng log là mất manh mối để trả tiền cho một người thật
+đang ngồi chờ.
 
 ---
 

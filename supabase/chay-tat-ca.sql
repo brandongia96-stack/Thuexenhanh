@@ -6,7 +6,7 @@
 --
 -- Bọc trong BEGIN/COMMIT: lỗi ở bất kỳ đâu là huỷ sạch toàn bộ, CSDL trở lại
 -- như trước khi chạy. Không có chuyện vào được một nửa rồi mắc kẹt.
--- Gồm 13 file: 0001_init.sql, 0002_auth_hooks.sql, 0003_seed_static.sql, 0004_billing.sql, 0005_trust.sql, 0006_legal_consent.sql, 0007_notify.sql, 0008_admin.sql, 0009_grants.sql, 0010_bao_ve_sdt.sql, 0010_submit_and_owner_role.sql, 0011_storage_anh.sql, 0012_xe_dien_va_chi_phi.sql
+-- Gồm 15 file: 0001_init.sql, 0002_auth_hooks.sql, 0003_seed_static.sql, 0004_billing.sql, 0005_trust.sql, 0006_legal_consent.sql, 0007_notify.sql, 0008_admin.sql, 0009_grants.sql, 0010_bao_ve_sdt.sql, 0010_submit_and_owner_role.sql, 0011_storage_anh.sql, 0012_xe_dien_va_chi_phi.sql, 0013_nearby_cars.sql, 0014_auto_renew_va_doi_soat.sql
 -- ============================================================
 
 begin;
@@ -46,6 +46,15 @@ create type battery_ownership as enum ('mua', 'thue');
 create type wallet_tx_kind    as enum ('nap', 'tieu', 'hoan', 'thu_hoi', 'tang');
 create type topup_status      as enum ('cho_thanh_toan', 'da_thanh_toan', 'that_bai', 'huy');
 create type charge_kind       as enum ('dang_tin', 'gia_han', 'day_tin', 'lead');
+-- Vì sao tiền về mà không cộng được token. Bốn nhánh, không gộp làm một:
+-- mỗi nhánh cần một cách xử lý tay khác nhau.
+create type unmatched_reason  as enum (
+  'khong_doc_duoc_ma',     -- nội dung chuyển khoản không có mã đối soát nào
+  'khong_co_yeu_cau_nap',  -- đọc được mã nhưng không có `topups` nào mang mã đó
+  'bi_tu_choi',            -- `credit_topup` từ chối: ví dụ chuyển thiếu tiền
+  'khac'
+);
+create type unmatched_status  as enum ('moi', 'dang_xu_ly', 'da_xu_ly', 'bo_qua');
 create type report_status     as enum ('moi', 'dang_xu_ly', 'da_xu_ly', 'bo_qua');
 create type moderation_status as enum ('cho_duyet', 'da_duyet', 'tu_choi');
 create type notification_kind as enum ('tin_duyet', 'tin_tu_choi', 'sap_het_han', 'het_han', 'nap_thanh_cong', 'tru_token', 'he_thong');
@@ -238,6 +247,13 @@ create table listings (
   -- Số hiện sau khi khách bấm "Xem số điện thoại". KHÔNG có nút đặt xe.
   contact_phone     text not null,
   contact_zalo      text,
+
+  -- Chủ xe tự bật/tắt. Tin sắp hết hạn mà cờ này bật thì cron tự trừ token và
+  -- gia hạn thêm 1 tháng; hết token thì thôi, KHÔNG nợ, KHÔNG tự trừ tiếp
+  -- (CLAUDE.md 1.1: app không đứng giữa dòng tiền).
+  -- Mặc định TẮT: tự động lấy tiền của người ta mà họ không chủ động bật là
+  -- cách nhanh nhất để mất lòng tin.
+  auto_renew        boolean not null default false,
 
   -- Client KHÔNG được ghi 3 cột dưới. Chỉ server/admin.
   is_verified       boolean not null default false,
@@ -469,6 +485,46 @@ create table boosts (
   deleted_at   timestamptz
 );
 
+-- Chuyển khoản về tài khoản nhưng KHÔNG cộng được token.
+--
+-- Vì sao phải có bảng này thay vì `console.error`: đây là tiền thật của một
+-- người thật đang ngồi chờ token. Log của Edge Function hết hạn sau vài ngày
+-- và không ai ngồi đọc; mất dòng log là mất luôn manh mối để trả lại tiền.
+-- Có bảng thì admin tra được, khớp tay được, và chứng minh được là đã xử lý.
+--
+-- `payload` giữ NGUYÊN VĂN webhook: khi phải cãi nhau với ngân hàng hoặc với
+-- khách thì bản ghi tóm tắt không đủ, phải có bản gốc.
+-- Trong đó có tên và số tài khoản người gửi -> dữ liệu cá nhân -> CHỈ admin đọc.
+create table unmatched_transfers (
+  id            uuid primary key default gen_random_uuid(),
+  provider      text not null,                  -- 'sepay', 'payos'…
+  provider_ref  text,                           -- mã giao dịch bên nhà cung cấp
+  reason        unmatched_reason not null,
+  transfer_code text,                           -- mã đối soát đọc được, nếu đọc được
+  vnd_amount    int,
+  content       text,                           -- nội dung chuyển khoản thô
+  payload       jsonb not null default '{}',
+
+  -- Phần người thật xử lý tay
+  status        unmatched_status not null default 'moi',
+  resolved_topup_id uuid references topups(id), -- khớp tay vào yêu cầu nạp nào
+  handled_by    uuid references users(id),
+  handled_at    timestamptz,
+  note          text,
+
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now(),
+  deleted_at    timestamptz
+);
+-- Nhà cung cấp gửi lại webhook là chuyện thường. Khoá này để gửi lại không
+-- sinh ra dòng thứ hai cho cùng một giao dịch.
+create unique index unmatched_transfers_ref_idx
+  on unmatched_transfers (provider, provider_ref)
+  where provider_ref is not null;
+-- Hàng chờ xử lý: cũ nhất trước, vì người chờ lâu nhất phải được trả lời trước.
+create index unmatched_transfers_queue_idx
+  on unmatched_transfers (status, created_at);
+
 -- ─────────────────────────────────────────────
 -- 5. TIN CẬY & KIỂM DUYỆT
 -- ─────────────────────────────────────────────
@@ -658,7 +714,7 @@ begin
   foreach t in array array[
     'users','user_roles','brands','models','provinces','districts','amenities',
     'listings','listing_images','listing_blocked_dates','saved_listings',
-    'wallets','topups','charges','boosts',
+    'wallets','topups','charges','boosts','unmatched_transfers',
     'reviews','reports','moderation_queue','otp_codes','notifications','events_daily','reference_prices'
   ] loop
     execute format('create trigger %I_touch before update on %I for each row execute function touch_updated_at()', t, t);
@@ -693,7 +749,7 @@ begin
   foreach t in array array[
     'users','user_roles','brands','models','provinces','districts','amenities',
     'listings','listing_images','listing_blocked_dates','listing_events','saved_listings',
-    'wallets','wallet_transactions','topups','charges','boosts',
+    'wallets','wallet_transactions','topups','charges','boosts','unmatched_transfers',
     'reviews','reports','moderation_queue','otp_codes','user_consents','events','events_daily','notifications','admin_actions','reference_prices'
   ] loop
     execute format('alter table %I enable row level security', t);
@@ -745,6 +801,9 @@ create policy topups_own    on topups  for select using (user_id = auth.uid());
 create policy topups_create on topups  for insert with check (user_id = auth.uid());
 create policy charges_own   on charges for select using (user_id = auth.uid());
 create policy boosts_read   on boosts  for select using (deleted_at is null);
+-- Chuyển khoản lạc: CHỈ admin. Chứa tên + số tài khoản người gửi.
+-- service_role (Edge Function `bank-webhook`) bỏ qua RLS nên vẫn ghi được.
+create policy unmatched_admin on unmatched_transfers for all using (has_role('admin'));
 
 create policy reviews_read   on reviews for select using (is_public and deleted_at is null);
 create policy reviews_author on reviews for all
@@ -3288,6 +3347,252 @@ begin
   raise notice 'listing_card còn % dòng.', n;
 
   raise notice 'OK — xe điện + chi phí dạng số đã vào, quyền đúng.';
+end $blk$;
+
+commit;
+
+-- ════════════════════════════════════════════════════════════
+-- ▼ 0013_nearby_cars.sql
+-- ════════════════════════════════════════════════════════════
+do $$ begin raise notice 'Đang chạy: 0013_nearby_cars.sql'; end $$;
+
+-- ============================================================
+-- 0013 — "Xe gần bạn": tìm xe trong bán kính, tính khoảng cách TRÊN SERVER.
+--
+-- Thay bản cũ (client kéo toạ độ của MỌI tin về rồi tự tính Haversine):
+--   · bản cũ tải N dòng toạ độ mỗi lần bấm — 10.000 tin là 10.000 dòng
+--   · bản này: lọc hộp bao quanh trước (dùng được index), rồi mới tính
+--     Haversine trên vài chục dòng, trả tối đa 20 thẻ + khoảng cách.
+--
+-- Điều kiện hiển thị KHỚP trang tìm kiếm (searchApi.js):
+--   status in (dang_hien_thi, sap_het_han) và expires_at > now().
+--
+-- security INVOKER: chạy bằng quyền của người gọi → RLS + quyền cột của
+-- 0010 vẫn áp dụng nguyên vẹn. Hàm không đọc contact_phone/zalo/plate.
+--
+-- Chạy lại nhiều lần được.
+-- ============================================================
+
+create index if not exists listings_lat_lng_idx
+  on listings (lat, lng)
+  where lat is not null and lng is not null and deleted_at is null;
+
+create or replace function get_nearby_listings(
+  p_lat       numeric,
+  p_lng       numeric,
+  p_radius_km numeric default 50,
+  p_limit     int     default 8
+)
+returns table (
+  id                  uuid,
+  status              listing_status,
+  brand_text          text,
+  model_text          text,
+  year                int,
+  seats               int,
+  transmission        transmission,
+  fuel                fuel_type,
+  price_per_day       int,
+  province_id         int,
+  district_id         int,
+  is_verified         boolean,
+  published_at        timestamptz,
+  owner_id            uuid,
+  ev_range_km         int,
+  charge_policy       charge_policy,
+  collateral_required boolean,
+  cover_thumb         text,
+  cover_blur          text,
+  cover_width         int,
+  cover_height        int,
+  distance_km         numeric
+)
+language sql
+stable
+security invoker
+set search_path = public
+as $$
+  with tham_so as (
+    select
+      p_lat::float8                                            as lat0,
+      p_lng::float8                                            as lng0,
+      least(greatest(coalesce(p_radius_km, 50), 1), 100)::float8 as r,
+      least(greatest(coalesce(p_limit, 8), 1), 20)             as lim
+    where p_lat between -90 and 90 and p_lng between -180 and 180
+  ),
+  ung_vien as (
+    -- Hộp bao quanh: 1 độ vĩ ≈ 111 km. Lọc thô bằng index trước khi tính lượng giác.
+    select l.id, l.lat::float8 as lat, l.lng::float8 as lng
+    from listings l, tham_so t
+    where l.lat is not null and l.lng is not null
+      and l.deleted_at is null
+      and l.status in ('dang_hien_thi', 'sap_het_han')
+      and l.expires_at > now()
+      and l.lat between t.lat0 - t.r / 111.0 and t.lat0 + t.r / 111.0
+      and l.lng between t.lng0 - t.r / (111.0 * greatest(cos(radians(t.lat0)), 0.01))
+                    and t.lng0 + t.r / (111.0 * greatest(cos(radians(t.lat0)), 0.01))
+  ),
+  co_khoang_cach as (
+    select u.id,
+      6371 * acos(least(1.0, greatest(-1.0,
+        cos(radians(t.lat0)) * cos(radians(u.lat)) * cos(radians(u.lng) - radians(t.lng0))
+        + sin(radians(t.lat0)) * sin(radians(u.lat))
+      ))) as km
+    from ung_vien u, tham_so t
+  )
+  select
+    c.id, c.status, c.brand_text, c.model_text, c.year, c.seats, c.transmission, c.fuel,
+    c.price_per_day, c.province_id, c.district_id, c.is_verified, c.published_at, c.owner_id,
+    c.ev_range_km, c.charge_policy, c.collateral_required,
+    c.cover_thumb, c.cover_blur, c.cover_width, c.cover_height,
+    round(k.km::numeric, 1) as distance_km
+  from co_khoang_cach k
+  join listing_card c on c.id = k.id
+  cross join tham_so t
+  where k.km <= t.r
+  order by k.km asc, c.id
+  limit (select lim from tham_so);
+$$;
+
+revoke all on function get_nearby_listings(numeric, numeric, numeric, int) from public;
+grant execute on function get_nearby_listings(numeric, numeric, numeric, int) to anon, authenticated;
+
+-- Tự kiểm: hàm phải chạy được và toạ độ sai phải ra rỗng chứ không nổ.
+do $$
+declare n int;
+begin
+  select count(*) into n from get_nearby_listings(10.77, 106.70);
+  select count(*) into n from get_nearby_listings(999, 999);
+  if n <> 0 then
+    raise exception 'HỎNG — toạ độ không hợp lệ vẫn trả % dòng', n;
+  end if;
+  raise notice 'OK — get_nearby_listings chạy, toạ độ sai trả rỗng.';
+end $$;
+
+-- ════════════════════════════════════════════════════════════
+-- ▼ 0014_auto_renew_va_doi_soat.sql
+-- ════════════════════════════════════════════════════════════
+do $$ begin raise notice 'Đang chạy: 0014_auto_renew_va_doi_soat.sql'; end $$;
+
+-- ============================================================
+-- Luồng 01 — Ba món hợp đồng chung mà luồng 06 đang vướng.
+-- Chạy SAU 0013. (`src/modules/billing/server/README.md` mục 7)
+--
+--   1. `listings.auto_renew`      — chưa có cột thì không làm tự gia hạn được
+--   2. `unmatched_transfers`      — tiền về mà sai mã thì hiện chỉ `console.error`
+--   3. (món 3 là sửa `contracts/api.md`, không có SQL)
+--
+-- ⚠️ Thêm cột vào `listings` thì PHẢI gọi `cap_quyen_cot_listings()` ở cuối:
+-- `0010_bao_ve_sdt.sql` đã hạ quyền đọc mức BẢNG rồi cấp lại theo từng CỘT,
+-- nên cột mới mặc định không ai đọc được. Quên là giao diện lặng lẽ thiếu dữ
+-- liệu, không báo lỗi gì.
+-- ============================================================
+
+begin;
+
+-- ── 1. Tự động gia hạn ──
+-- Mặc định TẮT. Tự lấy tiền của người ta mà họ không chủ động bật là cách
+-- nhanh nhất để mất lòng tin — và trái tinh thần "app không đứng giữa dòng
+-- tiền" (CLAUDE.md 1.1).
+--
+-- Cố ý KHÔNG thêm cột "gia hạn mấy tháng": cứ 1 tháng một lần. Thêm cột chưa
+-- ai dùng là làm nặng schema; cần thì luồng 06 xin sau.
+alter table listings
+  add column if not exists auto_renew boolean not null default false;
+
+-- Cron quét tin sắp hết hạn chỉ quan tâm tin BẬT cờ này. Index một phần cho
+-- nhẹ: phần lớn tin sẽ để mặc định `false`.
+create index if not exists listings_auto_renew_idx
+  on listings (expires_at)
+  where auto_renew and deleted_at is null;
+
+-- ── 2. Chuyển khoản không cộng được token ──
+do $blk$ begin
+  if not exists (select 1 from pg_type where typname = 'unmatched_reason') then
+    create type unmatched_reason as enum (
+      'khong_doc_duoc_ma', 'khong_co_yeu_cau_nap', 'bi_tu_choi', 'khac');
+  end if;
+  if not exists (select 1 from pg_type where typname = 'unmatched_status') then
+    create type unmatched_status as enum ('moi', 'dang_xu_ly', 'da_xu_ly', 'bo_qua');
+  end if;
+end $blk$;
+
+create table if not exists unmatched_transfers (
+  id            uuid primary key default gen_random_uuid(),
+  provider      text not null,
+  provider_ref  text,
+  reason        unmatched_reason not null,
+  transfer_code text,
+  vnd_amount    int,
+  content       text,
+  payload       jsonb not null default '{}',
+
+  status        unmatched_status not null default 'moi',
+  resolved_topup_id uuid references topups(id),
+  handled_by    uuid references users(id),
+  handled_at    timestamptz,
+  note          text,
+
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now(),
+  deleted_at    timestamptz
+);
+
+-- Webhook gửi lại là chuyện thường; khoá này để gửi lại không sinh dòng thứ hai.
+create unique index if not exists unmatched_transfers_ref_idx
+  on unmatched_transfers (provider, provider_ref)
+  where provider_ref is not null;
+-- Hàng chờ: cũ nhất trước — người chờ lâu nhất phải được trả lời trước.
+create index if not exists unmatched_transfers_queue_idx
+  on unmatched_transfers (status, created_at);
+
+alter table unmatched_transfers enable row level security;
+
+drop policy if exists unmatched_admin on unmatched_transfers;
+-- CHỈ admin: `payload` chứa tên và số tài khoản người gửi.
+-- `service_role` (Edge Function `bank-webhook`) bỏ qua RLS nên vẫn ghi được.
+create policy unmatched_admin on unmatched_transfers for all using (has_role('admin'));
+
+drop trigger if exists unmatched_transfers_touch on unmatched_transfers;
+create trigger unmatched_transfers_touch before update on unmatched_transfers
+  for each row execute function touch_updated_at();
+
+-- ── 3. Cấp lại quyền cột cho `listings` (vì vừa thêm `auto_renew`) ──
+do $blk$
+declare n int;
+begin
+  n := cap_quyen_cot_listings();
+  raise notice 'Đã cấp lại quyền đọc % cột công khai của listings.', n;
+end $blk$;
+
+-- ── 4. Tự kiểm ──
+do $blk$
+declare n int;
+begin
+  -- 4a. Cột mới phải đọc được, nếu không màn chủ xe không thấy trạng thái cờ.
+  select count(*) into n
+  from information_schema.column_privileges
+  where table_schema = 'public' and table_name = 'listings'
+    and grantee = 'anon' and privilege_type = 'SELECT' and column_name = 'auto_renew';
+  if n <> 1 then
+    raise exception 'HỎNG — anon chưa đọc được listings.auto_renew';
+  end if;
+
+  -- 4b. Ba cột nhạy cảm vẫn phải kín sau khi cấp lại quyền.
+  select count(*) into n
+  from information_schema.column_privileges
+  where table_schema = 'public' and table_name = 'listings'
+    and grantee in ('anon', 'authenticated') and privilege_type = 'SELECT'
+    and column_name in ('contact_phone', 'contact_zalo', 'plate');
+  if n > 0 then
+    raise exception 'HỎNG — cấp lại quyền đã làm hở % cột nhạy cảm', n;
+  end if;
+
+  -- 4c. 10 tin demo không được mất dòng nào.
+  select count(*) into n from listing_card;
+  raise notice 'listing_card còn % dòng.', n;
+
+  raise notice 'OK — auto_renew + unmatched_transfers đã vào, quyền đúng.';
 end $blk$;
 
 commit;
