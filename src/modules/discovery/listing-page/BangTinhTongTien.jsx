@@ -9,6 +9,7 @@ import { layGiaThamChieu } from './giaThamChieuApi'
 import { soanBaoGia } from './baoGia'
 import { laySoDienThoai, loiThanhLoiNoi } from '../contact/lienHeApi'
 import { ghiBamZalo } from '../ghiSuKien'
+import BoChonThoiGian from '../../../components/BoChonThoiGian'
 
 // Giờ hiện tại làm tròn lên giờ chẵn kế tiếp — mốc mặc định hợp lý hơn phút lẻ.
 function gioMacDinh() {
@@ -107,24 +108,11 @@ export default function BangTinhTongTien({ tin, userId, conHienThi }) {
     <Khoi title="Ước tính chi phí thuê">
       <div className="banggia">
         <div className="banggia-nhap">
-          <label className="field">
-            <span className="field-label">Nhận xe lúc</span>
-            <input
-              type="datetime-local"
-              className="input"
-              value={dinhDangInput(gioNhan)}
-              onChange={(e) => e.target.value && setGioNhan(new Date(e.target.value))}
-            />
-          </label>
-          <label className="field">
-            <span className="field-label">Trả xe lúc</span>
-            <input
-              type="datetime-local"
-              className="input"
-              value={dinhDangInput(gioTra)}
-              onChange={(e) => e.target.value && setGioTra(new Date(e.target.value))}
-            />
-          </label>
+          <BoChonThoiGian 
+            gioNhan={gioNhan} 
+            gioTra={gioTra} 
+            onChange={(n, t) => { setGioNhan(n); setGioTra(t) }} 
+          />
           <label className="field">
             <span className="field-label">Quãng đường dự kiến</span>
             <input

@@ -1,0 +1,190 @@
+.banggia-nhap-to {
+  display: flex;
+  gap: var(--sp-2);
+  grid-column: 1 / -1;
+}
+
+.banggia-picker {
+  flex: 1;
+  cursor: pointer;
+}
+
+
+
+.banggia-picker .field-label {
+  display: block;
+  font-size: 12px;
+  color: var(--m-mid);
+  margin-bottom: 2px;
+}
+
+.banggia-picker .banggia-val strong {
+  font-size: 14px;
+  color: var(--m-dark);
+}
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-4);
+}
+
+.time-picker-modal {
+  background: var(--m-surface);
+  border-radius: var(--r-lg);
+  width: 100%;
+  max-width: 600px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--shadow-xl);
+  display: flex;
+  flex-direction: column;
+}
+
+.modal-head {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--sp-4);
+  border-bottom: 1px solid var(--m-border);
+  position: relative;
+}
+
+.modal-head .btn-close {
+  position: absolute;
+  right: var(--sp-4);
+  background: none;
+  border: 1px solid var(--m-border);
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--m-mid);
+}
+
+.modal-body {
+  padding: var(--sp-4);
+}
+
+.cal-header-nav {
+  display: flex;
+  align-items: center;
+  margin-bottom: var(--sp-4);
+}
+
+.cal-header-nav .btn-nav {
+  background: none;
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-sm);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.cal-wrapper {
+  display: flex;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+}
+
+.cal-month {
+  flex: 1;
+  min-width: 240px;
+}
+
+.cal-title {
+  text-align: center;
+  font-weight: 700;
+  margin-bottom: var(--sp-4);
+}
+
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px 0;
+}
+
+.cal-dow {
+  text-align: center;
+  font-size: 13px;
+  color: var(--m-mid);
+  margin-bottom: 8px;
+}
+
+.cal-cell {
+  background: none;
+  border: none;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--t-fast);
+  color: var(--m-dark);
+}
+
+.cal-cell:hover:not(.disabled):not(.empty) {
+  background: var(--m-green-light);
+}
+
+.cal-cell.disabled {
+  color: var(--m-border);
+  cursor: not-allowed;
+}
+
+.cal-cell.empty {
+  cursor: default;
+}
+
+.cal-cell.in-range {
+  background: var(--m-green-light);
+  color: var(--m-green);
+}
+
+.cal-cell.selected {
+  background: var(--m-green);
+  color: white;
+}
+
+.cal-cell.start-range {
+  border-top-left-radius: 18px;
+  border-bottom-left-radius: 18px;
+}
+
+.cal-cell.end-range {
+  border-top-right-radius: 18px;
+  border-bottom-right-radius: 18px;
+}
+
+.time-selectors {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  margin-top: var(--sp-4);
+  padding-top: var(--sp-4);
+  border-top: 1px dashed var(--m-border);
+}
+
+.modal-foot-cal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-4);
+  border-top: 1px solid var(--m-border);
+  background: var(--m-surface);
+  position: sticky;
+  bottom: 0;
+}
