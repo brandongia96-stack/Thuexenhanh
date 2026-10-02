@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react'
 import { Link, NavLink } from 'react-router-dom'
-import { LayoutDashboard, LogIn, LogOut, Plus, Wallet, Car, Heart, Settings } from 'lucide-react'
+import { LayoutDashboard, LogIn, LogOut, Plus, Wallet, Car, Heart, Settings, Calendar } from 'lucide-react'
 import { useAuth } from '../modules/auth/AuthProvider'
 import './Header.css'
 
@@ -83,6 +83,9 @@ export default function Header() {
                       </Link>
                       <Link to="/chu-xe" className="hd-dropdown-item" onClick={() => setMenuOpen(false)}>
                         <Car size={16} /> Quản lý xe
+                      </Link>
+                      <Link to="/chu-xe/lich" className="hd-dropdown-item" onClick={() => setMenuOpen(false)}>
+                        <Calendar size={16} /> Lịch xe tổng
                       </Link>
                     </>
                   )}

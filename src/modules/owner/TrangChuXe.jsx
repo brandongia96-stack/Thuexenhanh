@@ -183,14 +183,28 @@ export default function TrangChuXe() {
       {/* Tổng của chủ xe. ChiSo tự ẩn khi giá trị null (chưa biết); 0 vẫn hiện vì 0 là số thật. */}
       <section className="cx-tong" aria-label="Tổng quan 30 ngày">
         <ChiSo icon={Eye} nhan="Lượt xem 30 ngày" giaTri={tong?.view_listing} />
-        <ChiSo icon={Phone} nhan="Lượt lấy số 30 ngày" giaTri={tong?.reveal_phone} tone="ok"
-          phu={tyLe != null ? `${dinhDangTyLe(tyLe)} số người xem` : null} />
+        <ChiSo icon={Phone} nhan="Lượt lấy số 30 ngày" giaTri={tong?.reveal_phone} tone="ok" />
+        
+        {/* Tỉ lệ chuyển đổi tách ra thành 1 box riêng cho chuyên nghiệp */}
+        <ChiSo 
+          icon={AlertTriangle} 
+          nhan="Tỉ lệ chuyển đổi" 
+          giaTri={tyLe != null ? `${dinhDangTyLe(tyLe)}` : null} 
+          phu="Khách xem / Lấy số"
+        />
+
+        <ChiSo 
+          icon={Car} 
+          nhan="Tổng số xe" 
+          giaTri={quan ? quan.dangHien + quan.cho + quan.hetHan : null} 
+          phu={quan ? `${quan.cho} chờ duyệt` : null}
+        />
+        
         <ChiSo icon={Car} nhan="Đang hiển thị" giaTri={quan?.dangHien}
           phu={quan ? `${quan.hetHan} hết hạn / ẩn` : null} />
+          
         <ChiSo icon={Wallet} nhan="Số dư token" giaTri={soDu === undefined ? null : soDu}
           phu={<Link to="/chu-xe/vi">Mở ví</Link>} />
-        <ChiSo icon={CalendarClock} nhan="Hết hạn gần nhất"
-          giaTri={quan?.hetHanGanNhat ? formatDate(quan.hetHanGanNhat) : null} />
       </section>
       {tong && tong.view_listing === 0 && tong.reveal_phone === 0 && (
         <p className="t-small">

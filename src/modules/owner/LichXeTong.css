@@ -1,0 +1,148 @@
+.lich-page {
+  padding-top: var(--sp-6);
+  padding-bottom: var(--sp-12);
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.lich-header {
+  justify-content: space-between;
+  align-items: center;
+}
+.lich-header h1 {
+  display: flex; align-items: center; gap: var(--sp-3);
+  color: var(--m-dark);
+}
+
+.lich-controls {
+  background: var(--m-surface);
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-full);
+  padding: 4px;
+}
+.lich-thang {
+  font-weight: 600;
+  min-width: 120px;
+  text-align: center;
+}
+
+.lich-bang-wrap {
+  width: 100%;
+  overflow-x: auto;
+  background: var(--m-surface);
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-2);
+  box-shadow: var(--shadow-sm);
+  margin-top: var(--sp-4);
+}
+
+.lich-bang {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 1200px;
+}
+
+.lich-bang th, .lich-bang td {
+  border: 1px solid var(--m-border-light);
+  padding: 0;
+}
+
+.lich-th-xe {
+  width: 250px;
+  min-width: 250px;
+  padding: var(--sp-3) var(--sp-4) !important;
+  text-align: left;
+  background: var(--m-bg);
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+
+.lich-td-xe {
+  padding: var(--sp-2) var(--sp-3) !important;
+  background: var(--m-surface);
+  position: sticky;
+  left: 0;
+  z-index: 2;
+}
+
+.lich-xe-info {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+.lich-xe-info img {
+  width: 48px;
+  height: 36px;
+  border-radius: 4px;
+  object-fit: cover;
+  background: var(--m-bg);
+}
+.lich-xe-ten {
+  display: flex;
+  flex-direction: column;
+}
+.lich-xe-ten strong {
+  font-size: 14px;
+  color: var(--m-dark);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 150px;
+}
+.lich-xe-ten span {
+  font-size: 12px;
+  color: var(--m-subtle);
+}
+
+.lich-th-ngay {
+  min-width: 40px;
+  text-align: center;
+  background: var(--m-bg);
+  padding: var(--sp-2) 0 !important;
+}
+.lich-th-ngay .ngay-thu {
+  font-size: 11px;
+  color: var(--m-mid);
+  text-transform: uppercase;
+}
+.lich-th-ngay .ngay-so {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--m-dark);
+}
+.lich-th-ngay.hom-nay {
+  background: var(--m-green-light);
+}
+.lich-th-ngay.hom-nay .ngay-so {
+  color: var(--m-green);
+}
+
+.lich-td-ngay {
+  height: 52px;
+  position: relative;
+  cursor: pointer;
+  transition: background var(--t-fast);
+}
+.lich-td-ngay:hover {
+  background: var(--m-bg);
+}
+
+.lich-td-ngay.ban .lich-cell-content {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 2px;
+  right: 2px;
+  background: #FFEbee;
+  border: 1px solid #FFCDD2;
+  border-radius: 4px;
+}
+
+/* Kéo dài background trắng cho cột sticky để đè lên viền */
+.lich-td-xe::after, .lich-th-xe::after {
+  content: '';
+  position: absolute;
+  top: 0; right: -1px; bottom: 0;
+  border-right: 1px solid var(--m-border);
+}
