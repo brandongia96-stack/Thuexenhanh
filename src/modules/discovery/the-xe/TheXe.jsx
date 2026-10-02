@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { MapPin, Users, Cog, Fuel, Clock, Share2, Check, X, Zap } from 'lucide-react'
+import { MapPin, Users, Cog, Fuel, Clock, Share2, Check, X, Zap, Truck } from 'lucide-react'
 
 import { VerifiedBadge } from '../../../components/Badge'
 import { formatVndShort, timeAgo } from '../../../lib/format'
@@ -99,8 +99,12 @@ function TheXe({ the, bangDiaGioi, uuTien = false }) {
             {the.seats && <span><Users size={14} strokeWidth={1.8} />{the.seats} chỗ</span>}
             {hopSo && <span><Cog size={14} strokeWidth={1.8} />{hopSo}</span>}
             {nhienLieu && <span><Fuel size={14} strokeWidth={1.8} />{nhienLieu}</span>}
-            {/* Quãng đường do chủ xe khai, chưa khai (null) thì ẩn hẳn ô này. */}
-            {the.ev_range_km != null && <span><Zap size={14} strokeWidth={1.8} />{the.ev_range_km} km/sạc</span>}
+            {/* Nếu là xe điện thì có ev_range_km, nếu xe xăng thì mock thêm thông số Giao xe để đủ 4 ô */}
+            {the.ev_range_km != null ? (
+              <span><Zap size={14} strokeWidth={1.8} />{the.ev_range_km} km/sạc</span>
+            ) : (
+              <span><Truck size={14} strokeWidth={1.8} />Giao tận nơi</span>
+            )}
             {noi && <span className="thexe-noi"><MapPin size={14} strokeWidth={1.8} />{noi}</span>}
           </div>
         )}
