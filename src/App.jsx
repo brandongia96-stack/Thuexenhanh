@@ -21,6 +21,9 @@ const HoanToken = lazy(() => import('./modules/legal/HoanToken'))
 const LienHe = lazy(() => import('./modules/legal/LienHe'))
 const GioiThieu = lazy(() => import('./modules/legal/GioiThieu'))
 const HoiDap = lazy(() => import('./modules/legal/HoiDap'))
+const QuyChe = lazy(() => import('./modules/legal/QuyChe'))
+const KhieuNai = lazy(() => import('./modules/legal/KhieuNai'))
+const ThongTinThue = lazy(() => import('./modules/legal/ThongTinThue'))
 // Luồng 05 — trang xem xe và xe đã lưu. Tách gói riêng: khách vào trang chủ
 // không phải tải slider ảnh, hộp liên hệ hay 13 icon tiện nghi.
 const TrangXe = lazy(() => import('./modules/discovery/listing-page/TrangXe'))
@@ -96,9 +99,12 @@ export default function App() {
               } />
 
               {/* ── Trang tĩnh ── */}
+              <Route path="/quy-che" element={<QuyChe />} />
               <Route path="/dieu-khoan" element={<DieuKhoan />} />
               <Route path="/bao-mat" element={<BaoMat />} />
               <Route path="/hoan-token" element={<HoanToken />} />
+              <Route path="/khieu-nai" element={<KhieuNai />} />
+              <Route path="/thue" element={<ThongTinThue />} />
               <Route path="/gioi-thieu" element={<GioiThieu />} />
               <Route path="/tro-giup" element={<HoiDap />} />
               <Route path="/lien-he" element={<LienHe />} />

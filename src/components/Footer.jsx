@@ -42,9 +42,12 @@ export default function Footer() {
 
         <div className="footer-col">
           <h4>Chính sách</h4>
+          <Link to="/quy-che">Quy chế hoạt động</Link>
           <Link to="/dieu-khoan">Điều khoản sử dụng</Link>
-          <Link to="/bao-mat">Chính sách bảo mật</Link>
+          <Link to="/bao-mat">Bảo vệ dữ liệu cá nhân</Link>
           <Link to="/hoan-token">Chính sách hoàn token</Link>
+          <Link to="/khieu-nai">Giải quyết khiếu nại</Link>
+          <Link to="/thue">Thông tin thuế</Link>
         </div>
 
         <div className="footer-col">
