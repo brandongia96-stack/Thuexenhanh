@@ -13,7 +13,7 @@
 export const VAN_BAN = {
   terms: { phienBan: '1.1', hieuLuc: '02/10/2026' },
   privacy: { phienBan: '2.0', hieuLuc: '02/10/2026' },
-  refund: { phienBan: '1.1', hieuLuc: '02/10/2026' },
+  refund: { phienBan: '1.2', hieuLuc: '02/10/2026' },
   operation: { phienBan: '1.0', hieuLuc: '02/10/2026' },
   complaint: { phienBan: '1.0', hieuLuc: '02/10/2026' },
   tax: { phienBan: '1.0', hieuLuc: '02/10/2026' },

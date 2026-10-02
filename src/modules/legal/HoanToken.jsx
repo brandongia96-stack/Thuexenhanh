@@ -12,8 +12,17 @@ export default function HoanToken() {
       </p>
       <Muc n="1" title="Token đã nạp có đổi lại thành tiền không?">
         <p className="t-body">
-          Token còn <b>chưa dùng</b> trong ví được hoàn lại thành tiền nếu bạn yêu cầu. Token đã dùng
-          để hiển thị tin thì không hoàn thành tiền.
+          <b>Được.</b> Token còn <b>chưa dùng</b> trong ví được hoàn lại thành tiền nếu bạn yêu cầu.
+        </p>
+        <p className="t-body">
+          <b>Không trừ khoản nào:</b> mỗi token được hoàn đủ {formatVnd(TOKEN_VND)}, không trừ phí
+          xử lý, không trừ phần trăm. Chúng tôi chịu phí chuyển khoản ngân hàng nếu có.
+        </p>
+        <p className="t-body">
+          <b>Token đã tiêu thì không hoàn.</b> Khi bạn trả phí hiển thị cho một tin, số token đó đã
+          đổi thành thời gian hiển thị của tin (ví dụ {TOKENS_PER_MONTH} token đổi thành 1 tháng cho
+          một xe). Phần token này không hoàn thành tiền, kể cả khi bạn ẩn tin hoặc xoá tin trước
+          khi hết thời gian đó.
         </p>
         <p className="t-body">
           <b>Cách yêu cầu:</b> gửi yêu cầu kèm email bạn dùng để đăng nhập và số tài khoản nhận tiền
