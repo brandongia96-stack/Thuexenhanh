@@ -164,14 +164,66 @@ cũng sẽ "toàn PASS" mà app thì trắng trang.
 
 ---
 
-## 8. Cron — đặt sau, khi đã có dữ liệu thật
+## 8. Cron — CHƯA đặt. Thiếu bước này thì không ai nhận được thông báo hạn
 
-**Database → Extensions** bật `pg_cron`, rồi:
+Kiểm repo: không có `cron.schedule` nào, cũng không có lịch ở Cloudflare/GitHub.
+Hai thứ cần chạy theo lịch, **phụ thuộc nhau**:
 
-| Việc | Lệnh | Giờ |
+| Việc | Ai làm | Vì sao cần |
 |---|---|---|
-| Gộp sự kiện theo ngày | `select rollup_events_daily();` | 02:00 |
-| Dọn bảng `events` thô | `select prune_events(90);` | 03:00 |
-| Đánh dấu tin hết hạn | `select expire_listings();` | 01:00 |
-| Nhắc sắp hết hạn | `select scan_expiry_reminders();` | 08:00 |
-| Đẩy hàng đợi thông báo | gọi `send-notifications` kèm `CRON_SECRET` | mỗi 5 phút |
+| `expire_listings()` | SQL trực tiếp | Đổi `status` sang `sap_het_han` / `het_han` và bắn thông báo **trong app**. |
+| `send-notifications` | Edge Function | Tự gọi `scan_expiry_reminders()` rồi gửi **email + Zalo**. |
+
+⚠️ `scan_expiry_reminders()` đã nằm trong `send-notifications` — **đừng đặt cron riêng**
+cho nó. Mail "tin đã hết hạn" chỉ có khi `expire_listings()` đã đổi trạng thái tin
+sang `het_han`, nên `expire_listings()` mà không chạy thì email hết hạn không bao giờ ra.
+Cả hai chạy lại bao nhiêu lần cũng không gửi trùng.
+
+**Bước 1.** Deploy lại function **không kiểm JWT** (nó tự kiểm `x-cron-secret`):
+
+```bash
+npx supabase functions deploy send-notifications --no-verify-jwt
+```
+
+**Bước 2.** Database → Extensions: bật `pg_cron` và `pg_net`.
+
+**Bước 3.** Lưu secret vào Vault (SQL Editor). Thay hai giá trị; `CRON_SECRET` phải
+**giống hệt** biến đã `secrets set` ở bước 5:
+
+```sql
+select vault.create_secret('https://<ref>.supabase.co', 'project_url');
+select vault.create_secret('<CRON_SECRET>', 'cron_secret');
+```
+
+**Bước 4.** Đặt lịch:
+
+```sql
+select cron.schedule('het-han-tin', '0 * * * *', $$ select expire_listings(); $$);
+
+select cron.schedule('gui-thong-bao', '*/5 * * * *', $$
+  select net.http_post(
+    url     := (select decrypted_secret from vault.decrypted_secrets where name = 'project_url')
+               || '/functions/v1/send-notifications',
+    headers := jsonb_build_object(
+      'Content-Type', 'application/json',
+      'x-cron-secret', (select decrypted_secret from vault.decrypted_secrets where name = 'cron_secret')),
+    body    := '{}'::jsonb
+  );
+$$);
+
+select cron.schedule('gop-su-kien', '0 19 * * *', $$ select rollup_events_daily(); $$);
+select cron.schedule('don-su-kien', '0 20 * * *', $$ select prune_events(90); $$);
+```
+
+`expire_listings` chạy mỗi giờ (không phải 1 lần/đêm) để tin hết hạn ẩn và báo
+trong vòng 1 giờ. pg_cron tính giờ UTC: `0 19` = 02:00 giờ Việt Nam, `0 20` = 03:00.
+
+**Kiểm:** chờ 5 phút rồi chạy:
+
+```sql
+select status, count(*) from notification_outbox group by 1;
+select jobname, status, return_message from cron.job_run_details order by start_time desc limit 8;
+```
+
+Chưa có `RESEND_API_KEY` / `ZALO_*` thì dòng email/Zalo nằm ở `cho_gui` — đúng thiết kế,
+đặt khoá xong là tự gửi. Dòng `inapp` thì hiện ngay.

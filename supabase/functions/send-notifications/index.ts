@@ -1,4 +1,4 @@
-// send-notifications — cron gọi mỗi 15 phút (luồng 11).
+// send-notifications — cron gọi mỗi 5 phút (README §8) (luồng 11).
 //
 //   1. scan_expiry_reminders()  -> xếp hàng nhắc hạn 3 ngày / 1 ngày / đã hết / thiếu token
 //   2. claim_outbox()           -> lấy lô email + zalo chờ gửi
