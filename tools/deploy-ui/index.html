@@ -75,6 +75,8 @@ button{font-family:inherit;cursor:pointer}
   transition:background var(--t-fast),border-color var(--t-fast),transform var(--t-fast),opacity var(--t-fast);
 }
 .nut:active:not(:disabled){transform:translateY(1px)}
+a.nut{text-decoration:none}
+a.nut.lech{border-color:#fde68a;background:var(--m-amber-bg);color:#92400e}
 .nut:disabled{opacity:.42;cursor:not-allowed}
 .n-vien{background:var(--m-surface);border-color:#e3e5ea;color:var(--m-dark);box-shadow:var(--shadow-sm)}
 .n-vien:hover:not(:disabled){background:#fafbfc}
@@ -243,6 +245,14 @@ summary{cursor:pointer;font-weight:700;font-size:13px;color:var(--m-mid);padding
       <svg class="svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6"/><path d="m9 5 3-3 3 3"/><rect x="3" y="8" width="18" height="13" rx="2"/></svg>
       Đẩy lên main
     </button>
+    <a class="nut n-vien" id="l-dev" href="https://dev.thuexenhanh.pages.dev" target="_blank" rel="noopener" title="Bản build từ nhánh dev">
+      <svg class="svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+      Mở web dev
+    </a>
+    <a class="nut n-vien" id="l-that" href="https://thuexenhanh.pages.dev" target="_blank" rel="noopener" title="Bản production từ nhánh main — khách thật vào đây">
+      <svg class="svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20"/></svg>
+      Mở web thật
+    </a>
   </div>
 </div>
 
@@ -667,6 +677,7 @@ $('#b-dev').onclick = async () => {
   nhatKy('✔ Đã lên nhánh dev: ' + r.sha.slice(0, 7))
   if (r.log && r.log.trim()) nhatKy(r.log.trim())
   nhatKy('→ Nút main đã mở.')
+  setTimeout(kiemWeb, 90000)   // chờ Cloudflare build xong rồi kiểm lại hai web
   await lamMoiState()
 }
 
@@ -682,6 +693,7 @@ $('#b-main').onclick = async () => {
   nhatKy('✔ Đã lên nhánh main: ' + r.sha.slice(0, 7))
   if (r.log && r.log.trim()) nhatKy(r.log.trim())
   nhatKy('→ Cloudflare Pages sẽ tự build lại sau vài chục giây.')
+  setTimeout(kiemWeb, 90000)
   await lamMoiState()
 }
 
@@ -691,7 +703,24 @@ async function lamMoiState() {
   veDauTrang(); capNhatNut()
 }
 
+/** Đánh dấu nút mở web nếu web đó KHÔNG chạy code repo này (ví dụ alias dev còn bản cũ). */
+async function kiemWeb() {
+  try {
+    const w = await (await fetch('/api/web')).json()
+    for (const [id, k, nhan] of [['#l-dev', w.dev, 'Mở web dev'], ['#l-that', w.that, 'Mở web thật']]) {
+      const a = $(id)
+      const lech = k.laRepoNay === false
+      a.classList.toggle('lech', lech)
+      a.lastChild.textContent = ' ' + nhan + (lech ? ' ⚠' : '')
+      a.title = lech
+        ? `Đang chạy code KHÁC repo này ("${k.tieuDe}") — Cloudflare chưa build nhánh này`
+        : !k.song ? 'Không mở được web này' : `Đúng code repo này · ${k.bundle || ''}`
+    }
+  } catch {}
+}
+
 lamMoiState()
+kiemWeb()
 </script>
 </body>
 </html>

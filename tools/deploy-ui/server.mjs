@@ -643,6 +643,27 @@ const may = http.createServer(async (req, res) => {
       return traJson(res, { git: g, ...st })
     }
 
+    // Hai web thật có đang chạy code repo này không. So <title> với index.html ở máy:
+    // alias `dev.` từng phục vụ nguyên một codebase khác mà nhìn qua không ai biết.
+    if (url.pathname === '/api/web') {
+      const tieuDeMay = ((await readFile(path.join(ROOT, 'index.html'), 'utf8'))
+        .match(/<title>([^<]*)<\/title>/) || [])[1] || ''
+      const kiem = async (diaChi) => {
+        try {
+          const r = await fetch(diaChi + '/?cb=' + Date.now(), { signal: AbortSignal.timeout(8000) })
+          const html = await r.text()
+          const tieuDe = (html.match(/<title>([^<]*)<\/title>/) || [])[1] || ''
+          const bundle = (html.match(/assets\/index-[A-Za-z0-9_-]+\.js/) || [])[0] || null
+          return { diaChi, song: r.ok, laRepoNay: tieuDe === tieuDeMay, tieuDe, bundle }
+        } catch { return { diaChi, song: false, laRepoNay: null } }
+      }
+      const [that, dev] = await Promise.all([
+        kiem('https://thuexenhanh.pages.dev'),
+        kiem('https://dev.thuexenhanh.pages.dev'),
+      ])
+      return traJson(res, { that, dev })
+    }
+
     // Quét — dòng sự kiện để giao diện hiện tiến trình thay vì đứng im 15 giây.
     if (url.pathname === '/api/scan') {
       res.writeHead(200, {
