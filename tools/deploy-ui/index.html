@@ -667,11 +667,26 @@ $('#b-dev').onclick = async () => {
   }
   const paths = $$('.tick:checked').map((n) => n.value)
   const message = ($('#loi-nhan') && $('#loi-nhan').value) || ''
-  nhatKy(paths.length ? `▶ Commit ${paths.length} file rồi đẩy lên nhánh dev…`
-    : '▶ Không có gì để commit — đẩy commit sẵn có lên nhánh dev…')
+  const dongLog = paths.length ? `▶ Commit ${paths.length} file rồi đẩy lên nhánh dev…`
+    : '▶ Không có gì để commit — đẩy commit sẵn có lên nhánh dev…'
+  nhatKy(dongLog)
 
   DANG_CHAY = true; capNhatNut()
+  let p = 0
+  const pt = setInterval(() => {
+    p += Math.floor(Math.random() * 12) + 3; if (p > 99) p = 99
+    const lines = $('#nhat-ky').textContent.split('\n')
+    lines[lines.length - 2] = `${dongLog} ${p}%`
+    $('#nhat-ky').textContent = lines.join('\n')
+  }, 300)
+
   const r = await goi('/api/push-dev', { paths, message, headLucQuet: kq.git.head })
+  
+  clearInterval(pt)
+  const lines = $('#nhat-ky').textContent.split('\n')
+  lines[lines.length - 2] = `${dongLog} 100%`
+  $('#nhat-ky').textContent = lines.join('\n')
+
   DANG_CHAY = false
   if (!r.ok) { nhatKy('✘ ' + r.loi); await lamMoiState(); return }
   nhatKy('✔ Đã lên nhánh dev: ' + r.sha.slice(0, 7))
@@ -686,8 +701,25 @@ $('#b-main').onclick = async () => {
   if (!confirm(`Đẩy commit ${(STATE.devPush ? STATE.devPush.sha.slice(0, 7) : g.headNgan)} lên nhánh main?\n\n`
     + 'Main là nhánh Cloudflare Pages build ra bản production.')) return
   DANG_CHAY = true; capNhatNut()
-  nhatKy('▶ Đẩy lên nhánh main…')
+  
+  const dongLog = '▶ Đẩy lên nhánh main…'
+  nhatKy(dongLog)
+
+  let p = 0
+  const pt = setInterval(() => {
+    p += Math.floor(Math.random() * 12) + 3; if (p > 99) p = 99
+    const lines = $('#nhat-ky').textContent.split('\n')
+    lines[lines.length - 2] = `${dongLog} ${p}%`
+    $('#nhat-ky').textContent = lines.join('\n')
+  }, 300)
+
   const r = await goi('/api/push-main', {})
+
+  clearInterval(pt)
+  const lines = $('#nhat-ky').textContent.split('\n')
+  lines[lines.length - 2] = `${dongLog} 100%`
+  $('#nhat-ky').textContent = lines.join('\n')
+
   DANG_CHAY = false
   if (!r.ok) { nhatKy('✘ ' + r.loi); await lamMoiState(); return }
   nhatKy('✔ Đã lên nhánh main: ' + r.sha.slice(0, 7))

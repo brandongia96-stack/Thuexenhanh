@@ -118,6 +118,12 @@ function TheXe({ xe, soLieu, rieng, uuTien = false, dangTaiSoLieu = false, moRon
             Sửa
           </Link>
         )}
+        {status === 'cho_duyet' && (
+          <button type="button" className="btn btn-primary btn-sm" onClick={() => onGiaHan?.(xe)}>
+            <RefreshCw size={15} strokeWidth={1.8} />
+            Thanh toán
+          </button>
+        )}
         {coTheGiaHan(status) && (
           // Gia hạn = trừ token, việc của luồng 06: mở HopTraPhi, màn này không đụng vào ví.
           <button type="button" className="btn btn-soft btn-sm" onClick={() => onGiaHan?.(xe)}>
