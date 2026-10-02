@@ -186,3 +186,6 @@ export const xuLyBaoCao = (reportId, status, note) =>
 
 export const doanhThu = (from, to) => op('revenue', { from, to })
 export const sucKhoeHeThong = (days = 14) => op('health', { days })
+
+/** Đối soát sổ ví (chỉ admin, chỉ đọc). Trả { items: [{van_de, user_id, chi_tiet}] } — rỗng là tốt. */
+export const doiSoatVi = () => op('doi_soat_vi')

@@ -11,6 +11,7 @@ import { Skeleton } from '../../components/Loading'
 import { formatVnd, formatTokens } from '../../lib/format'
 import { TOKEN_VND } from '../../lib/config'
 import { doanhThu } from './adminApi'
+import DoiSoatVi from './DoiSoatVi'
 import { useTai, thongDiepLoi } from './useTai'
 
 // Ngày theo GIỜ ĐỊA PHƯƠNG. toISOString() đổi sang UTC, ở UTC+7 sẽ lùi mất một ngày.
@@ -40,6 +41,7 @@ export default function DoanhThu() {
 
   return (
     <div className="stack" style={{ gap: 'var(--sp-4)' }}>
+      <DoiSoatVi />
       <div className="ad-tabs" style={{ marginBottom: 0 }} role="group" aria-label="Kỳ báo cáo">
         {Object.keys(KY).map((k) => (
           <button key={k} className={`ad-tab${k === ky ? ' active' : ''}`} onClick={() => setKy(k)}>{NHAN_KY[k]}</button>

@@ -84,6 +84,17 @@ Deno.serve(async (req) => {
       return rpc('admin_health', { p_actor: actor, p_days: Number(b.days) || 14 })
 
     // ── chỉ admin ──
+    case 'doi_soat_vi': {
+      // CHỈ ĐỌC. doi_soat_vi() (0004) không tự kiểm tra vai trò — lớp chặn
+      // duy nhất là dòng dưới, nên không được bỏ.
+      if (!vai.admin) return loi('khong_co_quyen', 'Chỉ quản trị viên được xem đối soát ví')
+      const { data, error } = await admin().rpc('doi_soat_vi')
+      if (error) {
+        console.error('admin-ops doi_soat_vi', error)
+        return loi('loi_he_thong', 'Không chạy được đối soát')
+      }
+      return json({ items: data ?? [] })
+    }
     case 'set_user_lock': {
       const id = uuid(b.user_id)
       if (!id) return sai('user_id', 'Thiếu mã người dùng')
