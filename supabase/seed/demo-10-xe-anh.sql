@@ -48,3 +48,9 @@ values
   ('de000000-0000-4000-8000-000000000010', 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=400&q=80', 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=800&q=80', 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1600&q=80', 'https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8', 800, 450, true);
 
 commit;
+
+INSERT INTO reference_prices (code, label, unit, price, source, effective_date) 
+VALUES 
+  ('xang_ron95', 'Xăng RON 95', 'lít', 24000, 'Petrolimex', CURRENT_DATE), 
+  ('dau_do', 'Dầu DO', 'lít', 21000, 'Petrolimex', CURRENT_DATE)
+ON CONFLICT DO NOTHING;

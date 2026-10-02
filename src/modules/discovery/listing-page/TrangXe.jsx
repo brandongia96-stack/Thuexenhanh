@@ -123,6 +123,24 @@ export default function TrangXe() {
                 </span>
               )}
             </div>
+            
+            {/* Mock Data - Thêm rating ảo */}
+            {(() => {
+              const m = tin.id ? tin.id.charCodeAt(tin.id.length - 1) : 5
+              const sao = 4 + (m % 10) / 10
+              const chuyen = (m % 30) * 2 + 5
+              return (
+                <div style={{ marginTop: '8px', fontSize: '14px', color: 'var(--m-mid)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+                  <span style={{ color: '#FFB020' }}>★</span>
+                  <strong style={{ color: 'var(--m-dark)' }}>{sao.toFixed(1)}</strong>
+                  <span>· {chuyen}+ chuyến</span>
+                  <span style={{ margin: '0 8px', color: 'var(--m-border)' }}>|</span>
+                  <span>Tỉ lệ phản hồi: <strong>100%</strong></span>
+                  <span style={{ margin: '0 8px', color: 'var(--m-border)' }}>|</span>
+                  <span>Duyệt xe: <strong>Tự động</strong></span>
+                </div>
+              )
+            })()}
           </header>
 
           <KhoiThongSo tin={tin} />

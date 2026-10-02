@@ -173,9 +173,19 @@ function tinhNhienLieu(tin, kmDuKien, giaThamChieu) {
   if (tin.fuel !== 'xang' && tin.fuel !== 'dau') return null // hybrid/điện không qua nhánh này
 
   const tieuHao = soDuong(tin.fuel_consumption) // lít / 100km
-  if (tieuHao == null || !giaThamChieu?.price) return null
+  if (tieuHao == null) return null
 
   const soLit = (kmDuKien / 100) * tieuHao
+  const tenNhienLieu = tin.fuel === 'xang' ? 'xăng' : 'dầu'
+
+  if (!giaThamChieu?.price) {
+    return {
+      soTien: null,
+      moTa: `Ước tính tiêu thụ khoảng ${soLit.toFixed(1)} lít ${tenNhienLieu} (theo mức ${tieuHao}L/100km)`,
+      ghiChu: 'Chưa có dữ liệu giá nhiên liệu hiện tại để tính tiền'
+    }
+  }
+
   return {
     soTien: Math.round(soLit * giaThamChieu.price),
     moTa: `${soLit.toFixed(1)} lít × ${giaThamChieu.price.toLocaleString('vi-VN')}đ/${giaThamChieu.unit ?? 'lít'}`,

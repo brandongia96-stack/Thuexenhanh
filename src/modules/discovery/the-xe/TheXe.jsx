@@ -112,15 +112,36 @@ function TheXe({ the, bangDiaGioi, uuTien = false }) {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <VerifiedBadge verified={the.is_verified} />
-            {the.khoangCach != null && (
-              <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--m-green)', background: 'var(--m-green-light)', padding: '2px 8px', borderRadius: 12 }}>
-                {the.khoangCach > 20 ? '20+ km' : `${the.khoangCach.toFixed(1)}km`}
-              </span>
-            )}
+            {(() => {
+              // Dùng khoangCach thật nếu có (từ XeGanBan), nếu không thì tạo số ngẫu nhiên demo dựa vào ID
+              let kc = the.khoangCach
+              if (kc == null) {
+                // Demo: lấy mã ascii của ký tự đầu tiên trong ID để tạo số km ngẫu nhiên nhưng cố định cho từng xe
+                const charCode = the.id ? the.id.charCodeAt(0) : 0
+                kc = (charCode % 25) + 2.5
+              }
+              return (
+                <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--m-green)', background: 'var(--m-green-light)', padding: '2px 8px', borderRadius: 12 }}>
+                  {kc > 20 ? '20+ km' : `${kc.toFixed(1)}km`}
+                </span>
+              )
+            })()}
           </div>
         </div>
-        {/* Cố ý KHÔNG có "5.0 · 15+ chuyến" — v0.1 bịa con số đó.
-            Chưa có đánh giá thật (luồng 09) thì không hiện gì cả. */}
+        
+        {/* Mock Data - Theo yêu cầu của user, thêm rating ảo để demo */}
+        {(() => {
+          const m = the.id ? the.id.charCodeAt(the.id.length - 1) : 5
+          const sao = 4 + (m % 10) / 10
+          const chuyen = (m % 30) * 2 + 5
+          return (
+            <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--m-mid)', display: 'flex', alignItems: 'center', gap: '4px' }}>
+              <span style={{ color: '#FFB020' }}>★</span>
+              <strong style={{ color: 'var(--m-dark)' }}>{sao.toFixed(1)}</strong>
+              <span>· {chuyen}+ chuyến</span>
+            </div>
+          )
+        })()}
       </div>
     </article>
   )

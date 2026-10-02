@@ -46,6 +46,7 @@ function DongCK({ nhan, giaTri, ma = false }) {
 export default function HopNapToken({ onDong, onXong }) {
   const [buoc, setBuoc] = useState('chon')      // chon | qr | xong
   const [tokens, setTokens] = useState(GOI_NAP[0].tokens)
+  const [phuongThuc, setPhuongThuc] = useState('ngan_hang')
   const [dangGui, setDangGui] = useState(false)
   const [loi, setLoi] = useState(null)
   const [yeuCau, setYeuCau] = useState(null)
@@ -119,10 +120,15 @@ export default function HopNapToken({ onDong, onXong }) {
   }
 
   if (buoc === 'qr' && yeuCau) {
+    const tenApp = phuongThuc === 'momo' ? 'MoMo' 
+                 : phuongThuc === 'zalopay' ? 'ZaloPay' 
+                 : phuongThuc === 'vnpay' ? 'VNPAY' 
+                 : 'app ngân hàng'
+                 
     return (
       <Hop
-        tieuDe="Chuyển khoản để nhận token"
-        moTa="Quét mã bằng app ngân hàng. Số tiền và nội dung đã điền sẵn."
+        tieuDe={`Thanh toán qua ${tenApp}`}
+        moTa={`Quét mã bằng ${tenApp}. Số tiền và nội dung đã điền sẵn.`}
         onDong={onDong}
       >
         {yeuCau.qr_url ? (
@@ -136,15 +142,19 @@ export default function HopNapToken({ onDong, onXong }) {
         ) : null}
 
         <div className="ck-bang">
-          <DongCK nhan="Ngân hàng" giaTri={yeuCau.ngan_hang?.bank} />
-          <DongCK nhan="Số tài khoản" giaTri={yeuCau.ngan_hang?.account} ma />
+          {phuongThuc === 'ngan_hang' && (
+            <>
+              <DongCK nhan="Ngân hàng" giaTri={yeuCau.ngan_hang?.bank} />
+              <DongCK nhan="Số tài khoản" giaTri={yeuCau.ngan_hang?.account} ma />
+            </>
+          )}
           <DongCK nhan="Số tiền" giaTri={formatVnd(yeuCau.vnd_amount)} />
           <DongCK nhan="Nội dung" giaTri={yeuCau.transfer_code} ma />
         </div>
 
         <div className="hop-nhac">
           Nội dung chuyển khoản phải giữ nguyên mã <b>{yeuCau.transfer_code}</b>. Đây là thứ
-          duy nhất giúp hệ thống biết khoản tiền này là của anh.
+          duy nhất giúp hệ thống tự động cộng điểm.
         </div>
 
         {loi && <div className="hop-loi">{loi}</div>}
@@ -152,12 +162,12 @@ export default function HopNapToken({ onDong, onXong }) {
         {hetGio ? (
           <div className="t-small">
             Chưa thấy tiền về sau 15 phút. Anh cứ đóng cửa sổ này — nếu đã chuyển khoản,
-            token sẽ tự vào ví khi ngân hàng báo về, không cần làm lại.
+            token sẽ tự vào ví khi hệ thống báo có.
           </div>
         ) : (
           <div className="row t-small" style={{ justifyContent: 'center' }}>
             <Loader2 size={16} strokeWidth={1.8} className="quay" />
-            Đang chờ ngân hàng báo có
+            Đang chờ thanh toán...
           </div>
         )}
       </Hop>
@@ -206,6 +216,40 @@ export default function HopNapToken({ onDong, onXong }) {
         )}
       </div>
 
+      <div className="field">
+        <label className="field-label">Phương thức thanh toán</label>
+        <div style={{ display: 'flex', gap: '8px', flexWrap: 'wrap', marginTop: '4px' }}>
+          {[
+            { id: 'ngan_hang', ten: 'Chuyển khoản', mau: 'var(--m-dark)' },
+            { id: 'momo', ten: 'MoMo', mau: '#A50064' },
+            { id: 'zalopay', ten: 'ZaloPay', mau: '#0068FF' },
+            { id: 'vnpay', ten: 'VNPAY', mau: '#005BAA' },
+            { id: 'the', ten: 'Thẻ tín dụng', mau: 'var(--m-dark)' }
+          ].map((pt) => (
+            <button
+              key={pt.id}
+              type="button"
+              onClick={() => setPhuongThuc(pt.id)}
+              style={{
+                flex: '1 1 auto',
+                padding: '10px 12px',
+                border: `1px solid ${phuongThuc === pt.id ? pt.mau : 'var(--m-border)'}`,
+                borderRadius: '8px',
+                background: phuongThuc === pt.id ? `${pt.mau}10` : 'var(--m-surface)',
+                color: phuongThuc === pt.id ? pt.mau : 'var(--m-mid)',
+                fontWeight: phuongThuc === pt.id ? '600' : '500',
+                fontSize: '13px',
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                textAlign: 'center'
+              }}
+            >
+              {pt.ten}
+            </button>
+          ))}
+        </div>
+      </div>
+
       {loi && <div className="hop-loi">{loi}</div>}
 
       <button
@@ -214,7 +258,7 @@ export default function HopNapToken({ onDong, onXong }) {
         disabled={!hopLe || dangGui}
         onClick={tao}
       >
-        {dangGui ? 'Đang tạo mã…' : 'Lấy mã chuyển khoản'}
+        {dangGui ? 'Đang tạo mã…' : 'Lấy mã thanh toán'}
       </button>
       <div className="t-small" style={{ textAlign: 'center' }}>
         Token chỉ dùng để trả phí hiển thị tin. Không phải tiền cọc, không liên quan
