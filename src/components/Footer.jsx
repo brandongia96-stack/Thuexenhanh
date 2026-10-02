@@ -1,21 +1,64 @@
 import { Link } from 'react-router-dom'
+import './Footer.css'
 
+/**
+ * Chân trang — CHỈ chứa thứ có thật (CLAUDE.md §1.2).
+ *
+ * Cố ý KHÔNG có cho tới khi anh đưa thông tin thật:
+ *   · tên công ty, mã số doanh nghiệp, địa chỉ, tài khoản ngân hàng
+ *   · hotline, email, mạng xã hội
+ *   · logo "Đã thông báo Bộ Công Thương" — chỉ gắn SAU KHI đã thông báo
+ *     website TMĐT với Bộ Công Thương và được cấp mã/đường dẫn xác thực
+ *   · logo phương thức thanh toán — app chỉ nhận chuyển khoản VietQR
+ *     để nạp token, không nhận MoMo/VNPAY/thẻ
+ * Mọi đường dẫn dưới đây đều trỏ tới route có thật trong App.jsx.
+ */
 export default function Footer() {
   return (
-    <footer style={{ borderTop: '1px solid var(--m-border)', background: 'var(--m-surface)', marginTop: 'var(--sp-10)' }}>
-      <div className="page stack" style={{ gap: 'var(--sp-3)' }}>
-        <div className="row" style={{ flexWrap: 'wrap', gap: 'var(--sp-4)' }}>
-          <Link to="/dieu-khoan" className="t-small">Điều khoản sử dụng</Link>
-          <Link to="/bao-mat" className="t-small">Chính sách bảo mật</Link>
-          <Link to="/hoan-token" className="t-small">Chính sách hoàn token</Link>
-          <Link to="/gioi-thieu" className="t-small">Về chúng tôi</Link>
-          <Link to="/tro-giup" className="t-small">Câu hỏi thường gặp</Link>
-          <Link to="/lien-he" className="t-small">Liên hệ</Link>
+    <footer className="footer-v2">
+      <div className="page footer-v2-top">
+        <div className="brand-col">
+          <h3>Thuê Xe Nhanh</h3>
+          <p>
+            Nơi chủ xe đăng tin và khách thuê tìm xe tự lái.
+            Xem số điện thoại, gọi thẳng chủ xe, tự thoả thuận.
+          </p>
+          <p><Link to="/lien-he">Liên hệ với chúng tôi</Link></p>
         </div>
-        <p className="t-small">
-          Thuexenhanh là nền tảng rao vặt, chỉ cung cấp thông tin và kết nối chủ xe với khách thuê.
+
+        <div className="footer-col">
+          <h4>Khách thuê</h4>
+          <Link to="/thue-xe">Tìm xe</Link>
+          <Link to="/da-luu">Xe đã lưu</Link>
+          <Link to="/tro-giup">Câu hỏi thường gặp</Link>
+        </div>
+
+        <div className="footer-col">
+          <h4>Chủ xe</h4>
+          <Link to="/chu-xe/dang-tin">Đăng tin cho thuê</Link>
+          <Link to="/chu-xe">Xe của tôi</Link>
+          <Link to="/chu-xe/vi">Ví token</Link>
+        </div>
+
+        <div className="footer-col">
+          <h4>Chính sách</h4>
+          <Link to="/dieu-khoan">Điều khoản sử dụng</Link>
+          <Link to="/bao-mat">Chính sách bảo mật</Link>
+          <Link to="/hoan-token">Chính sách hoàn token</Link>
+        </div>
+
+        <div className="footer-col">
+          <h4>Về chúng tôi</h4>
+          <Link to="/gioi-thieu">Giới thiệu</Link>
+          <Link to="/lien-he">Liên hệ</Link>
+        </div>
+      </div>
+
+      <div className="footer-v2-bot page">
+        <div className="footer-disclaimer">
+          Thuê Xe Nhanh là nền tảng rao vặt, chỉ cung cấp thông tin và kết nối chủ xe với khách thuê.
           Mọi giao dịch do hai bên tự thoả thuận. Chúng tôi không giữ tiền và không thu hoa hồng giao dịch.
-        </p>
+        </div>
       </div>
     </footer>
   )
