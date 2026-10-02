@@ -28,12 +28,12 @@ Tài liệu gốc cho mọi luồng chat. **Đọc §0 bên dưới trước ti�
 
 | Ngày | Thay đổi | Ảnh hưởng tới |
 |---|---|---|
+| 02/10 | **Nâng cấp văn bản pháp lý** — xem `NGHIEN-CUU-PHAP-LY.md`: thêm Quy chế hoạt động, Giải quyết khiếu nại, Thông tin thuế; viết lại Bảo vệ dữ liệu cá nhân. `_scratch/ChinhSachMioto.txt` **chỉ để tham khảo chủ đề, cấm chép câu chữ** | **12**, 08, 14 |
 | 02/10 | 🛑 **Rà soát phiên ngoài (TONG_HOP_CAP_NHAT.md):** (1) `demo-users.sql` lộ `admin123@test.com / 123456` trên repo **công khai** → đã gỡ, phải chạy `supabase/seed/khoa-demo-users.sql`; **cấm commit mật khẩu/seed tài khoản**. (2) Footer chép **thông tin pháp lý của Mioto** + logo Bộ Công Thương + logo thanh toán giả → đã viết lại, **cấm đưa thông tin công ty/logo chứng nhận khi chưa có thật**. (3) File cào chính sách Mioto → `_scratch/`, **không dùng làm nội dung**. (4) Xe gần bạn → hàm server `0013` (chưa chạy) | **mọi luồng**, 01, 12, 13, 14 |
 | 01/10 | ✅ **Đã chạy `0012_xe_dien_va_chi_phi.sql` trên Supabase** — kiểm REST: cột xe điện + chi phí dạng số + bảng `reference_prices` đều có, 10 xe demo còn đủ, SĐT vẫn `42501`. **Hết cấm đẩy `main`.** `reference_prices` đang TRỐNG → bảng tính phải ẩn dòng xăng/điện cho tới khi admin nhập giá | 02, 04, 05, 10, 14 |
 | 01/10 | ⚠️ **`npm run build` nay là 2 bước**: `vite build && node scripts/prerender-seo.mjs`. Bước 2 sinh HTML tĩnh cho `/thue-xe/:dongXe[/:tinh]` và **ghi đè `dist/sitemap.xml`** (bản gõ tay trong `public/` đã xoá). Bước 2 KHÔNG làm vỡ build: thiếu env hay mạng hỏng thì bỏ qua và vẫn ghi sitemap trang tĩnh. Cloudflare Pages cần `VITE_SUPABASE_URL`/`ANON_KEY` lúc build thì mới sinh được trang SEO. Muốn build cũ: `npm run build:spa` | **13**, 14 |
 | 01/10 | **Chốt mã `reference_prices.code` cho xăng/dầu**: `xang_ron95` (xăng RON95), `dau_do` (dầu) — xem bảng trong `contracts/api.md` mục 2. Luồng 05 đã dùng đúng 2 mã này, luồng 10 nhập giá admin **phải** dùng đúng mã, lệch mã thì khối ước tính tự ẩn không báo lỗi | 05, 10 |
 | 28/09 | **Hướng xe điện + bảng tính tổng tiền** — xem `NGHIEN-CUU-XE-DIEN.md`. Luồng 01 thêm cột xe điện + đổi cọc/phí giao xe từ chữ sang số **trước**, các luồng khác chờ | **01**, 02, 04, 05, 14 |
-| 23/09 | ✅ **Rò số điện thoại ĐÃ VÁ XONG** (`0010_bao_ve_sdt.sql`, đã chạy trên Supabase, kiểm chứng bằng REST): `anon`/`authenticated` nhận `42501` khi đọc `contact_phone`/`contact_zalo`/`plate`, và cả khi `select=*`. Khách lấy số qua `reveal-phone`; chủ xe + kiểm duyệt qua `listing_private`. **`select=*` trên `listings` nay LUÔN lỗi** — luồng nào còn dùng phải liệt kê cột | 02, 03, 05, 10 |
 
 **Luật:** chỉ **luồng nền tảng** được sửa mục này. Mỗi lần có quyết định hoặc phát
 hiện **ảnh hưởng tới luồng khác** → thêm một dòng ở đầu bảng, xoá dòng cuối nếu quá 6.
