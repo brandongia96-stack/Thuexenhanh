@@ -6,7 +6,7 @@ import { useAuth } from './AuthProvider'
 import { HAS_BACKEND, FLAGS } from '../../lib/config'
 
 export default function DangNhap() {
-  const { signInWithGoogle, isLoggedIn } = useAuth()
+  const { signInWithGoogle, signInWithEmail, isLoggedIn } = useAuth()
   const [loi, setLoi] = useState(null)
   const [dangChay, setDangChay] = useState(false)
   const [dongY, setDongY] = useState(false)
@@ -62,21 +62,45 @@ export default function DangNhap() {
           </span>
         </label>
 
+        <form className="stack" style={{ gap: 'var(--sp-3)' }} onSubmit={async (e) => {
+          e.preventDefault();
+          setLoi(null);
+          if (!dongY) { setLoi('Bạn cần đồng ý Điều khoản sử dụng và Chính sách bảo mật để tiếp tục.'); return; }
+          const form = new FormData(e.target);
+          try {
+            nhoDongY();
+            setDangChay(true);
+            await signInWithEmail(form.get('email'), form.get('password'));
+          } catch(err) {
+            setLoi(err.message);
+            setDangChay(false);
+          }
+        }}>
+          <div>
+            <input type="email" name="email" placeholder="Email đăng nhập" required className="input" />
+          </div>
+          <div>
+            <input type="password" name="password" placeholder="Mật khẩu" required className="input" />
+          </div>
+          <button type="submit" disabled={!HAS_BACKEND || dangChay} className="btn btn-primary btn-block">
+            {dangChay ? 'Đang xử lý…' : 'Đăng nhập'}
+          </button>
+        </form>
+
+        <div className="row" style={{ color: 'var(--m-subtle)', fontSize: 13, gap: '12px' }}>
+          <div style={{ flex: 1, height: 1, background: 'var(--m-border)' }} />
+          <span>Hoặc tiếp tục với</span>
+          <div style={{ flex: 1, height: 1, background: 'var(--m-border)' }} />
+        </div>
+
         <button
-          className="btn btn-primary btn-block"
+          className="btn btn-ghost btn-block"
           onClick={dangNhapGoogle}
           disabled={!HAS_BACKEND || dangChay}
         >
           <LogIn size={18} strokeWidth={1.8} />
-          {dangChay ? 'Đang chuyển hướng…' : 'Tiếp tục với Google'}
+          Google
         </button>
-
-        {FLAGS.otp_sdt && (
-          <button className="btn btn-ghost btn-block">
-            <Smartphone size={18} strokeWidth={1.8} />
-            Đăng nhập bằng số điện thoại
-          </button>
-        )}
 
         {loi && <p className="field-error">{loi}</p>}
 

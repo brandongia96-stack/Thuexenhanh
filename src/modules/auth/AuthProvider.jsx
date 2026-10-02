@@ -82,6 +82,12 @@ export function AuthProvider({ children }) {
     throw new Error('Đăng nhập bằng số điện thoại chưa mở. Sẽ có ở luồng 08.')
   }, [])
 
+  const signInWithEmail = useCallback(async (email, password) => {
+    const sb = await getSupabase()
+    const { error } = await sb.auth.signInWithPassword({ email, password })
+    if (error) throw error
+  }, [])
+
   const signOut = useCallback(async () => {
     const sb = await trySupabase()
     if (sb) await sb.auth.signOut()
@@ -101,6 +107,7 @@ export function AuthProvider({ children }) {
     isAdmin: roles.includes(ROLE.ADMIN),
     signInWithGoogle,
     signInWithPhone,
+    signInWithEmail,
     signOut,
     reload: () => loadProfile(session?.user?.id),
   }
