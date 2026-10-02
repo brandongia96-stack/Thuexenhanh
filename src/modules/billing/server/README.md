@@ -2,6 +2,22 @@
 
 Ba phần: **hàm SQL**, **Edge Function**, **webhook ngân hàng**. Làm đúng thứ tự.
 
+## 0. Trạng thái thật — kiểm bằng gọi REST ngày 02/10/2026
+
+| Mảnh | Trạng thái | Bằng chứng |
+|---|---|---|
+| SQL `0004_billing.sql` | ✅ **đã chạy** | `GET /rest/v1/wallet_ledger` → 200 |
+| Khoá quyền hàm tiền | ✅ **đúng** | anon gọi `charge_and_publish` → `42501 permission denied` |
+| `publish-listing` | ✅ deployed, chạy | trả `chua_dang_nhap` đúng như thiết kế |
+| `create-topup` | ⛔ deployed nhưng **khoá** | trả `chua_mo_nap_tien` — thiếu env `NAP_TIEN_THAT=true` |
+| `bank-webhook` | 🔴 deployed nhưng **hỏng** | trả `{"error":"chua_cau_hinh"}` — thiếu `BANK_WEBHOOK_KEY` |
+| `FLAGS.nap_tien_that` | 🔴 `false` | ẩn nút nạp ở trang ví |
+| Cron `expire_listings` | 🔴 **chưa chạy** | tin `de0…010` hết hạn 30/09 mà vẫn `sap_het_han` |
+| Admin cấp token tay | ✅ có | `/quan-tri` → Người dùng → Ví token |
+
+**Kết luận:** đường **trừ** token chạy được; đường **nạp** token chưa có lối nào
+tự động. Thiếu đúng 3 việc ngoài code: đặt secrets, nối SePay, đặt cron.
+
 > ⚠️ **Chưa bật nạp tiền thật cho tới khi trang `/hoan-token` (luồng 12) đã lên.**
 > Hai cổng khoá độc lập, phải mở cả hai: cờ `FLAGS.nap_tien_that` ở
 > `src/lib/config.js` và biến môi trường `NAP_TIEN_THAT` của Edge Function.

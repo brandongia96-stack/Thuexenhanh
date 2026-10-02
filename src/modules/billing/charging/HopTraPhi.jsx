@@ -1,10 +1,12 @@
 import { useMemo, useState } from 'react'
+import { Link } from 'react-router-dom'
 import { Check, Wallet } from 'lucide-react'
 import Hop from '../Hop'
 import HopNapToken from '../topup/HopNapToken'
 import { traPhiHienThi } from '../billingApi'
 import { GOI_HIEN_THI } from '../../../lib/pricing'
 import { formatVnd, formatDate } from '../../../lib/format'
+import { FLAGS } from '../../../lib/config'
 
 /**
  * Trả phí hiển thị cho một tin — dùng cho cả lần đăng đầu và gia hạn.
@@ -126,9 +128,19 @@ export default function HopTraPhi({ listing, soDu = 0, onDong, onXong }) {
       {thieu > 0 ? (
         <>
           <div className="hop-nhac">Còn thiếu {thieu} token để hiển thị {goi.label}.</div>
-          <button type="button" className="btn btn-primary btn-block btn-lg" onClick={() => setMoNap(true)}>
-            <Wallet size={18} strokeWidth={1.8} /> Nạp thêm token
-          </button>
+          {/* Nạp token chưa mở thì KHÔNG dựng nút "Nạp thêm" — bấm vào chỉ ra
+              lỗi "chưa mở nạp tiền" từ Edge Function. Nút dẫn tới chỗ không
+              làm được là đúng thứ CLAUDE.md 1.2 cấm. Nói thật cách lấy token. */}
+          {FLAGS.nap_tien_that ? (
+            <button type="button" className="btn btn-primary btn-block btn-lg" onClick={() => setMoNap(true)}>
+              <Wallet size={18} strokeWidth={1.8} /> Nạp thêm token
+            </button>
+          ) : (
+            <div className="t-small" style={{ textAlign: 'center' }}>
+              Nạp token tự động chưa mở. Trong thời gian này anh{' '}
+              <Link to="/lien-he">nhắn cho bên em</Link> để được cấp token thủ công.
+            </div>
+          )}
         </>
       ) : (
         <button
