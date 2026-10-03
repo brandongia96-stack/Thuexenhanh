@@ -51,19 +51,25 @@ function trungLap(kind, listingId) {
  * Ghi một sự kiện. Không bao giờ ném lỗi ra ngoài — mất một dòng thống kê
  * không được phép làm hỏng thao tác của người dùng.
  */
-export async function track(kind, { listingId = null, ownerId = null, meta = {}, dedupe = true } = {}) {
+//
+// Ghi qua hàm server `track_event` (0016), KHÔNG insert thẳng bảng `events`:
+// server tự tra chủ xe, tự lấy người xem từ phiên đăng nhập, bỏ qua chủ xe tự
+// xem, khử trùng lặp 1 giờ. `ownerId` vẫn nhận cho khỏi vỡ chỗ gọi cũ nhưng
+// không gửi đi — client khai chủ xe là chỗ để bơm số giả.
+export async function track(kind, { listingId = null, ownerId = null, meta = {}, dedupe = true } = {}) { // eslint-disable-line no-unused-vars
   if (!HAS_BACKEND) return
+  // Lượt lấy số do Edge Function `reveal-phone` ghi — đó là con số đem tính tiền.
+  if (kind === EVENT.REVEAL_PHONE) return
   if (dedupe && trungLap(kind, listingId)) return
 
   try {
     const sb = await trySupabase()
     if (!sb) return
-    await sb.from('events').insert({
-      kind,
-      listing_id: listingId,
-      owner_id: ownerId,
-      session_id: getSessionId(),
-      meta,
+    await sb.rpc('track_event', {
+      p_kind: kind,
+      p_listing_id: listingId,
+      p_session_id: getSessionId(),
+      p_meta: meta,
     })
   } catch (err) {
     if (import.meta.env.DEV) console.warn('[events] không ghi được:', err?.message)

@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { MapPin, Users, Cog, Fuel, Clock, Share2, Check, X, Zap, Truck, Heart, Eye } from 'lucide-react'
+import { MapPin, Users, Cog, Fuel, Clock, Share2, Check, X, Zap } from 'lucide-react'
 
 import { VerifiedBadge } from '../../../components/Badge'
 import { formatVndShort, timeAgo } from '../../../lib/format'
@@ -99,11 +99,8 @@ function TheXe({ the, bangDiaGioi, uuTien = false }) {
             {the.seats && <span><Users size={14} strokeWidth={1.8} />{the.seats} chỗ</span>}
             {hopSo && <span><Cog size={14} strokeWidth={1.8} />{hopSo}</span>}
             {nhienLieu && <span><Fuel size={14} strokeWidth={1.8} />{nhienLieu}</span>}
-            {/* Nếu là xe điện thì có ev_range_km, nếu xe xăng thì mock thêm thông số Giao xe để đủ 4 ô */}
-            {the.ev_range_km != null ? (
+            {the.ev_range_km != null && (
               <span><Zap size={14} strokeWidth={1.8} />{the.ev_range_km} km/sạc</span>
-            ) : (
-              <span><Truck size={14} strokeWidth={1.8} />Giao tận nơi</span>
             )}
             {noi && <span className="thexe-noi"><MapPin size={14} strokeWidth={1.8} />{noi}</span>}
           </div>
@@ -116,39 +113,15 @@ function TheXe({ the, bangDiaGioi, uuTien = false }) {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <VerifiedBadge verified={the.is_verified} />
-            {(() => {
-              // Dùng khoangCach thật nếu có (từ XeGanBan), nếu không thì tạo số ngẫu nhiên demo dựa vào ID
-              let kc = the.khoangCach
-              if (kc == null) {
-                // Demo: lấy mã ascii của ký tự đầu tiên trong ID để tạo số km ngẫu nhiên nhưng cố định cho từng xe
-                const charCode = the.id ? the.id.charCodeAt(0) : 0
-                kc = (charCode % 25) + 2.5
-              }
-              return (
-                <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--m-green)', background: 'var(--m-green-light)', padding: '2px 8px', borderRadius: 12 }}>
-                  {kc > 20 ? '20+ km' : `${kc.toFixed(1)}km`}
-                </span>
-              )
-            })()}
+            {/* Khoảng cách CHỈ có khi người dùng cho vị trí (Xe gần bạn). Không có thì ẩn. */}
+            {the.khoangCach != null && (
+              <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--m-green)', background: 'var(--m-green-light)', padding: '2px 8px', borderRadius: 12 }}>
+                {the.khoangCach > 20 ? '20+ km' : `${the.khoangCach.toFixed(1)}km`}
+              </span>
+            )}
           </div>
         </div>
         
-        {/* Mock Data - Theo yêu cầu của user, hiển thị tim và lượt xem ảo để demo */}
-        {(() => {
-          const m = the.id ? the.id.charCodeAt(the.id.length - 1) : 5
-          const tim = (m % 15) * 3 + 2
-          const xem = tim * (m % 5 + 3) + 12
-          return (
-            <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--m-mid)', display: 'flex', alignItems: 'center', gap: '12px' }}>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <Heart size={14} strokeWidth={1.8} /> {tim}
-              </span>
-              <span style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
-                <Eye size={14} strokeWidth={1.8} /> {xem}
-              </span>
-            </div>
-          )
-        })()}
       </div>
     </article>
   )

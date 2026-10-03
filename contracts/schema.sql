@@ -233,6 +233,9 @@ create table listings (
   -- Mặc định TẮT: tự động lấy tiền của người ta mà họ không chủ động bật là
   -- cách nhanh nhất để mất lòng tin.
   auto_renew        boolean not null default false,
+  -- Xe điện: chủ xe tự ghi quy định pin (0015). Thêm cột nào vào listings thì
+  -- PHẢI gọi cap_quyen_cot_listings() — quên là trang xe lỗi 42501 (đã xảy ra 03/10).
+  battery_policy_note text,
 
   -- Client KHÔNG được ghi 3 cột dưới. Chỉ server/admin.
   is_verified       boolean not null default false,
@@ -801,8 +804,10 @@ create policy modq_staff     on moderation_queue for all using (has_role('kiem_d
 -- OTP: client không đọc được dòng nào. Chỉ server xác thực.
 create policy otp_none       on otp_codes for select using (false);
 
--- Ghi sự kiện: ai cũng ghi. Đọc: chỉ chủ xe của tin đó và admin.
-create policy events_insert on events for insert with check (true);
+-- Ghi sự kiện: client KHÔNG insert thẳng (0016). Chỉ qua rpc track_event(kind,
+-- listing_id, session_id, meta) — server tự tra owner, tự lấy actor, bỏ qua chủ
+-- xe tự xem, khử trùng lặp 1 giờ. reveal_phone chỉ Edge Function reveal-phone ghi.
+-- Đọc: chỉ chủ xe của tin đó và admin.
 create policy events_read   on events for select using (owner_id = auth.uid() or has_role('admin'));
 -- Bảng tổng hợp: chủ xe đọc số của mình, admin đọc tất cả. Chỉ cron (service_role) ghi.
 create policy events_daily_read on events_daily for select

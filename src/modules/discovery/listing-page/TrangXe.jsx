@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ChevronLeft, MapPin, AlertTriangle, CarFront, Heart, Eye } from 'lucide-react'
+import { ChevronLeft, MapPin, AlertTriangle, CarFront } from 'lucide-react'
 
 import { useAuth } from '../../auth/AuthProvider'
 import { VerifiedBadge } from '../../../components/Badge'
@@ -123,28 +123,7 @@ export default function TrangXe() {
                 </span>
               )}
             </div>
-            
-            {/* Mock Data - Thêm số liệu ảo */}
-            {(() => {
-              const m = tin.id ? tin.id.charCodeAt(tin.id.length - 1) : 5
-              const tim = (m % 15) * 3 + 2
-              const xem = tim * (m % 5 + 3) + 12
-              return (
-                <div style={{ marginTop: '8px', fontSize: '14px', color: 'var(--m-mid)', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--m-dark)' }}>
-                    <Heart size={16} strokeWidth={1.8} /> {tim}
-                  </span>
-                  <span style={{ margin: '0 8px', color: 'var(--m-border)' }}>|</span>
-                  <span style={{ display: 'flex', alignItems: 'center', gap: '4px', color: 'var(--m-dark)' }}>
-                    <Eye size={16} strokeWidth={1.8} /> {xem}
-                  </span>
-                  <span style={{ margin: '0 8px', color: 'var(--m-border)' }}>|</span>
-                  <span>Phản hồi: <strong>100%</strong></span>
-                  <span style={{ margin: '0 8px', color: 'var(--m-border)' }}>|</span>
-                  <span>Duyệt: <strong>Tự động</strong></span>
-                </div>
-              )
-            })()}
+
           </header>
 
           <KhoiThongSo tin={tin} />

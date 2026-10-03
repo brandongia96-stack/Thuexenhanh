@@ -1,4 +1,4 @@
-// admin — khung trang quản trị, gắn ở /quan-tri/* (App.jsx).
+// admin — khung trang quản trị, gắn ở /admin/* (App.jsx).
 //
 // Chặn quyền thật nằm ở server (RLS + hàm 0008_admin.sql + Edge Function).
 // RequireRole ở App.jsx chỉ là lớp giao diện cho êm.
@@ -36,13 +36,13 @@ export default function TrangQuanTri() {
       </nav>
       <Suspense fallback={<PageLoading />}>
         <Routes>
-          <Route index element={<Navigate to="duyet-tin" replace />} />
+          <Route index element={<Navigate to="/admin/duyet-tin" replace />} />
           <Route path="duyet-tin" element={<HangDuyet />} />
           <Route path="duyet-giay-to" element={<DuyetGiayTo />} />
           <Route path="nguoi-dung" element={<NguoiDung />} />
           <Route path="doanh-thu" element={<DoanhThu />} />
           <Route path="suc-khoe" element={<SucKhoe />} />
-          <Route path="*" element={<Navigate to="duyet-tin" replace />} />
+          <Route path="*" element={<Navigate to="/admin/duyet-tin" replace />} />
         </Routes>
       </Suspense>
     </div>

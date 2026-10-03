@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
-import { Calendar, ChevronLeft, ChevronRight, Car, Settings, X, Plus } from 'lucide-react'
+import { Calendar, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useAuth } from '../auth/AuthProvider'
 import { danhSachXeCuaToi } from './ownerApi'
+import { getSupabase } from '../../lib/supabase'
 import { Skeleton } from '../../components/Loading'
 import './LichXeTong.css'
 
@@ -16,26 +17,40 @@ export default function LichXeTong() {
   const [xe, setXe] = useState([])
   const [dangTai, setDangTai] = useState(true)
   const [thangHienTai, setThangHienTai] = useState(new Date())
-  const [lichBan, setLichBan] = useState({}) // Mock dữ liệu lịch bận
+  // { [listing_id]: [{ tu: 'YYYY-MM-DD', den: 'YYYY-MM-DD' }] } — ngày chủ xe TỰ CHẶN
+  // trong từng tin (bảng listing_blocked_dates). Không có booking nên đây là
+  // nguồn duy nhất; cấm bịa ngày bận.
+  const [lichBan, setLichBan] = useState({})
 
   useEffect(() => {
     if (!user) return
-    danhSachXeCuaToi(user.id, { limit: 20 })
-      .then(res => {
+    let huy = false
+    ;(async () => {
+      try {
+        const res = await danhSachXeCuaToi(user.id, { limit: 20 })
+        if (huy) return
         setXe(res)
-        // Tạo dữ liệu lịch bận ảo (mock)
-        const mockLich = {}
-        res.forEach(x => {
-          const soNgayBan = Math.floor(Math.random() * 8) + 2 // 2-10 ngày bận
-          mockLich[x.id] = []
-          for (let i = 0; i < soNgayBan; i++) {
-            const ngay = Math.floor(Math.random() * 28) + 1
-            mockLich[x.id].push(ngay)
-          }
-        })
-        setLichBan(mockLich)
-      })
-      .finally(() => setDangTai(false))
+        const ids = res.map((x) => x.id)
+        if (!ids.length) return
+        const sb = await getSupabase()
+        const { data, error } = await sb
+          .from('listing_blocked_dates')
+          .select('listing_id, date_from, date_to')
+          .in('listing_id', ids)
+          .is('deleted_at', null)
+        if (error) throw error
+        const theoXe = {}
+        for (const d of data ?? []) {
+          ;(theoXe[d.listing_id] ??= []).push({ tu: d.date_from, den: d.date_to })
+        }
+        if (!huy) setLichBan(theoXe)
+      } catch {
+        /* lỗi mạng: hiện lịch trống thay vì vỡ trang */
+      } finally {
+        if (!huy) setDangTai(false)
+      }
+    })()
+    return () => { huy = true }
   }, [user])
 
   const nam = thangHienTai.getFullYear()
@@ -64,7 +79,7 @@ export default function LichXeTong() {
         </div>
       </div>
       
-      <p style={{ color: 'var(--m-subtle)' }}>Quản lý tình trạng xe trống/bận. Bấm vào ô ngày để khóa lịch.</p>
+      <p style={{ color: 'var(--m-subtle)' }}>Ô tô màu là ngày anh đã chặn trong tin. Muốn đổi thì vào sửa từng tin.</p>
 
       <div className="lich-bang-wrap">
         <table className="lich-bang">
@@ -87,23 +102,22 @@ export default function LichXeTong() {
               <tr key={x.id}>
                 <td className="lich-td-xe">
                   <div className="lich-xe-info">
-                    <img src={x.cover_thumb || 'https://via.placeholder.com/40'} alt="" />
+                    {x.cover_thumb && <img src={x.cover_thumb} alt="" width={40} height={40} />}
                     <div className="lich-xe-ten">
                       <strong>{x.brand_text} {x.model_text} {x.year}</strong>
-                      <span>Biển số: {x.id.charCodeAt(0) * 1234}</span>
                     </div>
                   </div>
                 </td>
                 {danhSachNgay.map(ngay => {
                   const dayNum = ngay.getDate()
-                  const isBan = lichBan[x.id]?.includes(dayNum)
+                  const khoa = `${nam}-${String(thang).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`
+                  const isBan = (lichBan[x.id] ?? []).some((k) => k.tu <= khoa && khoa <= k.den)
                   return (
                     <td 
                       key={dayNum} 
                       className={`lich-td-ngay ${isBan ? 'ban' : 'trong'}`}
-                      title={isBan ? 'Đã có khách thuê' : 'Trống lịch'}
+                      title={isBan ? 'Chủ xe đã chặn ngày này' : 'Trống lịch'}
                     >
-                      {/* Interactive cell mock */}
                       <div className="lich-cell-content"></div>
                     </td>
                   )

@@ -166,7 +166,13 @@ supabase.from('listing_card').select('*').eq('owner_id', uid)
 // Số dư ví (chỉ đọc)
 supabase.from('wallet_balances').select('*').eq('user_id', uid).single()
 
+// Ghi sự kiện (0016) — KHÔNG insert thẳng bảng events (đã thu quyền).
+// kind: view_listing | click_call | click_zalo | save_listing | search.
+// reveal_phone KHÔNG qua đây — Edge Function reveal-phone tự ghi.
+supabase.rpc('track_event', { p_kind, p_listing_id, p_session_id, p_meta })
+
 // Số liệu cho chủ xe — ĐỌC TỪ BẢNG TỔNG HỢP, không quét bảng events thô.
+// Cron gộp MỖI GIỜ (hôm nay + hôm qua), ngày tính theo GIỜ VIỆT NAM.
 supabase.from('events_daily').select('day,kind,count')
   .eq('listing_id', id).gte('day', tuNgay).order('day')
 

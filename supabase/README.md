@@ -164,7 +164,16 @@ cũng sẽ "toàn PASS" mà app thì trắng trang.
 
 ---
 
-## 8. Cron — CHƯA đặt. Thiếu bước này thì không ai nhận được thông báo hạn
+## 8. Cron — ✅ ĐÃ ĐẶT 03/10/2026 (`migrations/0017_lich_dinh_ky.sql`)
+
+Đang chạy trên production: `het-han-tin` (mỗi giờ), `gop-su-kien` (phút 10 mỗi giờ,
+`rollup_events_recent()` — hôm nay + hôm qua giờ VN), `don-su-kien` (03:00 VN),
+`gui-thong-bao` (5 phút). `CRON_SECRET` đã đặt ở Edge Function secrets **và** Vault
+(`cron_secret`, `project_url`) — giá trị không ghi ở đâu trong repo. Muốn đổi thì
+đặt lại CẢ HAI chỗ cùng một giá trị. Email/Zalo còn chờ `RESEND_API_KEY` / `ZALO_*`.
+
+Phần dưới giữ làm tài liệu cách dựng lại từ đầu (dự án Supabase mới).
+
 
 Kiểm repo: không có `cron.schedule` nào, cũng không có lịch ở Cloudflare/GitHub.
 Hai thứ cần chạy theo lịch, **phụ thuộc nhau**:

@@ -60,8 +60,3 @@ values
 
 commit;
 
-INSERT INTO reference_prices (code, label, unit, price, source, effective_date) 
-VALUES 
-  ('xang_ron95', 'Xăng RON 95', 'lít', 24000, 'Petrolimex', CURRENT_DATE), 
-  ('dau_do', 'Dầu DO', 'lít', 21000, 'Petrolimex', CURRENT_DATE)
-ON CONFLICT DO NOTHING;

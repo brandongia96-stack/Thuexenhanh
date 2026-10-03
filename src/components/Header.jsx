@@ -5,7 +5,7 @@ import { useAuth } from '../modules/auth/AuthProvider'
 import './Header.css'
 
 export default function Header() {
-  const { isLoggedIn, isOwner, profile, signOut } = useAuth()
+  const { isLoggedIn, isOwner, isAdmin, profile, signOut } = useAuth()
   const [menuOpen, setMenuOpen] = useState(false)
   const dropdownRef = useRef(null)
 
@@ -76,6 +76,11 @@ export default function Header() {
                     </div>
                   </div>
                   
+                  {isAdmin && (
+                    <Link to="/admin" className="hd-dropdown-item" onClick={() => setMenuOpen(false)}>
+                      <Settings size={16} /> Quản trị
+                    </Link>
+                  )}
                   {isOwner && (
                     <>
                       <Link to="/chu-xe/vi" className="hd-dropdown-item" onClick={() => setMenuOpen(false)}>

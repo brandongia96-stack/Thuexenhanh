@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { PHAP_NHAN, coPhapNhan } from '../modules/legal/phienBan'
 import './Footer.css'
 
 /**
@@ -62,17 +63,17 @@ export default function Footer() {
           Thuê Xe Nhanh là nền tảng rao vặt, chỉ cung cấp thông tin và kết nối chủ xe với khách thuê.
           Mọi giao dịch do hai bên tự thoả thuận. Chúng tôi không giữ tiền và không thu hoa hồng giao dịch.
         </div>
-        
-        <div className="footer-legal-info" style={{ color: 'var(--m-subtle)', fontSize: '13px' }}>
-          <strong>Hộ Kinh Doanh Thuê Xe Nhanh</strong>
-          <div>Giấy chứng nhận Đăng ký Hộ Kinh Doanh số: 01A8123456 do UBND Quận Cầu Giấy cấp ngày 01/01/2026.</div>
-          <div>Mã số thuế: 0123456789</div>
-          <div>Địa chỉ: 123 Đường Xuân Thủy, Phường Dịch Vọng Hậu, Quận Cầu Giấy, TP. Hà Nội.</div>
-          <div>Hotline hỗ trợ (Chủ xe & Khách thuê): 0987.654.321</div>
-          <div style={{ marginTop: 8 }}>
-            <em>* Website đang trong quá trình chạy thử nghiệm và hoàn thiện hồ sơ thông báo với Bộ Công Thương.</em>
+
+        {/* Thông tin pháp nhân lấy từ modules/legal/phienBan.js — rỗng thì ẩn cả khối.
+            CẤM gõ thẳng thông tin vào đây: mã số / địa chỉ bịa là vi phạm §1.2. */}
+        {coPhapNhan() && (
+          <div className="footer-legal-info" style={{ color: 'var(--m-subtle)', fontSize: '13px' }}>
+            {PHAP_NHAN.ten && <strong>{PHAP_NHAN.ten}</strong>}
+            {PHAP_NHAN.maSo && <div>Mã số: {PHAP_NHAN.maSo}</div>}
+            {PHAP_NHAN.diaChi && <div>Địa chỉ: {PHAP_NHAN.diaChi}</div>}
+            {PHAP_NHAN.dienThoai && <div>Điện thoại: {PHAP_NHAN.dienThoai}</div>}
           </div>
-        </div>
+        )}
       </div>
     </footer>
   )

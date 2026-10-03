@@ -103,29 +103,7 @@ export async function soLieuNhieuXe(ownerId, listingIds, { soNgay = SO_NGAY } = 
     .in('kind', KIND_QUAN_TAM)
     .gte('day', ngayBatDau(soNgay))
   if (error) throw error
-  
-  const ketQua = data ?? []
-  
-  // DEMO MOCK: Nếu chưa có dữ liệu thật, tự động sinh số giả để vẽ biểu đồ
-  if (ketQua.length === 0) {
-    for (const id of listingIds) {
-      const base = id ? id.charCodeAt(id.length - 1) % 10 + 3 : 5
-      for (let i = 0; i < soNgay; i++) {
-        const d = new Date()
-        d.setDate(d.getDate() - i)
-        const str = d.toISOString().split('T')[0]
-        
-        // Random có quy luật để đồ thị trông tự nhiên
-        const views = Math.floor(Math.abs(Math.sin(i)) * 8) + base + (i % 3)
-        const leads = views > 8 && i % 4 === 0 ? 1 : 0
-        
-        ketQua.push({ listing_id: id, kind: 'view_listing', day: str, count: views })
-        if (leads > 0) ketQua.push({ listing_id: id, kind: 'reveal_phone', day: str, count: leads })
-      }
-    }
-  }
-  
-  return ketQua
+  return data ?? []
 }
 
 /**
@@ -242,13 +220,6 @@ export async function tongSoLieuChuXe(ownerId, { soNgay = SO_NGAY } = {}) {
   if (error) throw error
   const tong = { view_listing: 0, reveal_phone: 0 }
   for (const r of data ?? []) tong[r.kind] += Number(r.count) || 0
-  
-  // DEMO MOCK: Nếu chưa có view thật, cấp số ngẫu nhiên demo
-  if (tong.view_listing === 0 && tong.reveal_phone === 0) {
-    const ownerCode = ownerId ? ownerId.charCodeAt(0) % 5 + 1 : 1
-    tong.view_listing = ownerCode * 125 + 53
-    tong.reveal_phone = ownerCode * 8 + 3
-  }
-  
+
   return tong
 }

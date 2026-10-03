@@ -13,7 +13,7 @@ Ba phần: **hàm SQL**, **Edge Function**, **webhook ngân hàng**. Làm đúng
 | `bank-webhook` | 🔴 deployed nhưng **hỏng** | trả `{"error":"chua_cau_hinh"}` — thiếu `BANK_WEBHOOK_KEY` |
 | `FLAGS.nap_tien_that` | 🔴 `false` | ẩn nút nạp ở trang ví |
 | Cron `expire_listings` | 🔴 **chưa chạy** | tin `de0…010` hết hạn 30/09 mà vẫn `sap_het_han` |
-| Admin cấp token tay | ✅ có | `/quan-tri` → Người dùng → Ví token |
+| Admin cấp token tay | ✅ có | `/admin` → Người dùng → Ví token |
 
 **Kết luận:** đường **trừ** token chạy được; đường **nạp** token chưa có lối nào
 tự động. Thiếu đúng 3 việc ngoài code: đặt secrets, nối SePay, đặt cron.
