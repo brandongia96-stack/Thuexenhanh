@@ -82,7 +82,9 @@ export default function OTimKiem({
           <X size={16} strokeWidth={2} />
         </button>
       )}
-      <button type="submit" className="btn btn-primary btn-sm otk-tim">Tìm</button>
+      <button type="submit" className="btn btn-primary btn-sm otk-tim" aria-label="Tìm" title="Tìm">
+        <Search size={18} strokeWidth={2.5} />
+      </button>
     </form>
   )
 }

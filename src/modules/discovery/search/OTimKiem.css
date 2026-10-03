@@ -23,4 +23,13 @@
   border-radius: var(--r-full); color: var(--m-subtle);
 }
 .otk-xoa:hover { background: var(--m-bg); color: var(--m-dark); }
-.otk-tim { border-radius: var(--r-full); height: 40px; padding: 0 var(--sp-5); }
+.otk-tim { 
+  border-radius: var(--r-full); 
+  width: 40px; 
+  height: 40px; 
+  padding: 0; 
+  display: flex; 
+  align-items: center; 
+  justify-content: center;
+  flex: none;
+}
