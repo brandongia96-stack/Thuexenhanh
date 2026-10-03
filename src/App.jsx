@@ -100,7 +100,7 @@ export default function App() {
               <Route path="/kiem-duyet" element={
                 <RequireRole><ChuaLam ten="Hàng chờ kiểm duyệt" luong="08 — Tin cậy & kiểm duyệt" /></RequireRole>
               } />
-              <Route path="/quan-tri/*" element={
+              <Route path="/admin/*" element={
                 <RequireRole><TrangQuanTri /></RequireRole>
               } />
 

@@ -144,6 +144,7 @@ export function nhomTruong(form, goi = GOI.DAY_DU) {
       { name: 'pickup_min_pct', label: 'Giao xe còn tối thiểu', type: 'number', suffix: '% pin' },
       { name: 'return_min_pct', label: 'Yêu cầu trả xe còn', type: 'number', suffix: '% pin' },
       { name: 'has_portable_charger', label: 'Có kèm dây sạc di động', type: 'checkbox' },
+      { name: 'battery_policy_note', label: 'Quy định Pin (Tuỳ chỉnh)', type: 'textarea', placeholder: 'VD: Giao xe pin 80%, nếu trả dưới 80% bù 5.000đ/1% pin. Sạc quá 100% không hoàn lại tiền...', hint: 'Ghi rõ quy định bù trừ tiền pin để tránh cãi vã khi trả xe.' },
     ],
   } : null
 

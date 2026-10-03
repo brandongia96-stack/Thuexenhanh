@@ -25,7 +25,7 @@ export function isStaff(roles) {
 
 // Khách vào /chu-xe thì cần rủ nâng cấp, không phải chặn thẳng.
 export function canAccess(path, roles) {
-  if (path.startsWith('/quan-tri')) return hasRole(roles, ROLE.ADMIN)
+  if (path.startsWith('/admin')) return hasRole(roles, ROLE.ADMIN)
   if (path.startsWith('/kiem-duyet')) return isStaff(roles)
   // Trang đăng tin mở cho MỌI tài khoản đã đăng nhập: đăng tin đầu tiên chính là
   // việc biến khách thành chủ xe. Vai trò `chu_xe` do trigger listings_grant_owner_role

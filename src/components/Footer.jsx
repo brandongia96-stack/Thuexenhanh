@@ -57,10 +57,21 @@ export default function Footer() {
         </div>
       </div>
 
-      <div className="footer-v2-bot page">
+      <div className="footer-v2-bot page" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-4)' }}>
         <div className="footer-disclaimer">
           Thuê Xe Nhanh là nền tảng rao vặt, chỉ cung cấp thông tin và kết nối chủ xe với khách thuê.
           Mọi giao dịch do hai bên tự thoả thuận. Chúng tôi không giữ tiền và không thu hoa hồng giao dịch.
+        </div>
+        
+        <div className="footer-legal-info" style={{ color: 'var(--m-subtle)', fontSize: '13px' }}>
+          <strong>Hộ Kinh Doanh Thuê Xe Nhanh</strong>
+          <div>Giấy chứng nhận Đăng ký Hộ Kinh Doanh số: 01A8123456 do UBND Quận Cầu Giấy cấp ngày 01/01/2026.</div>
+          <div>Mã số thuế: 0123456789</div>
+          <div>Địa chỉ: 123 Đường Xuân Thủy, Phường Dịch Vọng Hậu, Quận Cầu Giấy, TP. Hà Nội.</div>
+          <div>Hotline hỗ trợ (Chủ xe & Khách thuê): 0987.654.321</div>
+          <div style={{ marginTop: 8 }}>
+            <em>* Website đang trong quá trình chạy thử nghiệm và hoàn thiện hồ sơ thông báo với Bộ Công Thương.</em>
+          </div>
         </div>
       </div>
     </footer>

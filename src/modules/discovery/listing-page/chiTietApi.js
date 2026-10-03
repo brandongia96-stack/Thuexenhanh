@@ -33,7 +33,7 @@ const COT = [
   // Xe điện — null hết với xe xăng. Số liệu do CHỦ XE KHAI (không phải hãng).
   'ev_range_km', 'battery_kwh', 'charge_policy', 'free_charge_km',
   'charge_fee_per_pct', 'pickup_min_pct', 'return_min_pct',
-  'has_portable_charger', 'battery_ownership',
+  'has_portable_charger', 'battery_ownership', 'battery_policy_note',
   'amenity_codes', 'is_verified', 'published_at', 'expires_at', 'created_at',
 ].join(',')
 

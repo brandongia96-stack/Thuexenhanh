@@ -6,7 +6,7 @@
 
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AlertTriangle, CalendarClock, Car, Eye, Phone, Plus, Wallet } from 'lucide-react'
+import { AlertTriangle, CalendarClock, Car, Eye, Phone, Plus, Wallet, Download } from 'lucide-react'
 import { useAuth } from '../auth/AuthProvider'
 import EmptyState from '../../components/EmptyState'
 import { Skeleton } from '../../components/Loading'
@@ -211,6 +211,20 @@ export default function TrangChuXe() {
           Chưa có lượt xem nào trong 30 ngày qua. Số liệu gộp theo ngày, cập nhật mỗi đêm, chưa gồm hôm nay.
         </p>
       )}
+
+      {/* Quà tặng biểu mẫu cho chủ xe (Mức 2) */}
+      <div className="card card-pad row" style={{ gap: 'var(--sp-4)', marginTop: 'var(--sp-2)', marginBottom: 'var(--sp-4)', backgroundColor: 'var(--m-blue-bg)' }}>
+        <div style={{ flex: 1 }}>
+          <h3 className="t-h3" style={{ color: 'var(--m-blue)' }}>Biểu mẫu hỗ trợ kinh doanh</h3>
+          <p className="t-small" style={{ marginTop: 4 }}>Tải ngay bộ Mẫu hợp đồng thuê xe & Biên bản bàn giao chuẩn pháp lý (File Word).</p>
+        </div>
+        <button 
+          className="btn btn-primary" 
+          onClick={() => alert('Mẫu hợp đồng đang được đội pháp chế chuẩn bị. Sẽ sớm có mặt!')}
+        >
+          <Download size={16} /> Tải miễn phí
+        </button>
+      </div>
 
       <div className="cx-tab" role="tablist" aria-label="Lọc theo trạng thái">
         {TAB.map((t) => (

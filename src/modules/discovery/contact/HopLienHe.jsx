@@ -20,6 +20,7 @@ export default function HopLienHe({ tin, userId, conHienThi }) {
   const [so, setSo] = useState(null)
   const [dangLay, setDangLay] = useState(false)
   const [loi, setLoi] = useState(null)
+  const [hienCanhBao, setHienCanhBao] = useState(false)
 
   if (!conHienThi) {
     return (
@@ -28,6 +29,21 @@ export default function HopLienHe({ tin, userId, conHienThi }) {
         <span>Tin đã hết hạn nên không còn số liên hệ.</span>
       </div>
     )
+  }
+
+  function xulyBamXemSo() {
+    const daDongY = localStorage.getItem('thuexenhanh_anti_scam_agreed')
+    if (daDongY) {
+      xemSo()
+    } else {
+      setHienCanhBao(true)
+    }
+  }
+
+  function dongYCanhBao() {
+    localStorage.setItem('thuexenhanh_anti_scam_agreed', '1')
+    setHienCanhBao(false)
+    xemSo()
   }
 
   async function xemSo() {
@@ -55,7 +71,7 @@ export default function HopLienHe({ tin, userId, conHienThi }) {
           <button
             type="button"
             className="btn btn-primary btn-lg btn-block"
-            onClick={xemSo}
+            onClick={xulyBamXemSo}
             disabled={dangLay}
           >
             {dangLay ? (
@@ -106,6 +122,44 @@ export default function HopLienHe({ tin, userId, conHienThi }) {
         Thuexenhanh chỉ cung cấp thông tin. Giá cả, cọc và giao nhận do anh/chị và chủ xe tự
         thoả thuận.
       </p>
+
+      {/* Modal Cảnh báo lừa đảo */}
+      {hienCanhBao && (
+        <div style={{
+          position: 'fixed', top: 0, left: 0, right: 0, bottom: 0,
+          backgroundColor: 'rgba(0,0,0,0.7)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 9999, padding: 'var(--sp-4)'
+        }}>
+          <div className="card card-pad stack" style={{ maxWidth: 400, background: '#fff' }}>
+            <div className="row" style={{ color: 'var(--m-red)', justifyContent: 'center', marginBottom: 8 }}>
+              <AlertCircle size={48} strokeWidth={1.5} />
+            </div>
+            <h3 className="t-h3" style={{ textAlign: 'center', color: 'var(--m-red)' }}>Cảnh báo an toàn</h3>
+            <p className="t-body" style={{ textAlign: 'center', marginTop: 8 }}>
+              <b>TUYỆT ĐỐI KHÔNG CHUYỂN CỌC TRƯỚC KHI XEM XE TRỰC TIẾP.</b>
+              <br/><br/>
+              Thuê Xe Nhanh chỉ là nền tảng rao vặt, không chịu trách nhiệm bảo lãnh hay giải quyết tranh chấp tài chính cho giao dịch này.
+            </p>
+            <div className="row" style={{ marginTop: 'var(--sp-4)', gap: 'var(--sp-3)' }}>
+              <button 
+                className="btn btn-ghost" 
+                style={{ flex: 1 }} 
+                onClick={() => setHienCanhBao(false)}
+              >
+                Hủy bỏ
+              </button>
+              <button 
+                className="btn btn-primary" 
+                style={{ flex: 1, background: 'var(--m-red)', borderColor: 'var(--m-red)' }} 
+                onClick={dongYCanhBao}
+              >
+                Tôi đã hiểu
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }

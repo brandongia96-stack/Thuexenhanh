@@ -11,7 +11,7 @@ import { HAS_BACKEND } from '../../../lib/config'
 import { docTinChiTiet, conHienThi } from './chiTietApi'
 import SliderAnh from './SliderAnh'
 import {
-  KhoiThongSo, KhoiTienNghi, KhoiGia, KhoiMoTa, KhoiLichBan, BanDo, KhoiDanhGia,
+  KhoiThongSo, KhoiTienNghi, KhoiGia, KhoiMoTa, KhoiLichBan, BanDo, KhoiDanhGia, KhoiQuyDinhPin
 } from './KhoiThongTin'
 import BangTinhTongTien from './BangTinhTongTien'
 import HopLienHe from '../contact/HopLienHe'
@@ -152,6 +152,7 @@ export default function TrangXe() {
           <KhoiGia tin={tin} />
           <BangTinhTongTien tin={tin} userId={user?.id ?? null} conHienThi={conSong} />
           <KhoiMoTa text={tin.description} />
+          <KhoiQuyDinhPin text={tin.battery_policy_note} fuel={tin.fuel} />
           <KhoiLichBan khoang={tin.ngayChan} />
           <BanDo tin={tin} />
           <KhoiDanhGia />
@@ -165,6 +166,18 @@ export default function TrangXe() {
             </div>
             <NutLuu tin={tin} />
             <HopLienHe tin={tin} userId={user?.id ?? null} conHienThi={conSong} />
+            
+            {/* Nút báo cáo lừa đảo / giá ảo */}
+            <div style={{ marginTop: 'var(--sp-4)', textAlign: 'center' }}>
+              <button 
+                className="btn btn-ghost btn-sm" 
+                style={{ color: 'var(--m-subtle)', fontSize: '12px' }}
+                onClick={() => alert('Chức năng báo cáo tin đăng đang được xây dựng')}
+              >
+                <AlertTriangle size={14} style={{ marginRight: 4 }} /> 
+                Báo cáo tin này
+              </button>
+            </div>
           </div>
         </aside>
       </div>

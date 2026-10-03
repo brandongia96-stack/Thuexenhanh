@@ -136,6 +136,17 @@ export function KhoiMoTa({ text }) {
 }
 
 /**
+ * Quy định Pin của xe điện.
+ */
+export function KhoiQuyDinhPin({ text, fuel }) {
+  return (
+    <Khoi title="Chính sách & Quy định Pin" trong={fuel !== 'dien' || !text?.trim()}>
+      <p className="mota">{text}</p>
+    </Khoi>
+  )
+}
+
+/**
  * Lịch bận. CHỈ HIỆN — khách không đặt được ngày ở đây.
  * App là rao vặt, không giữ chỗ (CLAUDE.md 1.2).
  */
