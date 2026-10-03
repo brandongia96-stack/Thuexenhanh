@@ -144,6 +144,7 @@ export async function guiBaoCao(listingId, reporterId, reasonCode, detail) {
   
   if (error) {
     if (error.code === '23505') throw new Error('Anh/chị đã báo cáo xe này rồi.')
+    if (/tu bao cao/i.test(error.message)) throw new Error('Không thể tự báo cáo tin của mình.')
     throw new Error('Gặp lỗi khi gửi báo cáo: ' + error.message)
   }
   return true

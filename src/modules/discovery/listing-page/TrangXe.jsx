@@ -128,7 +128,7 @@ export default function TrangXe() {
             
             {tin.report_count > 0 && (
               <div style={{ marginTop: '12px', fontSize: '14px', color: 'var(--m-red)', display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'var(--m-red-bg)', padding: '6px 12px', borderRadius: 6, fontWeight: 500 }}>
-                <AlertTriangle size={16} strokeWidth={2} /> Cảnh báo an toàn: Chiếc xe này đã bị {tin.report_count} người tố cáo vi phạm.
+                <AlertTriangle size={16} strokeWidth={2} /> Tin này có {tin.report_count} báo cáo vi phạm đã được kiểm duyệt xác nhận.
               </div>
             )}
           </header>

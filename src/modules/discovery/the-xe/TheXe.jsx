@@ -124,7 +124,7 @@ function TheXe({ the, bangDiaGioi, uuTien = false }) {
         
         {the.report_count > 0 && (
           <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--m-red)', display: 'flex', alignItems: 'center', gap: '4px', background: 'var(--m-red-bg)', padding: '4px 8px', borderRadius: 4, fontWeight: 500 }}>
-            <AlertTriangle size={14} strokeWidth={2} /> Cảnh báo: Có {the.report_count} lượt báo cáo vi phạm
+            <AlertTriangle size={14} strokeWidth={2} /> {the.report_count} báo cáo vi phạm đã xác nhận
           </div>
         )}
       </div>

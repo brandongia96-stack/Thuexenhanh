@@ -8,6 +8,14 @@ import { thongDiepLoi } from './useTai'
 import { Link } from 'react-router-dom'
 import { formatDateTime } from '../../lib/format'
 
+const TEN_LY_DO = {
+  gia_ao: 'Giá báo khác với giá đăng',
+  xe_ao: 'Xe không có thật hoặc đã bán',
+  lua_dao: 'Dấu hiệu lừa đảo / đòi cọc trước',
+  thong_tin_sai: 'Sai thông tin',
+  khac: 'Lý do khác',
+}
+
 export default function QuanLyBaoCao() {
   const [ds, setDs] = useState(null)
   const [dangTai, setDangTai] = useState(true)
@@ -48,7 +56,9 @@ export default function QuanLyBaoCao() {
     // Nếu hợp lệ (da_xu_ly), chúng ta cần đếm lại số lượng report thật của xe
     // (Bằng trigger hoặc function. Ở đây chỉ cập nhật trạng thái tạm).
     
-    const { error } = await sb
+    // RLS chỉ cho kiểm duyệt/admin sửa (policy reports_staff_update, 0018).
+    // Trigger on_report_status_change tự cộng/trừ listings.report_count.
+    const { data, error } = await sb
       .from('reports')
       .update({
         status: hanhDong,
@@ -56,8 +66,11 @@ export default function QuanLyBaoCao() {
         handled_at: new Date().toISOString()
       })
       .eq('id', id)
-      
-    if (!error) {
+      .select('id')
+
+    if (!error && !data?.length) {
+      alert('Không cập nhật được — tài khoản không có quyền kiểm duyệt.')
+    } else if (!error) {
       setDs(ds => ds.filter(r => r.id !== id))
     } else {
       alert('Lỗi xử lý: ' + error.message)
@@ -76,7 +89,7 @@ export default function QuanLyBaoCao() {
         <div key={r.id} className="card card-pad stack" style={{ gap: 'var(--sp-3)', background: 'var(--m-red-bg)' }}>
           <div className="row" style={{ justifyContent: 'space-between', alignItems: 'flex-start' }}>
             <div>
-              <h3 className="t-h3" style={{ color: 'var(--m-red)' }}>Lý do: {r.reason_code}</h3>
+              <h3 className="t-h3" style={{ color: 'var(--m-red)' }}>Lý do: {TEN_LY_DO[r.reason_code] ?? r.reason_code}</h3>
               <div className="t-small" style={{ color: 'var(--m-subtle)' }}>
                 Người báo: <b>{r.reporter?.full_name}</b> ({r.reporter?.phone}) lúc {formatDateTime(r.created_at)}
               </div>
@@ -84,7 +97,7 @@ export default function QuanLyBaoCao() {
             <Link to={`/xe/${r.listing?.id}`} target="_blank" className="btn btn-ghost btn-sm">Xem xe bị báo cáo</Link>
           </div>
           
-          <div className="t-body" style={{ background: '#fff', padding: 'var(--sp-3)', borderRadius: 'var(--r-md)' }}>
+          <div className="t-body" style={{ background: 'var(--m-surface)', padding: 'var(--sp-3)', borderRadius: 'var(--r-md)' }}>
             <b>Chi tiết:</b> {r.detail || 'Không có ghi chú thêm.'}
           </div>
           
@@ -93,7 +106,7 @@ export default function QuanLyBaoCao() {
               <X size={16} /> Bỏ qua (Report ảo)
             </button>
             <button className="btn btn-primary" onClick={() => xuLy(r.id, 'da_xu_ly')} style={{ background: 'var(--m-red)', borderColor: 'var(--m-red)' }}>
-              <Check size={16} /> Xác nhận (Khóa xe hoặc cảnh cáo)
+              <Check size={16} /> Xác nhận vi phạm (hiện cảnh báo trên tin)
             </button>
           </div>
         </div>

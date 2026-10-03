@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AlertTriangle, X } from 'lucide-react'
 import { guiBaoCao } from './chiTietApi'
 import { useAuth } from '../../auth/AuthProvider'
@@ -23,11 +23,13 @@ export default function ModalBaoCao({ tin, dong }) {
   const [loi, setLoi] = useState(null)
   const [thanhCong, setThanhCong] = useState(false)
 
-  // Bắt đăng nhập mới được báo cáo
-  if (!user) {
-    navigate('/dang-nhap', { state: { quayLai: location.pathname + location.search } })
-    return null
-  }
+  // Bắt đăng nhập mới được báo cáo (báo cáo gắn với tài khoản — chống báo cáo
+  // ẩn danh hàng loạt; mỗi người chỉ báo cáo một tin một lần, DB đã chặn).
+  // Điều hướng trong effect, không gọi navigate() ngay lúc render.
+  useEffect(() => {
+    if (!user) navigate('/dang-nhap', { state: { quayLai: location.pathname + location.search } })
+  }, [user, navigate, location])
+  if (!user) return null
 
   async function xuLyGui(e) {
     e.preventDefault()
@@ -55,7 +57,7 @@ export default function ModalBaoCao({ tin, dong }) {
       display: 'flex', alignItems: 'center', justifyContent: 'center',
       zIndex: 9999, padding: 'var(--sp-4)'
     }}>
-      <div className="card card-pad stack" style={{ maxWidth: 450, width: '100%', background: '#fff', position: 'relative' }}>
+      <div className="card card-pad stack" style={{ maxWidth: 450, width: '100%', background: 'var(--m-surface)', position: 'relative' }}>
         <button 
           className="btn btn-ghost" 
           style={{ position: 'absolute', top: 12, right: 12, padding: 8 }}
@@ -74,7 +76,7 @@ export default function ModalBaoCao({ tin, dong }) {
             <div style={{ color: 'var(--m-green)', marginBottom: 'var(--sp-2)' }}>
               ✓ Gửi báo cáo thành công
             </div>
-            <p className="t-body">Cảm ơn anh/chị đã chung tay làm sạch cộng đồng Thuê Xe Nhanh. Quản trị viên sẽ xem xét và xử lý nghiêm.</p>
+            <p className="t-body">Cảm ơn anh/chị. Người kiểm duyệt sẽ xem xét. Tin bị 3 người báo cáo độc lập sẽ tạm ẩn chờ kiểm tra.</p>
             <button className="btn btn-primary" onClick={dong} style={{ marginTop: 'var(--sp-4)' }}>Đóng</button>
           </div>
         ) : (
