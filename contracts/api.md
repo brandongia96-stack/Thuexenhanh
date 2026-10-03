@@ -190,8 +190,11 @@ phải khớp mã, lệch mã thì khối ước tính tự ẩn chứ không b�
 
 | `code` | Nhiên liệu | `unit` |
 |---|---|---|
-| `xang_ron95` | Xăng (RON95) | đ/lít |
-| `dau_do` | Dầu (dầu đỏ/diesel) | đ/lít |
+| `xang_e10` | Xăng E10 RON95-III (từ 03/10/2026) | lít |
+| ~~`xang_ron95`~~ | bỏ 03/10 — bảng giá không còn RON95 thường | |
+| `dau_do` | Dầu DO 0,05S | lít |
+
+Giá do Edge Function `gia-nhien-lieu` tự lấy 06:00 + 16:00 giờ VN (Petrolimex vùng 1, qua giaxanghomnay.com; webgia.com dự phòng cho dầu). Có kiểm khoảng 15–50k và lệch ≤15%. View có `checked_at`; client ẩn giá quá 10 ngày chưa kiểm lại. Admin vẫn sửa tay được.
 
 Mã khác (vd. giá điện) để sau, chưa cần cho bảng tính hiện tại.
 

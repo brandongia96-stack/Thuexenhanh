@@ -3,14 +3,19 @@
 // contracts/api.md mục 2: `reference_price_now` — CẤM hardcode giá trong code,
 // bảng rỗng (admin luồng 10 chưa nhập) thì ẩn cả khối ước tính, không hiện 0đ.
 //
-// Mã `code` đã CHỐT ở contracts/api.md mục 2 (bảng "Mã reference_prices.code
-// đã chốt"): 'xang_ron95' cho xăng, 'dau_do' cho dầu. Luồng 10 nhập giá phải
-// dùng đúng 2 mã này — lệch mã thì khối ước tính tự ẩn (graceful
-// degradation), không BAO GIỜ hiện số sai.
+// Mã `code` đã CHỐT ở contracts/api.md mục 2: 'xang_e10' cho xăng (đổi từ
+// 'xang_ron95' ngày 03/10 — bảng giá không còn RON95 thường), 'dau_do' cho dầu.
+// Giá do Edge Function `gia-nhien-lieu` tự lấy 2 lần/ngày (0019).
+// Lệch mã thì khối ước tính tự ẩn, không BAO GIỜ hiện số sai.
 const MA_GIA_THEO_NHIEN_LIEU = {
-  xang: 'xang_ron95',
+  xang: 'xang_e10',
   dau: 'dau_do',
 }
+
+// Quá chừng này ngày chưa kiểm lại được giá (nguồn hỏng, cron dừng) thì coi
+// như không có giá — thà ẩn còn hơn hiện số cũ như thể là giá hôm nay.
+const GIA_CU_TOI_DA_NGAY = 10
+const MOT_NGAY = 86_400_000
 
 import { getSupabase } from '../../../lib/supabase'
 import { HAS_BACKEND } from '../../../lib/config'
@@ -27,10 +32,13 @@ export async function layGiaThamChieu(fuel) {
     const sb = await getSupabase()
     const { data, error } = await sb
       .from('reference_price_now')
-      .select('price,unit,source,effective_date')
+      .select('price,unit,source,effective_date,checked_at')
       .eq('code', ma)
       .maybeSingle()
     if (error || !data) return null
+    if (data.checked_at && Date.now() - new Date(data.checked_at).getTime() > GIA_CU_TOI_DA_NGAY * MOT_NGAY) {
+      return null
+    }
     return {
       price: data.price,
       unit: data.unit,

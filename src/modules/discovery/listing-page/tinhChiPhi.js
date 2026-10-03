@@ -168,6 +168,12 @@ function tinhSacPin(tin, kmDuKien) {
  * `giaThamChieu` do nơi gọi đọc từ view `reference_price_now` rồi truyền vào
  * (hàm này KHÔNG gọi mạng — luật 7). Thiếu giá tham chiếu thì ẩn dòng.
  */
+// 'yyyy-mm-dd' → 'dd/mm/yyyy'. Không dùng Date để khỏi lệch ngày theo múi giờ.
+function ngayVN(iso) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso ?? '')
+  return m ? `${m[3]}/${m[2]}/${m[1]}` : ''
+}
+
 function tinhNhienLieu(tin, kmDuKien, giaThamChieu) {
   if (kmDuKien == null) return null
   if (tin.fuel !== 'xang' && tin.fuel !== 'dau') return null // hybrid/điện không qua nhánh này
@@ -182,7 +188,7 @@ function tinhNhienLieu(tin, kmDuKien, giaThamChieu) {
     return {
       soTien: null,
       moTa: `Ước tính tiêu thụ khoảng ${soLit.toFixed(1)} lít ${tenNhienLieu} (theo mức ${tieuHao}L/100km)`,
-      ghiChu: 'Chưa có dữ liệu giá nhiên liệu hiện tại để tính tiền'
+      ghiChu: 'Chưa lấy được giá nhiên liệu mới nhất để tính tiền'
     }
   }
 
@@ -191,7 +197,7 @@ function tinhNhienLieu(tin, kmDuKien, giaThamChieu) {
     moTa: `${soLit.toFixed(1)} lít × ${giaThamChieu.price.toLocaleString('vi-VN')}đ/${giaThamChieu.unit ?? 'lít'}`,
     // Luật 5: BẮT BUỘC ghi ngày + nguồn của giá — khách không kiểm được số
     // thì không tin được bảng tính (contracts/api.md mục 2).
-    ghiChu: `Giá ${giaThamChieu.source ?? ''} ngày ${giaThamChieu.effectiveDate ?? giaThamChieu.effective_date ?? ''}`.trim(),
+    ghiChu: `Giá tham khảo ${giaThamChieu.source ?? ''}, áp dụng từ ${ngayVN(giaThamChieu.effectiveDate ?? giaThamChieu.effective_date)}`.trim(),
   }
 }
 
