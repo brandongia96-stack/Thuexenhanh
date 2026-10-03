@@ -1,0 +1,115 @@
+.tk-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding-bottom: var(--sp-12);
+  background-color: var(--m-bg);
+  min-height: 100vh;
+}
+
+.tk-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #10B981; /* Green color for banner */
+  color: white;
+  padding: var(--sp-3) var(--sp-4);
+  cursor: pointer;
+  margin-bottom: var(--sp-2);
+}
+
+.tk-banner-content {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+}
+
+.tk-banner-text {
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.tk-menu-list {
+  background-color: var(--m-surface);
+  display: flex;
+  flex-direction: column;
+}
+
+.tk-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-4);
+  cursor: pointer;
+  transition: background-color var(--t-fast);
+}
+
+.tk-menu-item:active {
+  background-color: var(--m-bg);
+}
+
+.tk-menu-item-left {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-4);
+}
+
+.tk-icon-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+}
+
+.tk-menu-text {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--m-dark);
+}
+
+.tk-chevron {
+  color: var(--m-subtle);
+}
+
+.tk-divider {
+  height: 8px;
+  background-color: var(--m-bg);
+  width: 100%;
+}
+
+.tk-profile-header {
+  padding: var(--sp-4);
+}
+
+.tk-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.tk-profile-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.tk-profile-name {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--m-dark);
+}
+
+.tk-profile-role {
+  font-size: 13px;
+  color: var(--m-subtle);
+}
+
+.tk-version {
+  text-align: center;
+  color: var(--m-subtle);
+  font-size: 14px;
+  margin-top: var(--sp-6);
+  padding-bottom: var(--sp-6);
+}

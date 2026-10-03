@@ -35,6 +35,7 @@ const COT = [
   'charge_fee_per_pct', 'pickup_min_pct', 'return_min_pct',
   'has_portable_charger', 'battery_ownership', 'battery_policy_note',
   'amenity_codes', 'is_verified', 'published_at', 'expires_at', 'created_at',
+  'report_count'
 ].join(',')
 
 // Ảnh: lấy medium + full + blur. KHÔNG lấy url_original (cấm phục vụ ảnh gốc).
@@ -124,9 +125,28 @@ function chuanHoa(d) {
   }
 }
 
-/** Tin có còn được phép hiện số điện thoại không. */
 export function conHienThi(tin) {
   return Boolean(tin) && dangHienThi(tin.trangThai)
+}
+
+/**
+ * Gửi báo cáo tin đăng lên server.
+ */
+export async function guiBaoCao(listingId, reporterId, reasonCode, detail) {
+  const sb = await getSupabase()
+  const { error } = await sb.from('reports').insert({
+    listing_id: listingId,
+    reporter_id: reporterId,
+    reason_code: reasonCode,
+    detail: detail || null,
+    status: 'moi'
+  })
+  
+  if (error) {
+    if (error.code === '23505') throw new Error('Anh/chị đã báo cáo xe này rồi.')
+    throw new Error('Gặp lỗi khi gửi báo cáo: ' + error.message)
+  }
+  return true
 }
 
 /** Dọn bộ nhớ tạm của một tin — dùng sau khi chủ xe vừa sửa tin đó. */

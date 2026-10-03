@@ -17,6 +17,7 @@ import BangTinhTongTien from './BangTinhTongTien'
 import HopLienHe from '../contact/HopLienHe'
 import NutLuu from '../saved/NutLuu'
 import { ghiXemTin } from '../ghiSuKien'
+import ModalBaoCao from './ModalBaoCao'
 import './TrangXe.css'
 
 /**
@@ -31,6 +32,7 @@ export default function TrangXe() {
   const [tin, setTin] = useState(null)
   const [dangTai, setDangTai] = useState(true)
   const [loi, setLoi] = useState(null)
+  const [hienBaoCao, setHienBaoCao] = useState(false)
 
   useEffect(() => {
     let huy = false
@@ -123,7 +125,12 @@ export default function TrangXe() {
                 </span>
               )}
             </div>
-
+            
+            {tin.report_count > 0 && (
+              <div style={{ marginTop: '12px', fontSize: '14px', color: 'var(--m-red)', display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'var(--m-red-bg)', padding: '6px 12px', borderRadius: 6, fontWeight: 500 }}>
+                <AlertTriangle size={16} strokeWidth={2} /> Cảnh báo an toàn: Chiếc xe này đã bị {tin.report_count} người tố cáo vi phạm.
+              </div>
+            )}
           </header>
 
           <KhoiThongSo tin={tin} />
@@ -151,7 +158,7 @@ export default function TrangXe() {
               <button 
                 className="btn btn-ghost btn-sm" 
                 style={{ color: 'var(--m-subtle)', fontSize: '12px' }}
-                onClick={() => alert('Chức năng báo cáo tin đăng đang được xây dựng')}
+                onClick={() => setHienBaoCao(true)}
               >
                 <AlertTriangle size={14} style={{ marginRight: 4 }} /> 
                 Báo cáo tin này
@@ -160,6 +167,8 @@ export default function TrangXe() {
           </div>
         </aside>
       </div>
+
+      {hienBaoCao && <ModalBaoCao tin={tin} dong={() => setHienBaoCao(false)} />}
     </div>
   )
 }
