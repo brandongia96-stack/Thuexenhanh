@@ -237,21 +237,10 @@ summary{cursor:pointer;font-weight:700;font-size:13px;color:var(--m-mid);padding
   </div>
   <div class="hanh-dong">
     <div class="chips" id="chips" style="display:flex;gap:6px;flex-wrap:wrap"></div>
-    <button class="nut n-xanh" id="b-dev">
+    <button class="nut n-xanh" id="b-main" title="Quét, nếu sạch thì commit file đã tick rồi đẩy thẳng lên main (thuexenhanh.pages.dev)">
       <svg class="svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5"/><path d="m5 12 7-7 7 7"/></svg>
-      Quét &amp; đẩy lên dev
+      Quét &amp; đẩy lên main
     </button>
-    <button class="nut n-den" id="b-main" disabled title="Phải đẩy lên dev xanh trước">
-      <svg class="svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v6"/><path d="m9 5 3-3 3 3"/><rect x="3" y="8" width="18" height="13" rx="2"/></svg>
-      Đẩy lên main
-    </button>
-    <button class="nut n-vien" id="b-both" style="color:var(--b1);border-color:var(--b4);font-weight:800">
-      Đẩy CẢ HAI
-    </button>
-    <a class="nut n-vien" id="l-dev" href="https://dev.thuexenhanh.pages.dev" target="_blank" rel="noopener" title="Bản build từ nhánh dev">
-      <svg class="svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
-      Mở web dev
-    </a>
     <a class="nut n-vien" id="l-that" href="https://thuexenhanh.pages.dev" target="_blank" rel="noopener" title="Bản production từ nhánh main — khách thật vào đây">
       <svg class="svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15 15 0 0 1 0 20 15 15 0 0 1 0-20"/></svg>
       Mở web thật
@@ -343,10 +332,9 @@ function veDauTrang() {
   if (g.hienTrang === 'public') c.push('<span class="chip do">⚠ repo ĐANG PUBLIC</span>')
   else if (g.hienTrang === 'private') c.push('<span class="chip xanh">private</span>')
   else if (g.hienTrang === null && KQ && g.remote) c.push('<span class="chip vang">không rõ public/private</span>')
-  if (STATE.devPush) {
-    const khop = STATE.devPush.sha === g.head
-    c.push(`<span class="chip ${khop ? 'xanh' : 'vang'}">dev <code>${esc(STATE.devPush.sha.slice(0, 7))}</code>${khop ? '' : ' cũ'}</span>`)
-  }
+  // Đọc từ origin/main thật, nên đúng cả khi đẩy bằng lệnh git tay chứ không qua công cụ.
+  if (g.chuaLenMain === 0) c.push('<span class="chip xanh">main đã đồng bộ</span>')
+  else if (g.chuaLenMain > 0) c.push(`<span class="chip vang">${g.chuaLenMain} commit chưa lên main</span>`)
   $('#chips').innerHTML = c.join('')
 }
 
@@ -521,7 +509,7 @@ function veSoVoiLanTruoc() {
       <div class="ks"><div class="nhan">File mới</div><div class="so xanhla">${s.themFile.length}</div></div>
       <div class="ks"><div class="nhan">File sửa</div><div class="so">${s.suaFile.length}</div></div>
       <div class="ks"><div class="nhan">File xoá</div><div class="so ${s.xoaFile.length ? 'do' : ''}">${s.xoaFile.length}</div></div>
-      <div class="ks"><div class="nhan">Commit chưa lên dev</div><div class="so">${KQ.commitChuaDay.length}</div></div>
+      <div class="ks"><div class="nhan">Commit chưa lên main</div><div class="so">${KQ.commitChuaDay.length}</div></div>
     </div>
     ${s.themFile.length ? `<details style="margin-top:12px"><summary>Xem ${s.themFile.length} file mới</summary>
       <div class="chi-tiet-mod mono">${s.themFile.map((p) => '<div>+ ' + esc(p) + '</div>').join('')}</div></details>` : ''}
@@ -608,13 +596,10 @@ function capNhatNut() {
   const g = (KQ && KQ.git) || (STATE && STATE.git) || {}
   const coRemote = Boolean(g.remote)
   $('#b-quet').disabled = DANG_CHAY
-  $('#b-dev').disabled = DANG_CHAY || !coRemote
-  $('#b-dev').title = coRemote ? '' : 'Chưa có remote origin — chạy: git remote add origin <url>'
-  const sanSang = Boolean(STATE.devPush && g.head && STATE.devPush.sha === g.head && coRemote)
-  $('#b-main').disabled = DANG_CHAY || !sanSang
-  $('#b-main').title = sanSang ? 'Đẩy đúng commit đã kiểm tra lên main'
-    : (STATE.devPush ? 'Commit đã đổi sau lần đẩy dev — bấm Dev lại' : 'Phải đẩy lên dev xanh trước')
-  $('#b-both').disabled = DANG_CHAY || !coRemote
+  $('#b-main').disabled = DANG_CHAY || !coRemote
+  $('#b-main').title = coRemote
+    ? 'Quét, nếu sạch thì commit file đã tick rồi đẩy thẳng lên main (thuexenhanh.pages.dev)'
+    : 'Chưa có remote origin — chạy: git remote add origin <url>'
 }
 
 // ══ Quét ═══════════════════════════════════════════════════════════════════
@@ -682,7 +667,12 @@ $$('.tab').forEach((t) => {
 $('#b-an-log').onclick = () => $('#the-nhat-ky').classList.add('an')
 $('#b-quet').onclick = () => chayQuet()
 
-async function thucHienDev() {
+/**
+ * Quét → (sạch) → xác nhận → commit file đã tick → đẩy thẳng lên main.
+ * Không còn bước dev: chưa có tên miền riêng, `main` (thuexenhanh.pages.dev) là bản duy nhất.
+ * Máy chủ vẫn chốt lại: main chỉ nhận đúng commit mà lần quét vừa rồi xác nhận sạch.
+ */
+async function thucHienMain() {
   const kq = await chayQuet()
   if (!kq) return false
   if (!kq.sach) {
@@ -690,63 +680,38 @@ async function thucHienDev() {
     $('#ghim').scrollIntoView({ behavior: 'smooth', block: 'start' })
     return false
   }
+  // Ô tick nằm ở tab "Thay đổi" — chuyển sang đó để lấy đúng lựa chọn của anh.
   if (kq.thayDoi.length && !document.querySelector('.tick')) {
     $$('.tab').forEach((x) => x.classList.toggle('chon', x.dataset.tab === 'thay-doi'))
     TAB = 'thay-doi'; veHet()
   }
   const paths = $$('.tick:checked').map((n) => n.value)
   const message = ($('#loi-nhan') && $('#loi-nhan').value) || ''
-  nhatKy(paths.length ? `▶ Commit ${paths.length} file rồi đẩy lên nhánh dev…`
-    : '▶ Không có gì để commit — đẩy commit sẵn có lên nhánh dev…')
+  const viec = paths.length ? `Commit ${paths.length} file rồi đẩy` : 'Đẩy các commit sẵn có'
+
+  if (!confirm(`${viec} lên MAIN (thuexenhanh.pages.dev)?\n\n`
+    + 'Đã quét sạch, build xanh. Đẩy xong Cloudflare tự build lại bản khách thật vào.')) {
+    nhatKy('■ Anh huỷ, chưa đẩy gì.')
+    return false
+  }
+  nhatKy(`▶ ${viec} lên nhánh main…`)
 
   DANG_CHAY = true; capNhatNut()
-  const pt = batPopup('Đang đẩy lên Dev...')
-  const r = await goi('/api/push-dev', { paths, message, headLucQuet: kq.git.head })
-  tatPopup(pt)
-
-  DANG_CHAY = false
-  if (!r.ok) { nhatKy('✘ ' + r.loi); await lamMoiState(); return false }
-  nhatKy('✔ Đã lên nhánh dev: ' + r.sha.slice(0, 7))
-  if (r.log && r.log.trim()) nhatKy(r.log.trim())
-  nhatKy('→ Nút main đã mở.')
-  setTimeout(kiemWeb, 90000)
-  await lamMoiState()
-  return true
-}
-
-async function thucHienMain() {
-  DANG_CHAY = true; capNhatNut()
-  nhatKy('▶ Đẩy lên nhánh main…')
   const pt = batPopup('Đang đẩy lên Main...')
-  const r = await goi('/api/push-main', {})
+  const r = await goi('/api/push-main', { paths, message, headLucQuet: kq.git.head })
   tatPopup(pt)
-  
+
   DANG_CHAY = false
   if (!r.ok) { nhatKy('✘ ' + r.loi); await lamMoiState(); return false }
   nhatKy('✔ Đã lên nhánh main: ' + r.sha.slice(0, 7))
   if (r.log && r.log.trim()) nhatKy(r.log.trim())
   nhatKy('→ Cloudflare Pages sẽ tự build lại sau vài chục giây.')
-  setTimeout(kiemWeb, 90000)
+  setTimeout(kiemWeb, 90000)   // chờ build xong rồi kiểm lại web thật
   await lamMoiState()
   return true
 }
 
-$('#b-dev').onclick = thucHienDev
-
-$('#b-main').onclick = async () => {
-  const g = (KQ && KQ.git) || STATE.git || {}
-  if (!confirm(`Đẩy commit ${(STATE.devPush ? STATE.devPush.sha.slice(0, 7) : g.headNgan)} lên nhánh main?\n\n`
-    + 'Main là nhánh Cloudflare Pages build ra bản production.')) return
-  await thucHienMain()
-}
-
-$('#b-both').onclick = async () => {
-  if (!confirm('Quét, commit và đẩy thẳng lên CẢ DEV LẪN MAIN luôn?\n\nLưu ý: Chỉ làm vậy khi bạn cực kỳ chắc chắn code không có lỗi.')) return
-  const devOk = await thucHienDev()
-  if (devOk) {
-    await thucHienMain()
-  }
-}
+$('#b-main').onclick = thucHienMain
 
 async function lamMoiState() {
   STATE = await (await fetch('/api/state')).json()
@@ -754,19 +719,17 @@ async function lamMoiState() {
   veDauTrang(); capNhatNut()
 }
 
-/** Đánh dấu nút mở web nếu web đó KHÔNG chạy code repo này (ví dụ alias dev còn bản cũ). */
+/** Đánh dấu nút "Mở web thật" nếu web đó KHÔNG chạy code repo này. */
 async function kiemWeb() {
   try {
-    const w = await (await fetch('/api/web')).json()
-    for (const [id, k, nhan] of [['#l-dev', w.dev, 'Mở web dev'], ['#l-that', w.that, 'Mở web thật']]) {
-      const a = $(id)
-      const lech = k.laRepoNay === false
-      a.classList.toggle('lech', lech)
-      a.lastChild.textContent = ' ' + nhan + (lech ? ' ⚠' : '')
-      a.title = lech
-        ? `Đang chạy code KHÁC repo này ("${k.tieuDe}") — Cloudflare chưa build nhánh này`
-        : !k.song ? 'Không mở được web này' : `Đúng code repo này · ${k.bundle || ''}`
-    }
+    const k = (await (await fetch('/api/web')).json()).that
+    const a = $('#l-that')
+    const lech = k.laRepoNay === false
+    a.classList.toggle('lech', lech)
+    a.lastChild.textContent = ' Mở web thật' + (lech ? ' ⚠' : '')
+    a.title = lech
+      ? `Đang chạy code KHÁC repo này ("${k.tieuDe}") — Cloudflare chưa build nhánh main`
+      : !k.song ? 'Không mở được web này' : `Đúng code repo này · ${k.bundle || ''}`
   } catch {}
 }
 

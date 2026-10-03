@@ -16,13 +16,24 @@ Rồi mở `http://127.0.0.1:4545`. Chỉ nghe ở `127.0.0.1` — máy khác tr
 
 ## Ba nút
 
+Chưa có tên miền riêng, nên `main` (`thuexenhanh.pages.dev`) là bản duy nhất khách thấy. **Không còn bước dev.**
+
 | Nút | Làm gì |
 |---|---|
 | **Quét** (vòng tròn xanh trên thanh điều hướng) | Soi toàn bộ app rồi báo cáo. **Không đẩy gì.** Dùng để xem tình hình. |
-| **Quét & đẩy lên dev** | Quét lại. Sạch thì commit đúng file anh tick rồi `git push origin HEAD:dev`. Có lỗi thì **dừng**, hiện ô ghim đỏ. |
-| **Đẩy lên main** | Chỉ mở sau khi đẩy dev xanh. Đẩy **đúng commit đó** lên `main` — nhánh Cloudflare build ra production. |
+| **Quét & đẩy lên main** | Quét. Có lỗi chặn thì **dừng**, hiện ô ghim đỏ. Sạch thì hỏi xác nhận một lần, rồi commit đúng file anh tick và `git push origin HEAD:main`. |
+| **Mở web thật** | Mở `thuexenhanh.pages.dev`. Tô vàng ⚠ nếu web đó đang chạy code khác repo này. |
 
-Nút main tự khoá lại nếu HEAD đổi sau lần đẩy dev. Main chỉ nhận commit đã qua kiểm tra, không nhận commit lạ.
+**Chốt ở máy chủ, không chỉ ở giao diện:** `main` chỉ nhận đúng commit mà lần quét gần nhất đã xác nhận sạch.
+Gọi API mà không kèm mã commit lúc quét, hoặc kèm mã chưa quét, hoặc lần quét còn lỗi chặn, hoặc công cụ vừa
+khởi động lại (mất ghi nhớ lần quét) thì đều bị từ chối. HEAD đổi giữa lúc quét và lúc đẩy
+(phiên chat khác vừa commit) cũng bị từ chối, bắt quét lại.
+
+Lệnh `POST /api/push-dev` vẫn còn để dùng khi cần, giao diện không còn nút cho nó.
+
+**Lưu ý khi nhiều phiên cùng sửa repo:** lần quét build **cả cây làm việc**, kể cả file người khác đang sửa dở
+chưa commit. File của họ hỏng cú pháp thì quét báo "Build hỏng" và chặn đẩy, dù commit của anh vẫn ổn.
+Chờ họ sửa xong (hoặc commit xong) rồi quét lại. Công cụ không tự gạt file của người khác ra khỏi lần build.
 
 ## Ba tab
 
@@ -101,4 +112,4 @@ cảnh báo — rồi lần sau có lỗi thật cũng bỏ qua nốt.
 
 ## File trạng thái
 
-`.state.json` (lần đẩy dev gần nhất) và `.snapshot.json` (mốc so sánh "code nào mới") nằm cùng thư mục, đã gitignore. Xoá đi thì lần quét sau tính là lần đầu.
+`.state.json` (lần đẩy `main` / `dev` gần nhất, ghi riêng từng nhánh) và `.snapshot.json` (mốc so sánh "code nào mới") nằm cùng thư mục, đã gitignore. Xoá đi thì lần quét sau tính là lần đầu.

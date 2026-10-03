@@ -31,6 +31,10 @@ const PORT = Number(process.env.PORT || 4545)
 const FILE_STATE = path.join(HERE, '.state.json')
 const FILE_SNAPSHOT = path.join(HERE, '.snapshot.json')
 
+// Lần quét gần nhất (chỉ giữ trong bộ nhớ, tắt công cụ là mất — cố ý, bắt quét lại).
+// `main` là bản khách thật vào, nên chỉ nhận commit mà lần quét này đã xác nhận sạch.
+let LAN_QUET_CUOI = null   // { head, sach, luc }
+
 // Ngân sách lấy thẳng từ HIEU-NANG.md và CLAUDE.md. Đổi ở đây là đổi luật.
 const NGAN_SACH_JS_GZ = 150 * 1024 // JS lần đầu, gzip
 const NGAN_SACH_APP_JSX = 200 // App.jsx chỉ được routing + layout
@@ -143,18 +147,26 @@ function nhanTrangThai(xy) {
 }
 
 async function thongTinGit() {
-  const [branch, head, remote, upstreamDev] = await Promise.all([
+  const [branch, head, remote, upstreamMain] = await Promise.all([
     git('rev-parse', '--abbrev-ref', 'HEAD'),
     git('rev-parse', 'HEAD'),
     git('remote', 'get-url', 'origin'),
-    git('rev-parse', '--verify', '--quiet', 'refs/remotes/origin/dev'),
+    git('rev-parse', '--verify', '--quiet', 'refs/remotes/origin/main'),
   ])
+  // Số commit ở máy mà `main` trên GitHub chưa có. Đọc từ nhánh theo dõi origin/main
+  // nên đúng cả khi anh đẩy bằng lệnh git tay chứ không qua công cụ. null = chưa có origin/main.
+  let chuaLenMain = null
+  if (upstreamMain.code === 0) {
+    const dem = await git('rev-list', '--count', 'origin/main..HEAD')
+    if (dem.code === 0) chuaLenMain = Number(dem.out.trim())
+  }
   return {
     branch: branch.out.trim(),
     head: head.out.trim(),
     headNgan: head.out.trim().slice(0, 7),
     remote: remote.code === 0 ? remote.out.trim() : null,
-    coNhanhDev: upstreamDev.code === 0,
+    coNhanhMain: upstreamMain.code === 0,
+    chuaLenMain,
   }
 }
 
@@ -444,11 +456,11 @@ async function quet(bao) {
     } catch { t.them = 0 }
   }
 
-  // 4. Commit chưa lên nhánh dev
-  bao('chua-day', 'Đếm commit chưa lên nhánh dev…')
+  // 4. Commit chưa lên nhánh main
+  bao('chua-day', 'Đếm commit chưa lên nhánh main…')
   let commitChuaDay = []
-  if (g.coNhanhDev) {
-    const lg = await git('log', '--oneline', 'origin/dev..HEAD')
+  if (g.coNhanhMain) {
+    const lg = await git('log', '--oneline', 'origin/main..HEAD')
     commitChuaDay = lg.out.split('\n').filter(Boolean)
   }
 
@@ -525,6 +537,8 @@ async function quet(bao) {
 
   await ghiJson(FILE_SNAPSHOT, { at: new Date().toISOString(), files: moi })
 
+  LAN_QUET_CUOI = { head: g.head, sach: chan.length === 0, luc: new Date().toISOString() }
+
   return {
     luc: new Date().toISOString(),
     matGiay: ((Date.now() - batDau) / 1000).toFixed(1),
@@ -552,10 +566,29 @@ async function quet(bao) {
 
 // ── Đẩy lên GitHub ──────────────────────────────────────────────────────────
 
-async function dayLenDev({ paths, message, headLucQuet }) {
+/**
+ * Đẩy HEAD lên `nhanh` ('main' hoặc 'dev'). Dùng chung một đường để hai nhánh không lệch luật.
+ *
+ * Với `main` (bản khách thật vào, chưa có tên miền riêng nên cũng là bản duy nhất) có thêm chốt:
+ * phải có mã commit lúc quét VÀ lần quét gần nhất của công cụ phải sạch đúng commit đó.
+ * Thay cho luật cũ "phải đẩy dev trước" — quét sạch mới là điều kiện thật, dev chỉ là vòng vo.
+ */
+async function dayLen(nhanh, { paths, message, headLucQuet } = {}) {
   const g = await thongTinGit()
   if (!g.remote) {
     return { ok: false, loi: 'Chưa có remote `origin`. Chạy: git remote add origin <url repo>' }
+  }
+  if (nhanh === 'main') {
+    if (!headLucQuet) {
+      return { ok: false, loi: 'Thiếu mã commit lúc quét. Bấm nút "Quét & đẩy lên main", đừng gọi thẳng.' }
+    }
+    const q = LAN_QUET_CUOI
+    if (!q || q.head !== headLucQuet) {
+      return { ok: false, loi: 'Commit này chưa được công cụ quét (hoặc công cụ vừa khởi động lại). Quét lại rồi đẩy.' }
+    }
+    if (!q.sach) {
+      return { ok: false, loi: 'Lần quét gần nhất còn lỗi chặn. Sửa lỗi, quét lại rồi mới đẩy lên main.' }
+    }
   }
   if (headLucQuet && headLucQuet !== g.head) {
     return {
@@ -578,34 +611,17 @@ async function dayLenDev({ paths, message, headLucQuet }) {
     }
   }
 
-  const push = await git('push', 'origin', 'HEAD:dev')
+  const push = await git('push', 'origin', `HEAD:${nhanh}`)
   if (push.code !== 0) {
     return { ok: false, loi: 'git push hỏng:\n' + (push.err || push.out) }
   }
 
   const sau = await thongTinGit()
-  const state = { devPush: { sha: sau.head, luc: new Date().toISOString() } }
+  // Gộp vào trạng thái cũ, không ghi đè: lần đẩy nhánh này không được xoá dấu vết nhánh kia.
+  const cu = await docJson(FILE_STATE, {})
+  const state = { ...cu, [nhanh === 'main' ? 'mainPush' : 'devPush']: { sha: sau.head, luc: new Date().toISOString() } }
   await ghiJson(FILE_STATE, state)
   return { ok: true, sha: sau.head, log: push.err || push.out, state }
-}
-
-async function dayLenMain() {
-  const g = await thongTinGit()
-  const state = await docJson(FILE_STATE, {})
-  if (!g.remote) return { ok: false, loi: 'Chưa có remote `origin`.' }
-  if (!state.devPush) {
-    return { ok: false, loi: 'Chưa đẩy lên dev lần nào. Bấm nút Dev trước.' }
-  }
-  if (state.devPush.sha !== g.head) {
-    return {
-      ok: false,
-      loi: `Commit đã đổi sau lần đẩy dev (${state.devPush.sha.slice(0, 7)} → ${g.headNgan}). `
-        + 'Main chỉ nhận đúng commit đã được kiểm tra. Bấm Dev lại.',
-    }
-  }
-  const push = await git('push', 'origin', 'HEAD:main')
-  if (push.code !== 0) return { ok: false, loi: 'git push hỏng:\n' + (push.err || push.out) }
-  return { ok: true, sha: g.head, log: push.err || push.out }
 }
 
 // ── Máy chủ ─────────────────────────────────────────────────────────────────
@@ -643,8 +659,9 @@ const may = http.createServer(async (req, res) => {
       return traJson(res, { git: g, ...st })
     }
 
-    // Hai web thật có đang chạy code repo này không. So <title> với index.html ở máy:
-    // alias `dev.` từng phục vụ nguyên một codebase khác mà nhìn qua không ai biết.
+    // Web thật có đang chạy code repo này không. So <title> với index.html ở máy.
+    // (Chưa có tên miền riêng nên chỉ kiểm `pages.dev`. Alias `dev.` đã bỏ: không còn đẩy dev,
+    // và nó từng phục vụ nguyên một codebase khác nên ở lại cũng chỉ báo lệch hoài.)
     if (url.pathname === '/api/web') {
       const tieuDeMay = ((await readFile(path.join(ROOT, 'index.html'), 'utf8'))
         .match(/<title>([^<]*)<\/title>/) || [])[1] || ''
@@ -657,11 +674,7 @@ const may = http.createServer(async (req, res) => {
           return { diaChi, song: r.ok, laRepoNay: tieuDe === tieuDeMay, tieuDe, bundle }
         } catch { return { diaChi, song: false, laRepoNay: null } }
       }
-      const [that, dev] = await Promise.all([
-        kiem('https://thuexenhanh.pages.dev'),
-        kiem('https://dev.thuexenhanh.pages.dev'),
-      ])
-      return traJson(res, { that, dev })
+      return traJson(res, { that: await kiem('https://thuexenhanh.pages.dev') })
     }
 
     // Quét — dòng sự kiện để giao diện hiện tiến trình thay vì đứng im 15 giây.
@@ -685,12 +698,13 @@ const may = http.createServer(async (req, res) => {
       // Header riêng: trang web lạ không gửi được nếu không qua preflight CORS.
       if (req.headers['x-deploy-ui'] !== '1') return traJson(res, { ok: false, loi: 'thieu header' }, 400)
       const body = await docBody(req)
-      return traJson(res, await dayLenDev(body))
+      return traJson(res, await dayLen('dev', body))
     }
 
     if (req.method === 'POST' && url.pathname === '/api/push-main') {
       if (req.headers['x-deploy-ui'] !== '1') return traJson(res, { ok: false, loi: 'thieu header' }, 400)
-      return traJson(res, await dayLenMain())
+      const body = await docBody(req)
+      return traJson(res, await dayLen('main', body))
     }
 
     res.writeHead(404); res.end('khong co')
