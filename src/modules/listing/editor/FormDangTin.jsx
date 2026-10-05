@@ -41,7 +41,29 @@ export default function FormDangTin({ dieuKhien, onXong }) {
 
   const nhom = nhomTruong(form, goi)
   const dangChay = dangLuu != null
+  
   const nhan = nhanTrangThai(trangThai)
+
+  const [dangQuetGiayTo, setDangQuetGiayTo] = useState(false)
+  const [quetThanhCong, setQuetThanhCong] = useState(false)
+
+  function quetGiayTo() {
+    setDangQuetGiayTo(true)
+    setTimeout(() => {
+      // Giả lập điền dữ liệu OCR
+      doiTruong('plate', '51K-12345')
+      doiTruong('brand_text', 'Toyota')
+      doiTruong('model_text', 'Innova')
+      doiTruong('year', '2023')
+      doiTruong('seats', '7')
+      doiTruong('color', 'Trắng')
+      
+      setQuetThanhCong(true)
+      setDangQuetGiayTo(false)
+      alert('AI đã quét thành công! Form đã được điền tự động và chiếc xe này sẽ nhận được Tích Xanh.')
+    }, 2000)
+  }
+
 
   async function nhanLuuNhap() {
     const id = await luuNhap()
@@ -76,8 +98,8 @@ export default function FormDangTin({ dieuKhien, onXong }) {
       {/* ─── Chọn gói trường ─── */}
       <div className="card card-pad stack">
         <div>
-          <h2 className="t-h3">Khai báo bao nhiêu thông tin?</h2>
-          <p className="t-small">Hai lựa chọn dưới đây <strong>cùng một giá</strong>. Khác nhau ở số trường phải điền, không phải ở tiền.</p>
+          <h2 className="t-h3">Chọn gói đăng tin</h2>
+          <p className="t-small">Gói <strong>Cơ bản</strong> tốn 10 Token/tháng. Gói <strong>Đầy đủ</strong> tốn 20 Token/tháng và được cấp Tích xanh.</p>
         </div>
 
         <div className="fdt-goi" role="radiogroup" aria-label="Mức khai thông tin">

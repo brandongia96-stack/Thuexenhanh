@@ -1,4 +1,4 @@
-// owner/TrangChuXe — màn "Xe của tôi" (route /chu-xe).
+﻿// owner/TrangChuXe — màn "Xe của tôi" (route /chu-xe).
 //
 // Ghép các mảnh của luồng 03: danh sách xe + trạng thái + hạn còn lại, số liệu
 // 30 ngày từng xe, tổng của chủ xe. Màn CHỈ ĐỌC. Việc duy nhất liên quan tới tiền
@@ -162,10 +162,7 @@ export default function TrangChuXe() {
     <div className="page stack cx">
       <div className="row cx-dau">
         <h1 className="t-h1">Xe của tôi</h1>
-        <Link to="/chu-xe/dang-tin" className="btn btn-primary btn-sm">
-          <Plus size={16} strokeWidth={2} />
-          Đăng tin
-        </Link>
+        
       </div>
 
       {quan?.sapHetHan > 0 && (
@@ -256,7 +253,7 @@ export default function TrangChuXe() {
           icon={Car}
           title="Anh chưa đăng xe nào"
           hint="Đăng tin đầu tiên để khách bắt đầu xem và gọi cho anh."
-          action={<Link to="/chu-xe/dang-tin" className="btn btn-primary btn-sm">Đăng tin</Link>}
+          action={<Link to="/chu-xe/dang-tin" className="btn btn-primary">Đăng xe ngay</Link>}
         />
       )}
       {!dangTai && !loi && !chuaCoXe && items.length === 0 && (
@@ -304,3 +301,4 @@ export default function TrangChuXe() {
     </div>
   )
 }
+
