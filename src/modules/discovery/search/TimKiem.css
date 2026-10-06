@@ -34,7 +34,8 @@
 .tk-moc { height: 1px; }
 .tk-them { display: flex; align-items: center; justify-content: center; gap: var(--sp-3); }
 
-.tk-khung-anh { aspect-ratio: 16 / 9; border-radius: 0; }
+/* Khớp đúng khung thẻ thật (4:3) để xương → thẻ không nhảy layout. */
+.tk-khung-anh { aspect-ratio: 4 / 3; border-radius: 0; }
 .tk-khung-chu { display: flex; flex-direction: column; gap: var(--sp-2); }
 
 /* ─── Điện thoại: bộ lọc là bảng trượt từ đáy + thanh cố định dưới đáy ─── */

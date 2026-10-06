@@ -64,16 +64,18 @@ function TheXe({ the, bangDiaGioi, uuTien = false }) {
           onTouchStart={() => napTruocTin(the.id)}
           aria-label={ten}
         >
-          {the.cover_thumb && (
+          {the.cover_thumb ? (
             <img
               src={the.cover_thumb}
               alt=""
               width={the.cover_width ?? 400}
-              height={the.cover_height ?? 225}
+              height={the.cover_height ?? 300}
               loading={uuTien ? 'eager' : 'lazy'}
               fetchPriority={uuTien ? 'high' : undefined}
               decoding="async"
             />
+          ) : (
+            <ChoDuyet />
           )}
         </Link>
         <div className="thexe-nut">
@@ -197,6 +199,21 @@ function NutChiaSe({ id, ten, gia }) {
     >
       {ketQua === 'xong' ? <Check size={16} strokeWidth={2} /> : ketQua === 'loi' ? <X size={16} strokeWidth={2} /> : <Share2 size={16} strokeWidth={2} />}
     </button>
+  )
+}
+
+/**
+ * Tin chưa có ảnh: logo mờ bằng SVG nội tuyến + dòng chữ trạng thái. Không dùng
+ * ảnh ngoài, không ảnh mẫu (CLAUDE.md 1.2). Màu lấy từ token qua `currentColor`.
+ */
+function ChoDuyet() {
+  return (
+    <div className="thexe-cho" role="img" aria-label="Hình ảnh đang chờ kiểm duyệt">
+      <svg viewBox="0 0 48 48" width="40" height="40" aria-hidden="true" focusable="false">
+        <path d="M24 4 6 14v20l18 10 18-10V14L24 4Zm0 3.2 14.4 8L24 23.2 9.6 15.2 24 7.2Zm-15 11.7 13.2 7.3v15.8L9 34.7V18.9Zm16.8 23.1V26.2L39 18.9v15.8l-13.2 7.3Z" fill="currentColor" />
+      </svg>
+      <span>Hình ảnh đang chờ kiểm duyệt</span>
+    </div>
   )
 }
 
