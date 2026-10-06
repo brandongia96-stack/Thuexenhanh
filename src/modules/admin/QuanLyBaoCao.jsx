@@ -7,6 +7,53 @@ import { getSupabase } from '../../lib/supabase'
 import { thongDiepLoi } from './useTai'
 import { Link } from 'react-router-dom'
 import { formatDateTime } from '../../lib/format'
+import { bangChungCuaBaoCao } from './adminApi'
+
+// Bằng chứng nằm ở bucket kín. Link ký chỉ sống 60 giây nên KHÔNG lấy sẵn khi
+// tải danh sách: chỉ ký khi người duyệt bấm xem, và ký lại mỗi lần bấm.
+function BangChung({ reportId, soFile }) {
+  const [urls, setUrls] = useState(null)
+  const [dangTai, setDangTai] = useState(false)
+  const [loi, setLoi] = useState(null)
+
+  // Không có bằng chứng thì ẩn cả khối.
+  if (!soFile) return null
+
+  async function xem() {
+    setDangTai(true); setLoi(null)
+    try {
+      const { urls: ds } = await bangChungCuaBaoCao(reportId)
+      setUrls(ds)
+    } catch (e) { setLoi(thongDiepLoi(e)) } finally { setDangTai(false) }
+  }
+
+  return (
+    <div className="stack" style={{ gap: 'var(--sp-2)' }}>
+      {!urls ? (
+        <div>
+          <button className="btn btn-sm btn-ghost" onClick={xem} disabled={dangTai}>
+            <AlertTriangle size={14} strokeWidth={2} /> {dangTai ? 'Đang mở...' : `Xem bằng chứng (${soFile} file)`}
+          </button>
+        </div>
+      ) : (
+        <div className="row" style={{ gap: 'var(--sp-2)', flexWrap: 'wrap' }}>
+          {urls.map((f, i) => !f.url ? (
+            <span key={f.path} className="t-small">File {i + 1}: không mở được</span>
+          ) : /\.pdf$/i.test(f.path) ? (
+            <a key={f.path} href={f.url} target="_blank" rel="noreferrer" className="btn btn-sm btn-soft">PDF {i + 1}</a>
+          ) : (
+            <a key={f.path} href={f.url} target="_blank" rel="noreferrer">
+              <img src={f.url} alt={`Bằng chứng ${i + 1}`} width={160} height={120}
+                style={{ objectFit: 'cover', borderRadius: 'var(--r-sm)' }} loading="lazy" decoding="async" />
+            </a>
+          ))}
+          <button className="btn btn-sm btn-ghost" onClick={xem} disabled={dangTai}>Mở lại (link mới)</button>
+        </div>
+      )}
+      {loi && <div className="ad-loi" role="alert">{loi}</div>}
+    </div>
+  )
+}
 
 const TEN_LY_DO = {
   gia_ao: 'Giá báo khác với giá đăng',
@@ -30,7 +77,7 @@ export default function QuanLyBaoCao() {
       const { data, error } = await sb
         .from('reports')
         .select(`
-          id, reason_code, detail, status, created_at,
+          id, reason_code, detail, status, created_at, evidence_paths,
           reporter:users!reports_reporter_id_fkey(full_name, phone),
           listing:listings(id, brand_text, model_text, owner_id)
         `)
@@ -100,6 +147,8 @@ export default function QuanLyBaoCao() {
           <div className="t-body" style={{ background: 'var(--m-surface)', padding: 'var(--sp-3)', borderRadius: 'var(--r-md)' }}>
             <b>Chi tiết:</b> {r.detail || 'Không có ghi chú thêm.'}
           </div>
+
+          <BangChung reportId={r.id} soFile={r.evidence_paths?.length ?? 0} />
           
           <div className="row" style={{ gap: 'var(--sp-3)', justifyContent: 'flex-end', marginTop: 'var(--sp-2)' }}>
             <button className="btn btn-ghost" onClick={() => xuLy(r.id, 'bo_qua')} style={{ color: 'var(--m-subtle)' }}>

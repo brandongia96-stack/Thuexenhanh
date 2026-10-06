@@ -15,6 +15,9 @@ const NguoiDung = lazy(() => import('./NguoiDung'))
 const DoanhThu = lazy(() => import('./DoanhThu'))
 const SucKhoe = lazy(() => import('./SucKhoe'))
 const QuanLyBaoCao = lazy(() => import('./QuanLyBaoCao'))
+const GiaSan = lazy(() => import('./GiaSan'))
+const GiaNhienLieu = lazy(() => import('./GiaNhienLieu'))
+const CuuHo = lazy(() => import('./CuuHo'))
 
 const TABS = [
   { to: 'duyet-tin', nhan: 'Duyệt tin' },
@@ -23,6 +26,9 @@ const TABS = [
   { to: 'nguoi-dung', nhan: 'Người dùng & ví' },
   { to: 'doanh-thu', nhan: 'Doanh thu' },
   { to: 'suc-khoe', nhan: 'Sức khoẻ hệ thống' },
+  { to: 'gia-san', nhan: 'Giá sàn' },
+  { to: 'gia-nhien-lieu', nhan: 'Giá nhiên liệu' },
+  { to: 'cuu-ho', nhan: 'Cứu hộ' },
 ]
 
 export default function TrangQuanTri() {
@@ -45,6 +51,9 @@ export default function TrangQuanTri() {
           <Route path="nguoi-dung" element={<NguoiDung />} />
           <Route path="doanh-thu" element={<DoanhThu />} />
           <Route path="suc-khoe" element={<SucKhoe />} />
+          <Route path="gia-san" element={<GiaSan />} />
+          <Route path="gia-nhien-lieu" element={<GiaNhienLieu />} />
+          <Route path="cuu-ho" element={<CuuHo />} />
           <Route path="*" element={<Navigate to="/admin/duyet-tin" replace />} />
         </Routes>
       </Suspense>

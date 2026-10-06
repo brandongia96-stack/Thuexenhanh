@@ -189,3 +189,56 @@ export const sucKhoeHeThong = (days = 14) => op('health', { days })
 
 /** Đối soát sổ ví (chỉ admin, chỉ đọc). Trả { items: [{van_de, user_id, chi_tiet}] } — rỗng là tốt. */
 export const doiSoatVi = () => op('doi_soat_vi')
+
+// ─── GIÁ SÀN, GIÁ NHIÊN LIỆU, CỨU HỘ ───
+// Đọc thẳng bảng (RLS công khai đọc). Ghi đi qua admin-ops.
+
+export async function giaSan() {
+  const sb = await getSupabase()
+  const { data, error } = await sb
+    .from('price_floors').select('seats,min_price_per_day,note,updated_at').order('seats')
+  if (error) throw error
+  return data ?? []
+}
+
+export const suaGiaSan = ({ seats, minPricePerDay, note }) =>
+  op('set_price_floor', { seats, min_price_per_day: minPricePerDay, note })
+
+/** Mọi dòng giá (kể cả lịch sử) để admin thấy dòng nào đang áp dụng. */
+export async function giaNhienLieu() {
+  const sb = await getSupabase()
+  const { data, error } = await sb
+    .from('reference_prices')
+    .select('id,code,label,unit,price,source,source_url,effective_date,updated_at')
+    .is('deleted_at', null)
+    .order('code').order('effective_date', { ascending: false }).limit(100)
+  if (error) throw error
+  return data ?? []
+}
+
+/** Giá đang áp dụng, lấy từ view (có checked_at). */
+export async function giaDangApDung() {
+  const sb = await getSupabase()
+  const { data, error } = await sb
+    .from('reference_price_now').select('code,label,unit,price,source,effective_date,checked_at')
+  if (error) throw error
+  return data ?? []
+}
+
+export const nhapGiaNhienLieu = (fields) => op('set_reference_price', fields)
+
+export async function danhBaCuuHo() {
+  const sb = await getSupabase()
+  const { data, error } = await sb
+    .from('rescue_contacts')
+    .select('id,province_id,name,phone,service,note,sort_order')
+    .is('deleted_at', null).order('province_id').order('sort_order').limit(200)
+  if (error) throw error
+  return data ?? []
+}
+
+export const luuCuuHo = (fields) => op('upsert_rescue', fields)
+export const xoaCuuHo = (id, reason) => op('delete_rescue', { id, reason })
+
+/** Link ký 60 giây tới ảnh/PDF bằng chứng. Gọi lại mỗi lần bấm xem: link hết hạn nhanh. */
+export const bangChungCuaBaoCao = (reportId) => op('evidence_urls', { report_id: reportId })
