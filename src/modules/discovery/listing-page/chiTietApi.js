@@ -134,16 +134,32 @@ export function conHienThi(tin) {
 /**
  * Gửi báo cáo tin đăng lên server.
  */
-export async function guiBaoCao(listingId, reporterId, reasonCode, detail) {
+// Bằng chứng: tối đa 3 file, ≤ 5MB, ảnh hoặc PDF. Bucket `bang-chung` kín,
+// đường dẫn <user_id>/<uuid>.<đuôi> (contracts/api.md mục 3d).
+export const SO_FILE_BANG_CHUNG_TOI_DA = 3
+export const CO_MOI_FILE_TOI_DA = 5 * 1024 * 1024
+export const LOAI_BANG_CHUNG = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf']
+
+export async function guiBaoCao(listingId, reporterId, reasonCode, detail, files = []) {
   const sb = await getSupabase()
+  const evidencePaths = []
+  for (const file of files) {
+    const duoi = (file.name.split('.').pop() || 'bin').toLowerCase()
+    const path = `${reporterId}/${crypto.randomUUID()}.${duoi}`
+    const { error: upErr } = await sb.storage.from('bang-chung').upload(path, file, { upsert: false })
+    if (upErr) throw new Error('Không tải được bằng chứng: ' + upErr.message)
+    evidencePaths.push(path)
+  }
+
   const { error } = await sb.from('reports').insert({
     listing_id: listingId,
     reporter_id: reporterId,
     reason_code: reasonCode,
     detail: detail || null,
+    evidence_paths: evidencePaths,
     status: 'moi'
   })
-  
+
   if (error) {
     if (error.code === '23505') throw new Error('Anh/chị đã báo cáo xe này rồi.')
     if (/tu bao cao/i.test(error.message)) throw new Error('Không thể tự báo cáo tin của mình.')

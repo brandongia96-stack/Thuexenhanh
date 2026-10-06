@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { AlertTriangle, X } from 'lucide-react'
-import { guiBaoCao } from './chiTietApi'
+import { guiBaoCao, SO_FILE_BANG_CHUNG_TOI_DA, CO_MOI_FILE_TOI_DA, LOAI_BANG_CHUNG } from './chiTietApi'
 import { useAuth } from '../../auth/AuthProvider'
 import { useNavigate, useLocation } from 'react-router-dom'
 
@@ -22,6 +22,7 @@ export default function ModalBaoCao({ tin, dong }) {
   const [dangGui, setDangGui] = useState(false)
   const [loi, setLoi] = useState(null)
   const [thanhCong, setThanhCong] = useState(false)
+  const [files, setFiles] = useState([])
 
   // Bắt đăng nhập mới được báo cáo (báo cáo gắn với tài khoản — chống báo cáo
   // ẩn danh hàng loạt; mỗi người chỉ báo cáo một tin một lần, DB đã chặn).
@@ -37,11 +38,15 @@ export default function ModalBaoCao({ tin, dong }) {
       setLoi('Vui lòng chọn một lý do.')
       return
     }
-    
+    if (lyDo === 'lua_dao' && files.length === 0) {
+      setLoi('Báo cáo lừa đảo cần ít nhất 1 ảnh hoặc PDF làm bằng chứng.')
+      return
+    }
+
     setDangGui(true)
     setLoi(null)
     try {
-      await guiBaoCao(tin.id, user.id, lyDo, chiTiet)
+      await guiBaoCao(tin.id, user.id, lyDo, chiTiet, files)
       setThanhCong(true)
     } catch (err) {
       setLoi(err.message || 'Không thể gửi báo cáo. Vui lòng thử lại.')
@@ -104,6 +109,26 @@ export default function ModalBaoCao({ tin, dong }) {
                 placeholder="Ví dụ: Gọi điện thì chủ xe bảo xe giá này nhưng đòi phụ phí..."
                 value={chiTiet}
                 onChange={e => setChiTiet(e.target.value)}
+              />
+            </div>
+
+            <div className="stack" style={{ gap: 4 }}>
+              <label className="t-small" style={{ fontWeight: 500 }}>
+                Bằng chứng {lyDo === 'lua_dao' ? '(bắt buộc)' : '(tuỳ chọn)'}: tối đa {SO_FILE_BANG_CHUNG_TOI_DA} ảnh/PDF, mỗi file ≤ 5MB
+              </label>
+              <input
+                type="file"
+                accept={LOAI_BANG_CHUNG.join(',')}
+                multiple
+                disabled={dangGui}
+                onChange={e => {
+                  const chon = Array.from(e.target.files || [])
+                  const hop = chon.filter(f => LOAI_BANG_CHUNG.includes(f.type) && f.size <= CO_MOI_FILE_TOI_DA)
+                  if (hop.length !== chon.length) {
+                    setLoi('Chỉ nhận ảnh JPG/PNG/WEBP hoặc PDF, mỗi file ≤ 5MB. Các file không hợp lệ đã bị bỏ qua.')
+                  }
+                  setFiles(hop.slice(0, SO_FILE_BANG_CHUNG_TOI_DA))
+                }}
               />
             </div>
 
