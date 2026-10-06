@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Phone, MessageCircle, Loader2, AlertCircle } from 'lucide-react'
+import { Link, useLocation } from 'react-router-dom'
+import { Phone, MessageCircle, Loader2, AlertCircle, LogIn } from 'lucide-react'
 import { formatPhone } from '../../../lib/format'
 import { telHref, zaloHref } from '../../../lib/phone'
 import { laySoDienThoai, loiThanhLoiNoi } from './lienHeApi'
@@ -19,8 +20,10 @@ import { ghiBamGoi, ghiBamZalo, ghiXemSo } from '../ghiSuKien'
 export default function HopLienHe({ tin, userId, conHienThi }) {
   const [so, setSo] = useState(null)
   const [dangLay, setDangLay] = useState(false)
+  // { text, code }: giữ cả mã lỗi để biết có nên mời đăng nhập hay không.
   const [loi, setLoi] = useState(null)
   const [hienCanhBao, setHienCanhBao] = useState(false)
+  const { pathname, search } = useLocation()
 
   if (!conHienThi) {
     return (
@@ -58,7 +61,7 @@ export default function HopLienHe({ tin, userId, conHienThi }) {
       // ghiSuKien nên không tạo ra lượt trùng.
       ghiXemSo(tin, userId)
     } catch (err) {
-      setLoi(loiThanhLoiNoi(err))
+      setLoi({ text: loiThanhLoiNoi(err), code: err?.code ?? null })
     } finally {
       setDangLay(false)
     }
@@ -82,9 +85,22 @@ export default function HopLienHe({ tin, userId, conHienThi }) {
             {dangLay ? 'Đang lấy số…' : 'Xem số điện thoại'}
           </button>
           {loi && (
-            <p className="lienhe-loi" role="alert">
-              {loi}
-            </p>
+            <div className="lienhe-loi-khoi">
+              <p className="lienhe-loi" role="alert">
+                {loi.text}
+              </p>
+              {/* Hết lượt xem số khi chưa đăng nhập: mời đăng nhập thay vì bỏ khách lại. */}
+              {loi.code === 'vuot_gioi_han' && !userId && (
+                <Link
+                  to="/dang-nhap"
+                  state={{ quayLai: pathname + search }}
+                  className="btn btn-ghost btn-block"
+                >
+                  <LogIn size={18} strokeWidth={2} />
+                  Đăng nhập để xem tiếp
+                </Link>
+              )}
+            </div>
           )}
         </>
       ) : (

@@ -1,6 +1,6 @@
 import {
   Users, Cog, Fuel, Calendar, Palette, Car, Gauge as GaugeIcon,
-  MapPin, ExternalLink, CalendarX2,
+  MapPin, ExternalLink, CalendarX2, Hash,
 } from 'lucide-react'
 // 13 icon tiện nghi — import TỪNG CÁI. Import cả gói lucide-react là hơn 1 MB
 // (HIEU-NANG.md mục 3, CLAUDE.md mục 1.4).
@@ -39,6 +39,8 @@ export function Khoi({ title, children, trong = false }) {
 /** Thông số kỹ thuật. Mỗi dòng tự biến mất nếu chủ xe không khai. */
 export function KhoiThongSo({ tin }) {
   const dong = [
+    // Biển số đã che (plate_masked). Null thì dòng này tự ẩn — không đoán, không đọc `plate`.
+    { icon: Hash, label: 'Biển số', value: tin.plate_masked },
     { icon: Users, label: 'Số chỗ', value: tin.seats ? `${tin.seats} chỗ` : null },
     { icon: Cog, label: 'Hộp số', value: nhan(TRANSMISSIONS, tin.transmission) },
     { icon: Fuel, label: 'Nhiên liệu', value: nhan(FUELS, tin.fuel) },

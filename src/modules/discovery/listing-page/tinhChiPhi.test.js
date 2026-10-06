@@ -219,12 +219,16 @@ describe('tinhChiPhi — xe xăng/dầu (luật 5)', () => {
     // 200/100 * 8 = 16 lít * 20.000đ = 320.000đ
     expect(nl.soTien).toBe(320_000)
     expect(nl.ghiChu).toContain('Petrolimex')
-    expect(nl.ghiChu).toContain('2026-09-01')
+    expect(nl.ghiChu).toContain('01/09/2026') // định dạng VN, do luồng nền tảng đổi
   })
 
-  it('không có giá tham chiếu thì ẩn dòng (luật 2)', () => {
+  it('không có giá tham chiếu: hiện lít ước tính, KHÔNG có số tiền, không cộng tổng', () => {
     const kq = tinhChiPhi({ tin: xeXangCoBan(), ...ngay(1), kmDuKien: 200, giaThamChieu: null })
-    expect(dongCua(kq, 'nhien_lieu')).toBeUndefined()
+    const nl = dongCua(kq, 'nhien_lieu')
+    expect(nl.soTien).toBeNull()
+    expect(nl.moTa).toMatch(/16.0 lít/)
+    expect(nl.ghiChu).toMatch(/Chưa lấy được giá/)
+    expect(kq.tongTien).toBe(900_000) // chỉ tiền thuê, không có 0đ giả
   })
 
   it('xe điện và hybrid không chạy qua nhánh nhiên liệu xăng/dầu', () => {

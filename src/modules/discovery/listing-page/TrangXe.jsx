@@ -169,6 +169,23 @@ export default function TrangXe() {
       </div>
 
       {hienBaoCao && <ModalBaoCao tin={tin} dong={() => setHienBaoCao(false)} />}
+
+      <DaiCanhBaoCoc />
+    </div>
+  )
+}
+
+/**
+ * Dải cảnh báo cố định cuối màn hình. Hiện trên MỌI tin, kể cả tin hết hạn —
+ * đây là lời nhắc an toàn trước khi khách chuyển tiền, không phải nội dung có thể ẩn.
+ */
+function DaiCanhBaoCoc() {
+  return (
+    <div className="dai-canhbao" role="note">
+      <AlertTriangle size={18} strokeWidth={2} />
+      <span>
+        <strong>KHÔNG CHUYỂN CỌC KHI CHƯA XEM XE TRỰC TIẾP.</strong> Thuê Xe Nhanh không bảo lãnh giao dịch.
+      </span>
     </div>
   )
 }

@@ -34,6 +34,7 @@ const TIN = {
   status: 'dang_hien_thi',
   brand_text: 'Toyota',
   model_text: 'Innova',
+  plate_masked: '51H-***.45',
   year: 2021,
   color: 'Trắng',
   seats: 7,
@@ -70,6 +71,7 @@ const TIN = {
 const TIN_CO_BAN = {
   ...TIN,
   id: 'thu-co-ban',
+  plate_masked: null,
   color: null, body_style: null, fuel: null, fuel_consumption: null,
   price_per_month: null, deposit_note: null, delivery_fee_note: null,
   limit_km_per_day: null, extra_km_fee: null,

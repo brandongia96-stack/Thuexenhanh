@@ -2,7 +2,21 @@
    CSS thuần, KHÔNG Tailwind. Mọi màu lấy từ token var(--m-...) trong
    contracts/tokens.css — cấm hardcode mã màu mới (CLAUDE.md mục 1.3). */
 
-.trangxe { display: flex; flex-direction: column; gap: var(--sp-4); }
+.trangxe { display: flex; flex-direction: column; gap: var(--sp-4); padding-bottom: 80px; /* chừa chỗ cho dải cảnh báo cố định */ }
+
+/* Dải cảnh báo đỏ cố định cuối màn hình — luôn hiện, không ẩn được. */
+.dai-canhbao {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: var(--z-header);
+  display: flex; align-items: center; justify-content: center; gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-4);
+  background: var(--m-red); color: var(--m-surface);
+  font-size: 13px; line-height: 1.45;
+}
+.dai-canhbao strong { font-weight: 800; }
+.dai-canhbao svg { flex: none; }
+
+/* Lỗi khi lấy số + nút đăng nhập (khi hết lượt xem số, chưa đăng nhập). */
+.lienhe-loi-khoi { display: flex; flex-direction: column; gap: var(--sp-2); }
 
 .trangxe-quaylai {
   display: inline-flex; align-items: center; gap: var(--sp-1);
@@ -257,9 +271,10 @@
   .trangxe-luoi { grid-template-columns: 1fr; }
   /* Hộp liên hệ bám đáy màn hình: nút lấy số luôn trong tầm ngón cái,
      đó là hành động duy nhất app này cần khách làm. */
+  /* Đặt trên dải cảnh báo cố định (xem .dai-canhbao) — nếu không hộp liên hệ bị dải che. */
   .trangxe-phai {
-    position: sticky; top: auto; bottom: 0;
-    margin: 0 calc(var(--sp-3) * -1) calc(var(--sp-4) * -1);
+    position: sticky; top: auto; bottom: 64px;
+    margin: 0 calc(var(--sp-3) * -1) 0;
     z-index: calc(var(--z-header) - 1);
   }
   .hop-lienhe {

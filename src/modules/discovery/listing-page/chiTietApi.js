@@ -21,6 +21,8 @@ import { trangThaiThuc, dangHienThi } from '../../listing/lifecycle'
 const COT = [
   'id', 'owner_id', 'status',
   'brand_text', 'model_text', 'year', 'color', 'seats', 'transmission',
+  // Biển số CHE (51H-***.45), công khai. CẤM đưa `plate` (kín) vào đây.
+  'plate_masked',
   'fuel', 'fuel_consumption', 'body_style', 'description',
   'price_per_day', 'price_per_month', 'price_per_hour',
   'limit_km_per_day', 'extra_km_fee',
