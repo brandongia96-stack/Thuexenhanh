@@ -12,6 +12,8 @@
 // gọi bốn lần là giải mã ảnh bốn lần trên đúng cái máy Android tầm trung
 // mà mình đang cố tiết kiệm.
 
+import { catKhung169 } from './cat169'
+
 export const CO_ANH = {
   blur:   { width: 20,   quality: 0.45, max: 1_024 },
   thumb:  { width: 400,  quality: 0.72, max: 25 * 1024 },
@@ -150,7 +152,10 @@ export async function xuLyAnh(file) {
     throw new Error('Ảnh nặng quá 25 MB, chọn ảnh khác')
   }
 
-  const anh = await docAnh(file)
+  // Cắt 16:9 trước. Từ đây trở đi pipeline chỉ thấy ảnh đã đúng khung.
+  // `file` gốc vẫn dùng cho dung lượng hiển thị và tên file.
+  const daCat = await catKhung169(file)
+  const anh = await docAnh(daCat)
   const loai = DINH_DANG()
 
   try {

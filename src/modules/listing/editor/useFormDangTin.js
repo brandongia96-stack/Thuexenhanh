@@ -10,8 +10,9 @@ import { GOI, tenTruongCuaGoi } from '../fieldGroups'
 import { coTheSua, coTheGuiDuyet, STATUS } from '../lifecycle/vongDoi'
 import {
   docTin, hangSangForm, taoNhap, capNhatTin, guiDuyet,
-  luuAnhMoi, sapXepAnh, xoaAnh, luuNgayChan,
+  luuAnhMoi, sapXepAnh, xoaAnh, luuNgayChan, taiSanGia,
 } from '../listingApi'
+import { sanChoXe, dinhDangDong } from './sanGia'
 
 // Biển số ô tô: 2 số tỉnh + 1–2 chữ + 4–5 số, bỏ qua dấu chấm/gạch/khoảng trắng.
 // Cùng quy tắc với submit_listing() phía server (0010) — server kiểm lại, đây chỉ để báo sớm.
@@ -43,6 +44,7 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
   const [anhDaXoa, setAnhDaXoa] = useState([])
 
   const [tin, setTin] = useState(null)       // hàng gốc, để biết status
+  const [sanGia, setSanGia] = useState([])   // bảng giá sàn theo số chỗ (0021)
   const [dangTai, setDangTai] = useState(Boolean(listingId))
   const [dangLuu, setDangLuu] = useState(null) // null | 'nhap' | 'duyet'
   const [tienDoAnh, setTienDoAnh] = useState(null)
@@ -138,7 +140,18 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
 
   const truongCuaGoi = useMemo(() => new Set(tenTruongCuaGoi(form, goi)), [form, goi])
 
+  // Nạp bảng giá sàn một lần khi mở form. Không có bảng thì sanGia rỗng → không hiện sàn.
+  useEffect(() => {
+    let huy = false
+    taiSanGia().then((rows) => { if (!huy) setSanGia(rows) })
+    return () => { huy = true }
+  }, [])
+
+  // Giá sàn áp dụng cho số chỗ đang nhập (null = không có sàn cho xe này).
+  const sanNgay = useMemo(() => sanChoXe(sanGia, form.seats), [sanGia, form.seats])
+
   // choDuyet: gửi duyệt thì biển số BẮT BUỘC; lưu nháp thì cho để trống nhưng đã nhập là phải đúng.
+  // Giá dưới sàn chỉ chặn khi GỬI DUYỆT — đúng chỗ server kiểm (trigger chỉ chạy khi tin sang cho_duyet).
   function kiemTra(choDuyet = false) {
     const { ok, fields } = validateListing(form)
     // Chỉ báo lỗi ở trường gói hiện tại đang hiện. Bắt lỗi một ô người ta
@@ -155,9 +168,25 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
     if (bienSo && !BIEN_SO.test(bienSo)) loc.plate = 'Biển số chưa đúng dạng, ví dụ 51H-123.45'
     else if (!bienSo && choDuyet) loc.plate = 'Nhập biển số xe để gửi duyệt'
 
+    const gia = Number(form.price_per_day)
+    if (choDuyet && sanNgay && gia > 0 && gia < sanNgay) {
+      loc.price_per_day = `Xe ${form.seats} chỗ không được thuê dưới ${dinhDangDong(sanNgay)}đ/ngày`
+    }
+
     setLoiTruong(loc)
     setLoiChung(null)
     return Object.keys(loc).length === 0
+  }
+
+  // Lỗi từ server/CSDL: giá dưới sàn (hint gia_duoi_san) hiện ngay dưới ô giá;
+  // lỗi khác hiện ở đầu form như cũ.
+  function ghiLoi(e, macDinh) {
+    if (e?.hint === 'gia_duoi_san' || e?.code === 'gia_duoi_san') {
+      setLoiTruong((truoc) => ({ ...truoc, price_per_day: e.message }))
+      setLoiChung(null)
+      return
+    }
+    setLoiChung(e?.message ?? macDinh)
   }
 
   /** Lưu nội dung + ảnh + lịch chặn. Trả về id của tin. */
@@ -214,7 +243,7 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
       await napLaiSauLuu(id)
       return id
     } catch (e) {
-      setLoiChung(e.message ?? 'Không lưu được, thử lại nhé')
+      ghiLoi(e, 'Không lưu được, thử lại nhé')
       return null
     } finally {
       setDangLuu(null)
@@ -235,7 +264,7 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
       await guiDuyet(id)
       return id
     } catch (e) {
-      setLoiChung(e.message ?? 'Không gửi duyệt được, thử lại nhé')
+      ghiLoi(e, 'Không gửi duyệt được, thử lại nhé')
       return null
     } finally {
       setDangLuu(null)
@@ -255,6 +284,7 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
     guiDuyetDuoc: coTheGuiDuyet(trangThai),
     dangTai, dangLuu, tienDoAnh,
     loiTruong, loiChung,
+    sanNgay,
     luuNhap, luuVaGuiDuyet,
     // Sau khi trả phí ở HopTraPhi: đọc lại status/expires_at mà SERVER vừa ghi.
     taiLaiTin: () => (idRef.current ? napTin(idRef.current, { chiTaiLaiAnh: true }) : null),

@@ -12,8 +12,8 @@ import { xuLyNhieuAnh, SO_ANH_TOI_DA, LOAI_CHAP_NHAN } from './imagePipeline'
 import { nguonAnh } from './storage'
 import './UploadAnh.css'
 
-// Ảnh xe ngang 4:3 — cố định tỉ lệ để lưới không nhảy khi ảnh tải xong (CLS).
-const TI_LE = '4 / 3'
+// Khung 16:9, khớp ảnh đã cắt ở cat169.js — cố định tỉ lệ để lưới không nhảy khi ảnh tải xong (CLS).
+const TI_LE = '16 / 9'
 
 function hienDungLuong(byte) {
   if (byte == null) return null

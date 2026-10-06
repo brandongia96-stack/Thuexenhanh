@@ -25,7 +25,7 @@ export default function FormDangTin({ dieuKhien, onXong }) {
     ngayChan, setNgayChan,
     tin, trangThai, khoaSua, guiDuyetDuoc,
     dangTai, dangLuu, tienDoAnh,
-    loiTruong, loiChung,
+    loiTruong, loiChung, sanNgay,
     luuNhap, luuVaGuiDuyet,
   } = dieuKhien
 
@@ -39,7 +39,7 @@ export default function FormDangTin({ dieuKhien, onXong }) {
     )
   }
 
-  const nhom = nhomTruong(form, goi)
+  const nhom = nhomTruong(form, goi, { sanNgay })
   const dangChay = dangLuu != null
   const nhan = nhanTrangThai(trangThai)
 

@@ -36,6 +36,11 @@ Deno.serve(async (req) => {
   })
 
   if (error) {
+    // Trigger listings_kiem_gia_san (0021) chặn giá dưới sàn: P0001 + hint gia_duoi_san.
+    // Trả mã riêng để app hiện đúng message ở ô giá — không gộp vào lỗi hệ thống.
+    if (error.hint === 'gia_duoi_san') {
+      return loi('gia_duoi_san', error.message ?? 'Giá thuê đang thấp hơn mức tối thiểu')
+    }
     console.error('submit-listing', error)
     return loi('loi_he_thong', 'Không gửi duyệt được, thử lại nhé')
   }

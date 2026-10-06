@@ -283,6 +283,29 @@ export async function danhSachTinCuaToi(ownerId, { cursor = null, limit = 20 } =
 // Ghi
 // ─────────────────────────────────────────────
 
+// ─────────────────────────────────────────────
+// Giá sàn theo số chỗ (0021_chong_gian_lan.sql, contracts/api.md mục 3d)
+// ─────────────────────────────────────────────
+let sanGiaCache = null
+
+/**
+ * Bảng giá sàn — ai cũng đọc được. Lỗi hoặc chưa có bảng thì trả rỗng:
+ * form không hiện sàn, nhưng server vẫn chặn khi gửi duyệt (không bỏ qua được).
+ */
+export async function taiSanGia() {
+  if (sanGiaCache) return sanGiaCache
+  if (!HAS_BACKEND) return []
+  try {
+    const sb = await getSupabase()
+    const { data, error } = await sb.from('price_floors').select('seats,min_price_per_day')
+    if (error) return []
+    sanGiaCache = data ?? []
+    return sanGiaCache
+  } catch {
+    return []
+  }
+}
+
 /** Tạo bản nháp. Không gửi `status` — CSDL mặc định `nhap`. */
 export async function taoNhap(form, ownerId) {
   const sb = await getSupabase()
