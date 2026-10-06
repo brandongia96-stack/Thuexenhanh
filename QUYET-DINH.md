@@ -90,3 +90,15 @@ lại Firebase. Phiên này làm rõ và chốt hướng hợp nhất.
    code đang nằm chờ.
 2. **Luồng 04 — bê `Overview` + `CarCard`.** Sửa `/thue-xe` đang là `<ChuaLam />`.
 3. **Luồng 14 — bê `LandingPage`** + SEO meta + logo thật từ `_scratch/ban-sao-dev-pages/`.
+
+
+---
+
+## 06/10/2026 — Tài liệu CEO (CEO WEBTHUEXE/)
+
+1. **Giữ mô hình: chủ xe trả phí hiển thị, khách xem số miễn phí.** Không đổi sang
+   "khách trả token mỗi lần xem số" như `Backend_Requirements.md` đề xuất.
+2. **Giới hạn xem số: 10 xe khác nhau / 24h / tài khoản** (tài liệu đề xuất 5).
+   Khách chưa đăng nhập 30 xe / 24h / IP — vì 4G dùng chung IP (em đề xuất).
+3. Giá sàn: **xe 7 chỗ ≥ 500.000đ/ngày** (theo tài liệu). Số chỗ khác chưa có sàn.
+4. Thông tin công ty FastRent Tech: **chưa đưa lên web** — GPKD dự kiến 24/12/2026.

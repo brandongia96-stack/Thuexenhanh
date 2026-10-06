@@ -20,13 +20,15 @@ export const GOI = {
 }
 
 export const GOI_LABEL = {
-  co_ban: 'Cơ bản (10 Token)',
-  day_du: 'Đầy đủ (20 Token - Cấp Tích Xanh)',
+  co_ban: 'Cơ bản',
+  day_du: 'Đầy đủ',
 }
 
+// Mô tả gói cho người dùng. Nói thẳng là không khác giá — đừng để chủ xe
+// tưởng mình đang bị bán thêm thứ gì.
 export const GOI_MO_TA = {
-  co_ban: 'Chỉ những thông tin tối thiểu. Không yêu cầu tải giấy tờ.',
-  day_du: 'Khai báo chi tiết. Quét giấy tờ xe tự động bằng AI (Giả lập OCR) và tự động nhận Tích Xanh uy tín.',
+  co_ban: 'Chỉ những thông tin tối thiểu để tin lên được. Điền nhanh, xong trong vài phút.',
+  day_du: 'Khai thêm kỹ thuật, giấy tờ, giới hạn km và lịch bận. Cùng giá, chỉ nhiều thông tin hơn để khách đỡ phải gọi hỏi.',
 }
 
 const chon = (arr) => arr.map((v) => ({ value: v, label: String(v) }))

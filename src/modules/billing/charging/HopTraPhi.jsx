@@ -4,7 +4,7 @@ import { Check, Wallet } from 'lucide-react'
 import Hop from '../Hop'
 import HopNapToken from '../topup/HopNapToken'
 import { traPhiHienThi } from '../billingApi'
-import { layGoiHienThi } from '../../../lib/pricing'
+import { GOI_HIEN_THI } from '../../../lib/pricing'
 import { formatVnd, formatDate } from '../../../lib/format'
 import { FLAGS } from '../../../lib/config'
 
@@ -26,8 +26,8 @@ export default function HopTraPhi({ listing, soDu = 0, onDong, onXong }) {
   const [xong, setXong] = useState(null)
 
   const goi = useMemo(
-    () => layGoiHienThi(listing?.package_id).find((g) => g.months === months) ?? layGoiHienThi(listing?.package_id)[0],
-    [months, listing?.package_id],
+    () => GOI_HIEN_THI.find((g) => g.months === months) ?? GOI_HIEN_THI[0],
+    [months],
   )
   const thieu = Math.max(goi.tokens - soDu, 0)
   const laGiaHan = Boolean(listing?.published_at)
@@ -91,7 +91,7 @@ export default function HopTraPhi({ listing, soDu = 0, onDong, onXong }) {
       onDong={onDong}
     >
       <div className="chon-luoi">
-        {layGoiHienThi(listing?.package_id).map((g) => (
+        {GOI_HIEN_THI.map((g) => (
           <button
             key={g.months}
             type="button"

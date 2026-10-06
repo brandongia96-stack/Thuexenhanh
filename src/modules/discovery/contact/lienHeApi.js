@@ -29,6 +29,9 @@ const THONG_BAO = {
 }
 
 export function loiThanhLoiNoi(err) {
+  // Giới hạn xem số (10 xe/tài khoản, 30 xe/IP mỗi 24h): câu chữ do server
+  // soạn vì khác nhau giữa đã/chưa đăng nhập.
+  if (err?.code === 'vuot_gioi_han' && err.message) return err.message
   return THONG_BAO[err?.code] ?? THONG_BAO[err?.message] ?? THONG_BAO[LOI.MANG]
 }
 

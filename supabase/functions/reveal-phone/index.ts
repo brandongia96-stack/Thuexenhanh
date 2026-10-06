@@ -25,6 +25,20 @@ const CORS = {
 }
 
 const MOT_GIO = 60 * 60 * 1000
+// Giới hạn xem số: 10 xe KHÁC NHAU / 24h (anh chốt 06/10, chống bãi xe cào
+// danh bạ chủ xe). Đã đăng nhập → tính theo tài khoản; chưa → theo IP đã băm.
+// Bấm lại xe đã xem không tốn lượt. Chủ xe xem tin mình không tính.
+const GIOI_HAN_24H = 10
+// Khách chưa đăng nhập đếm theo IP — mà 4G Việt Nam dùng chung IP (CGNAT) cho
+// rất nhiều máy, để 10 là chặn oan cả xóm. Nới cho IP; muốn hơn thì đăng nhập.
+const GIOI_HAN_IP_24H = 30
+
+// Băm IP trước khi lưu: đủ để đếm, không lưu IP thật (Bảo vệ dữ liệu cá nhân).
+async function bamIp(ip: string) {
+  const muoi = Deno.env.get('IP_SALT') ?? Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(muoi + '|' + ip))
+  return Array.from(new Uint8Array(buf).slice(0, 16), (b) => b.toString(16).padStart(2, '0')).join('')
+}
 const TRANG_THAI_HIEN = ['dang_hien_thi', 'sap_het_han']
 
 function tra(body: unknown, status = 200) {
@@ -88,7 +102,25 @@ Deno.serve(async (req) => {
   // Chủ xe tự xem tin mình: trả số bình thường nhưng KHÔNG tính lượt.
   const laChuXe = actor_id != null && actor_id === tin.owner_id
 
+  const ip = (req.headers.get('cf-connecting-ip')
+    ?? req.headers.get('x-forwarded-for')?.split(',')[0]
+    ?? '').trim()
+  const ipBam = ip ? await bamIp(ip) : null
+
   if (!laChuXe) {
+    const { data: daXem, error: loiDem } = await admin.rpc('reveal_da_xem_24h', {
+      p_actor: actor_id, p_ip: ipBam, p_listing: listing_id,
+    })
+    if (!loiDem && (daXem ?? 0) >= (actor_id ? GIOI_HAN_24H : GIOI_HAN_IP_24H)) {
+      return loi('vuot_gioi_han',
+        actor_id
+          ? `Anh/chị đã xem số của ${GIOI_HAN_24H} xe trong 24 giờ qua. Vui lòng thử lại sau.`
+          : 'Mạng của anh/chị đã xem số của rất nhiều xe trong 24 giờ qua. Vui lòng đăng nhập để xem tiếp.',
+        // 200 chứ không 429: supabase-js nuốt body khi status >= 400, khách sẽ
+        // chỉ thấy "mạng chập chờn" (xem _shared/http.ts).
+        200)
+    }
+
     const tu = new Date(Date.now() - MOT_GIO).toISOString()
     // Cùng người + cùng xe trong 1 giờ chỉ tính 1 lần. "Cùng người" nhận diện
     // bằng tài khoản nếu đã đăng nhập, không thì bằng session ẩn danh.
@@ -110,7 +142,7 @@ Deno.serve(async (req) => {
         owner_id: tin.owner_id, // lặp lại để dashboard chủ xe khỏi join
         actor_id,
         session_id: session_id ?? null,
-        meta: {},
+        meta: ipBam ? { ip: ipBam } : {},
       })
     }
   }

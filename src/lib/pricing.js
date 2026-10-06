@@ -1,30 +1,31 @@
+// Mô hình giá — ĐÃ CHỐT ở CLAUDE.md mục 6. Luồng khác không được đổi công thức.
+// 1 token = 4.000đ · 10 token / 1 xe / 1 tháng · tuyến tính · KHÔNG có gói vĩnh viễn.
+
 import { TOKEN_VND, TOKENS_PER_MONTH } from './config'
 
-export function tokensForMonths(months, package_id = 'co_ban') {
+export function tokensForMonths(months) {
   if (!Number.isInteger(months) || months < 1) throw new Error('Số tháng phải là số nguyên dương')
-  const tpm = package_id === 'day_du' ? 20 : TOKENS_PER_MONTH
-  return months * tpm
+  return months * TOKENS_PER_MONTH
 }
 
 export function vndForTokens(tokens) {
   return tokens * TOKEN_VND
 }
 
-export function vndForMonths(months, package_id) {
-  return vndForTokens(tokensForMonths(months, package_id))
+export function vndForMonths(months) {
+  return vndForTokens(tokensForMonths(months))
 }
 
-export function layGoiHienThi(package_id = 'co_ban') {
-  return [1, 3, 6, 12].map((months) => ({
-    months,
-    tokens: tokensForMonths(months, package_id),
-    vnd: vndForMonths(months, package_id),
-    label: `${months} tháng`,
-  }))
-}
+// Các lựa chọn hiển thị ở màn đăng tin / gia hạn.
+// Cố tình không có gói "tiết kiệm hơn" — giá tuyến tính, nói thẳng là tuyến tính.
+export const GOI_HIEN_THI = [1, 3, 6, 12].map((months) => ({
+  months,
+  tokens: tokensForMonths(months),
+  vnd: vndForMonths(months),
+  label: `${months} tháng`,
+}))
 
-export const GOI_HIEN_THI = layGoiHienThi('co_ban')
-
+// Khoá chống trừ trùng. Cùng tin + cùng kỳ = cùng khoá = chỉ trừ một lần.
 export function publishIdemKey(listingId, months) {
   const now = new Date()
   const ky = `${now.getUTCFullYear()}${String(now.getUTCMonth() + 1).padStart(2, '0')}`

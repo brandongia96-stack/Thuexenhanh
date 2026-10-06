@@ -89,12 +89,11 @@ const chuHoacNull = (v) => {
 }
 
 /** Đổi giá trị form thành hàng `listings`. Chỉ gồm cột client được phép ghi. */
-export async function formSangHang(form, ownerId, package_id) {
+export async function formSangHang(form, ownerId) {
   const { province_id, district_id } = await idDiaGioi(form.province, form.district)
 
   return {
     owner_id: ownerId,
-    package_id: package_id || 'co_ban',
 
     brand_text: form.brand_text,
     model_text: form.model_text,
@@ -285,9 +284,9 @@ export async function danhSachTinCuaToi(ownerId, { cursor = null, limit = 20 } =
 // ─────────────────────────────────────────────
 
 /** Tạo bản nháp. Không gửi `status` — CSDL mặc định `nhap`. */
-export async function taoNhap(form, ownerId, package_id) {
+export async function taoNhap(form, ownerId) {
   const sb = await getSupabase()
-  const hang = await formSangHang(form, ownerId, package_id)
+  const hang = await formSangHang(form, ownerId)
   const { data, error } = await sb.from('listings').insert(hang).select('id,status').single()
   if (error) throw error
   return data
@@ -297,9 +296,9 @@ export async function taoNhap(form, ownerId, package_id) {
  * Cập nhật nội dung tin. Chỉ ghi cột nội dung — mọi cột do server quản
  * (status, published_at, expires_at, is_verified) đều không có trong `formSangHang`.
  */
-export async function capNhatTin(id, form, ownerId, package_id) {
+export async function capNhatTin(id, form, ownerId) {
   const sb = await getSupabase()
-  const hang = await formSangHang(form, ownerId, package_id)
+  const hang = await formSangHang(form, ownerId)
   delete hang.owner_id // không cho đổi chủ tin
   const { error } = await sb.from('listings').update(hang).eq('id', id)
   if (error) throw error

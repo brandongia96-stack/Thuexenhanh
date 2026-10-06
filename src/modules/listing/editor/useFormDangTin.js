@@ -36,7 +36,7 @@ const FORM_RONG = {
 }
 
 export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
-  const [goi, setGoi] = useState(GOI.CO_BAN)
+  const [goi, setGoi] = useState(GOI.DAY_DU)
   const [form, setForm] = useState({ ...FORM_RONG, contact_phone: sdtMacDinh })
   const [anh, setAnh] = useState([])         // mảng hợp nhất cho UploadAnh
   const [ngayChan, setNgayChan] = useState([])
@@ -67,8 +67,7 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
       date_from: d.date_from, date_to: d.date_to, note: d.note ?? '',
     })))
     if (chiTaiLaiAnh) return l
-    setForm(await hangSangForm(l));
-      if (l.package_id) setGoi(l.package_id);
+    setForm(await hangSangForm(l))
     // Tin đã khai trường của gói Đầy Đủ thì mở sẵn gói đó, đừng bắt
     // chủ xe tự bấm lại rồi tưởng mất dữ liệu.
     const coTruongDayDu = l.fuel || l.limit_km_per_day || l.description || l.contact_zalo
@@ -165,7 +164,7 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
   async function luu() {
     let id = idRef.current
     if (id) {
-      await capNhatTin(id, form, ownerId, goi)
+      await capNhatTin(id, form, ownerId)
     } else {
       const moi = await taoNhap(form, ownerId)
       id = moi.id
@@ -234,7 +233,6 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
     try {
       const id = await luu()
       await guiDuyet(id)
-      if (goi === GOI.DAY_DU) { const { getSupabase } = await import('../../../lib/supabase'); const sb = await getSupabase(); await sb.rpc('mock_grant_verified', { p_listing_id: id }); }
       return id
     } catch (e) {
       setLoiChung(e.message ?? 'Không gửi duyệt được, thử lại nhé')

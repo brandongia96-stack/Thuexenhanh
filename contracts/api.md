@@ -377,6 +377,21 @@ và không ai ngồi đọc. Mất dòng log là mất manh mối để trả ti
 
 ---
 
+## 3d. Chống gian lận (0021, 06/10/2026)
+
+| Thứ | Ai đọc/ghi | Ghi chú |
+|---|---|---|
+| `reveal-phone` giới hạn | server | 10 xe khác nhau/24h theo **tài khoản**; chưa đăng nhập 30 xe/24h theo **IP đã băm** (`events.meta.ip`). Vượt → `{ error: 'vuot_gioi_han', message }` HTTP 200 — client hiện nguyên `message` |
+| `events` kind `reveal_phone` | chỉ server ghi | **Không bao giờ dọn** — nhật ký kết nối làm bằng chứng |
+| `che_sdt()` trigger | tự động | Che SĐT (dạng số + dạng chữ) trong `description`, `*_note`, `address_text`, `reviews.content` thành `***` khi lưu |
+| `price_floors (seats, min_price_per_day)` | mọi người đọc, admin ghi | Sàn = dòng có `seats` lớn nhất ≤ số chỗ xe. Lỗi khi gửi duyệt/đổi giá: `P0001` "Giá thuê xe N chỗ không được thấp hơn …", hint `gia_duoi_san`. Hiện chỉ có 7 chỗ ≥ 500.000đ |
+| `listings.plate_masked` | công khai | `51H-***.45`, tự sinh từ `plate` (kín). UI hiện cột này, **cấm** đọc `plate` |
+| `rescue_contacts` | mọi người đọc, admin ghi | Danh bạ cứu hộ theo tỉnh. **Rỗng** — chỉ nhập số THẬT |
+| bucket `bang-chung` (kín) + `reports.evidence_paths text[]` | người báo cáo ghi `bang-chung/<uid>/<uuid>.<đuôi>`; người báo cáo + kiểm duyệt đọc | ảnh/PDF ≤ 5 MB |
+| `rpc('da_lien_he', { p_listing })` | authenticated | true nếu tài khoản đã lấy số tin đó. Policy `reviews_author_insert` bắt buộc điều kiện này |
+
+**KHÔNG có (trái quyết định 06/10):** khách trả token xem số, hoàn token theo report, tặng token khi chưa KYC, rút token ra tiền.
+
 ## 4. Mã lỗi chung
 
 | Mã | Nghĩa |

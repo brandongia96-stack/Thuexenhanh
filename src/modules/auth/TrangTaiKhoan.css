@@ -1,4 +1,4 @@
-﻿.tk-container {
+.tk-container {
   max-width: 600px;
   margin: 0 auto;
   padding-bottom: var(--sp-12);
@@ -113,7 +113,3 @@
   margin-top: var(--sp-6);
   padding-bottom: var(--sp-6);
 }
-
-.lucide-spin { animation: tk-spin 1s linear infinite; }
-@keyframes tk-spin { 100% { transform: rotate(360deg); } }
-
