@@ -384,13 +384,27 @@ và không ai ngồi đọc. Mất dòng log là mất manh mối để trả ti
 | `reveal-phone` giới hạn | server | 10 xe khác nhau/24h theo **tài khoản**; chưa đăng nhập 30 xe/24h theo **IP đã băm** (`events.meta.ip`). Vượt → `{ error: 'vuot_gioi_han', message }` HTTP 200 — client hiện nguyên `message` |
 | `events` kind `reveal_phone` | chỉ server ghi | **Không bao giờ dọn** — nhật ký kết nối làm bằng chứng |
 | `che_sdt()` trigger | tự động | Che SĐT (dạng số + dạng chữ) trong `description`, `*_note`, `address_text`, `reviews.content` thành `***` khi lưu |
-| `price_floors (seats, min_price_per_day)` | mọi người đọc, admin ghi | Sàn = dòng có `seats` lớn nhất ≤ số chỗ xe. Lỗi khi gửi duyệt/đổi giá: `P0001` "Giá thuê xe N chỗ không được thấp hơn …", hint `gia_duoi_san`. Hiện chỉ có 7 chỗ ≥ 500.000đ |
+| `price_floors (seats, min_price_per_day)` | mọi người đọc, admin ghi (qua `admin-ops`) | **NGƯỠNG CẢNH BÁO, không chặn** (đổi 11/10, PL-33). Giá dưới ngưỡng → server tự gắn `listings.price_anomaly = true`, người duyệt xem tay. UI: cảnh báo vàng + cho gửi, KHÔNG chặn. Hiện chỉ có 7 chỗ: 500.000đ |
 | `listings.plate_masked` | công khai | `51H-***.45`, tự sinh từ `plate` (kín). UI hiện cột này, **cấm** đọc `plate` |
 | `rescue_contacts` | mọi người đọc, admin ghi | Danh bạ cứu hộ theo tỉnh. **Rỗng** — chỉ nhập số THẬT |
 | bucket `bang-chung` (kín) + `reports.evidence_paths text[]` | người báo cáo ghi `bang-chung/<uid>/<uuid>.<đuôi>`; người báo cáo + kiểm duyệt đọc | ảnh/PDF ≤ 5 MB |
 | `rpc('da_lien_he', { p_listing })` | authenticated | true nếu tài khoản đã lấy số tin đó. Policy `reviews_author_insert` bắt buộc điều kiện này |
 
 **KHÔNG có (trái quyết định 06/10):** khách trả token xem số, hoàn token theo report, tặng token khi chưa KYC, rút token ra tiền.
+
+## 3e. Tuân thủ pháp lý (0023, 11/10/2026)
+
+| Thứ | Cách dùng |
+|---|---|
+| `user_consents` thêm loại + cột `granted` | `document`: `terms`, `privacy`, `refund`, `operation`, `show_phone`, `age_18`, `marketing`, `kyc_sensitive`. Mỗi ô tick = MỘT dòng insert `{ user_id, document, version, granted: true }`. Rút đồng ý = insert dòng mới `granted: false` (bảng chỉ ghi thêm). `rpc('da_dong_y', { p_user, p_document })` → trạng thái hiện tại |
+| `listings.price_anomaly` | công khai, chỉ server ghi. true = giá dưới ngưỡng, chờ duyệt tay |
+| `listings.lat/lng` | server tự làm tròn 2 số lẻ (~1 km). Bản đồ vẽ VÒNG TRÒN ~1 km, không cắm ghim |
+| `complaints` + `complaint_messages` | người dùng insert `{ user_id, kind, content, listing_id?, report_id? }` → server sinh `code` (`KN-YYMM-00001`) + `due_at`. `kind`: `nen_tang`/`tin_dang`/`bao_cao_sai`/`token`/`du_lieu`/`khac`. Người dùng đọc của mình + nhắn thêm; chỉ kiểm duyệt/admin đổi `status`, `resolution`. Tin nhắn không sửa/xoá được |
+| `takedown_requests` | chỉ admin. Hạn `deadline_at` = nhận + 24h; cron báo admin khi còn < 4h |
+| `authority_requests` | chỉ admin. Sổ cung cấp dữ liệu cho cơ quan chức năng — bắt buộc số văn bản |
+| `rpc('xuat_du_lieu_cua_toi')` | trả JSON toàn bộ dữ liệu của người đang đăng nhập → cho tải file |
+| `rpc('yeu_cau_xoa_tai_khoan')` / `rpc('huy_yeu_cau_xoa_tai_khoan')` | chờ 7 ngày rồi cron ẩn danh hoá thật (xoá tên/email/SĐT, gỡ Google, ẩn tin). Ví còn token → chuyển admin xử lý hoàn token trước. Trạng thái đọc ở `account_deletion_requests` |
+| `admin-ops` `evidence_urls` | mỗi lần xem bằng chứng tự ghi `admin_actions` (`view_evidence`) |
 
 ## 4. Mã lỗi chung
 

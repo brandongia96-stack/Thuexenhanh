@@ -208,6 +208,12 @@ Deno.serve(async (req) => {
         if (eS) console.error('admin-ops signed', eS)
         urls.push({ path, url: s?.signedUrl ?? null })
       }
+      // Mỗi lần xem bằng chứng (có thể chứa dữ liệu nhạy cảm của người thứ ba)
+      // đều để lại dấu vết — KeHoach_Backend BE-39.
+      await admin().rpc('admin_log', {
+        p_actor: actor, p_action: 'view_evidence', p_target_type: 'report',
+        p_target_id: id, p_before: null, p_after: { so_file: paths.length },
+      })
       return json({ urls })
     }
 

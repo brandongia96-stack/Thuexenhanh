@@ -12,10 +12,11 @@ import { formatVnd, formatDate, formatDateTime } from '../../lib/format'
 import { giaDangApDung, giaNhienLieu, nhapGiaNhienLieu } from './adminApi'
 import { useTai, thongDiepLoi } from './useTai'
 
-// Mã đã chốt (CLAUDE.md §0, 01/10). Đừng thêm mã khác mà không báo luồng 05.
+// Mã đã chốt (contracts/api.md mục 2; xăng đổi sang xang_e10 ngày 03/10 — bảng giá
+// không còn RON95 thường, và Edge Function gia-nhien-lieu ghi đúng mã này).
 const MA_CHOT = {
-  xang_ron95: { label: 'Xăng RON 95', unit: 'đ/lít' },
-  dau_do: { label: 'Dầu diesel', unit: 'đ/lít' },
+  xang_e10: { label: 'Xăng E10 RON95-III', unit: 'lít' },
+  dau_do: { label: 'Dầu DO 0,05S', unit: 'lít' },
 }
 
 const homNay = () => {
@@ -25,7 +26,7 @@ const homNay = () => {
 }
 
 function Nhap({ taiLai }) {
-  const [code, setCode] = useState('xang_ron95')
+  const [code, setCode] = useState('xang_e10')
   const [gia, setGia] = useState('')
   const [nguon, setNguon] = useState('')
   const [url, setUrl] = useState('')
@@ -86,7 +87,7 @@ export default function GiaNhienLieu() {
             <tbody>{now.data.map((r) => (
               <tr key={r.code}>
                 <td>{r.label}<div className="t-small"><code>{r.code}</code></div></td>
-                <td className="so">{formatVnd(r.price)} <span className="t-small">{r.unit}</span></td>
+                <td className="so">{formatVnd(r.price)} <span className="t-small">/ {r.unit}</span></td>
                 <td>{r.source}</td>
                 <td>{formatDate(r.effective_date)}</td>
                 <td className="t-small">{formatDateTime(r.checked_at)}</td>
