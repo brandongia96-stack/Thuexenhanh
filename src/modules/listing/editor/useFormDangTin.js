@@ -10,9 +10,9 @@ import { GOI, tenTruongCuaGoi } from '../fieldGroups'
 import { coTheSua, coTheGuiDuyet, STATUS } from '../lifecycle/vongDoi'
 import {
   docTin, hangSangForm, taoNhap, capNhatTin, guiDuyet,
-  luuAnhMoi, sapXepAnh, xoaAnh, luuNgayChan, taiSanGia,
+  luuAnhMoi, sapXepAnh, xoaAnh, luuNgayChan, taiSanGia, ghiDongYHienSo,
 } from '../listingApi'
-import { sanChoXe, dinhDangDong } from './sanGia'
+import { sanChoXe } from './sanGia'
 
 // Biển số ô tô: 2 số tỉnh + 1–2 chữ + 4–5 số, bỏ qua dấu chấm/gạch/khoảng trắng.
 // Cùng quy tắc với submit_listing() phía server (0010) — server kiểm lại, đây chỉ để báo sớm.
@@ -50,6 +50,21 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
   const [tienDoAnh, setTienDoAnh] = useState(null)
   const [loiTruong, setLoiTruong] = useState({})
   const [loiChung, setLoiChung] = useState(null)
+
+  // Hai ô đồng ý ở bước cuối, bắt buộc với GỬI DUYỆT (0023, PL-05/01).
+  // Không tick sẵn, và hỏi lại ở MỌI lần gửi — mỗi lần tick là một dòng
+  // user_consents mới (bảng chỉ ghi thêm), không gộp với lần trước.
+  const [dongYSo, setDongYSo] = useState(false)
+  const [dongYAnh, setDongYAnh] = useState(false)
+
+  const doiDongYSo = useCallback((v) => {
+    setDongYSo(v)
+    setLoiTruong((truoc) => (truoc.dongYSo ? { ...truoc, dongYSo: undefined } : truoc))
+  }, [])
+  const doiDongYAnh = useCallback((v) => {
+    setDongYAnh(v)
+    setLoiTruong((truoc) => (truoc.dongYAnh ? { ...truoc, dongYAnh: undefined } : truoc))
+  }, [])
 
   // Id của tin đang làm việc. Tin mới chưa có id; ngay khi bản nháp được tạo thì
   // nhớ lại ở đây. Không nhớ thì lưu hỏng giữa chừng rồi bấm lại sẽ đẻ ra bản nháp
@@ -148,10 +163,14 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
   }, [])
 
   // Giá sàn áp dụng cho số chỗ đang nhập (null = không có sàn cho xe này).
+  // ĐỔI 11/10 (PL-33): chỉ còn là NGƯỠNG CẢNH BÁO, không chặn gửi — ép giá
+  // người bán độc lập là rủi ro Luật Cạnh tranh. Dưới ngưỡng thì server tự
+  // gắn `listings.price_anomaly = true` để người duyệt xem tay; UI chỉ nhắc.
   const sanNgay = useMemo(() => sanChoXe(sanGia, form.seats), [sanGia, form.seats])
+  const giaDuoiSan = Boolean(sanNgay && Number(form.price_per_day) > 0 && Number(form.price_per_day) < sanNgay)
 
   // choDuyet: gửi duyệt thì biển số BẮT BUỘC; lưu nháp thì cho để trống nhưng đã nhập là phải đúng.
-  // Giá dưới sàn chỉ chặn khi GỬI DUYỆT — đúng chỗ server kiểm (trigger chỉ chạy khi tin sang cho_duyet).
+  // Hai ô đồng ý ở cuối form cũng chỉ bắt buộc khi GỬI DUYỆT — lưu nháp chưa lộ gì cho khách.
   function kiemTra(choDuyet = false) {
     const { ok, fields } = validateListing(form)
     // Chỉ báo lỗi ở trường gói hiện tại đang hiện. Bắt lỗi một ô người ta
@@ -168,25 +187,12 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
     if (bienSo && !BIEN_SO.test(bienSo)) loc.plate = 'Biển số chưa đúng dạng, ví dụ 51H-123.45'
     else if (!bienSo && choDuyet) loc.plate = 'Nhập biển số xe để gửi duyệt'
 
-    const gia = Number(form.price_per_day)
-    if (choDuyet && sanNgay && gia > 0 && gia < sanNgay) {
-      loc.price_per_day = `Xe ${form.seats} chỗ không được thuê dưới ${dinhDangDong(sanNgay)}đ/ngày`
-    }
+    if (choDuyet && !dongYSo) loc.dongYSo = 'Cần đồng ý để gửi duyệt'
+    if (choDuyet && !dongYAnh) loc.dongYAnh = 'Cần xác nhận để gửi duyệt'
 
     setLoiTruong(loc)
     setLoiChung(null)
     return Object.keys(loc).length === 0
-  }
-
-  // Lỗi từ server/CSDL: giá dưới sàn (hint gia_duoi_san) hiện ngay dưới ô giá;
-  // lỗi khác hiện ở đầu form như cũ.
-  function ghiLoi(e, macDinh) {
-    if (e?.hint === 'gia_duoi_san' || e?.code === 'gia_duoi_san') {
-      setLoiTruong((truoc) => ({ ...truoc, price_per_day: e.message }))
-      setLoiChung(null)
-      return
-    }
-    setLoiChung(e?.message ?? macDinh)
   }
 
   /** Lưu nội dung + ảnh + lịch chặn. Trả về id của tin. */
@@ -243,7 +249,7 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
       await napLaiSauLuu(id)
       return id
     } catch (e) {
-      ghiLoi(e, 'Không lưu được, thử lại nhé')
+      setLoiChung(e?.message ?? 'Không lưu được, thử lại nhé')
       return null
     } finally {
       setDangLuu(null)
@@ -261,10 +267,13 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
     setLoiChung(null)
     try {
       const id = await luu()
+      // Ghi bằng chứng đồng ý TRƯỚC khi gửi duyệt — nếu ghi hỏng thì không
+      // được coi là đã xin phép, dừng lại ở đây, đừng gửi tin đi.
+      await ghiDongYHienSo(ownerId)
       await guiDuyet(id)
       return id
     } catch (e) {
-      ghiLoi(e, 'Không gửi duyệt được, thử lại nhé')
+      setLoiChung(e?.message ?? 'Không gửi duyệt được, thử lại nhé')
       return null
     } finally {
       setDangLuu(null)
@@ -284,7 +293,8 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
     guiDuyetDuoc: coTheGuiDuyet(trangThai),
     dangTai, dangLuu, tienDoAnh,
     loiTruong, loiChung,
-    sanNgay,
+    sanNgay, giaDuoiSan,
+    dongYSo, doiDongYSo, dongYAnh, doiDongYAnh,
     luuNhap, luuVaGuiDuyet,
     // Sau khi trả phí ở HopTraPhi: đọc lại status/expires_at mà SERVER vừa ghi.
     taiLaiTin: () => (idRef.current ? napTin(idRef.current, { chiTaiLaiAnh: true }) : null),

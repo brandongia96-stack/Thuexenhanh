@@ -5,7 +5,7 @@
 //   2. Không hứa hẹn tin sẽ lên ngay — tin đi qua kiểm duyệt và tốn token.
 //   3. Chủ xe không tự đặt được tích xanh. Không có ô nào cho việc đó.
 
-import { AlertCircle, CheckCircle2, Info, Loader2, Save, Send } from 'lucide-react'
+import { AlertCircle, AlertTriangle, CheckCircle2, Info, Loader2, Save, Send } from 'lucide-react'
 import { AMENITIES } from '../../../data/amenities'
 import { TOKENS_PER_MONTH } from '../../../lib/config'
 import { vndForMonths } from '../../../lib/pricing'
@@ -25,7 +25,8 @@ export default function FormDangTin({ dieuKhien, onXong }) {
     ngayChan, setNgayChan,
     tin, trangThai, khoaSua, guiDuyetDuoc,
     dangTai, dangLuu, tienDoAnh,
-    loiTruong, loiChung, sanNgay,
+    loiTruong, loiChung, giaDuoiSan,
+    dongYSo, doiDongYSo, dongYAnh, doiDongYAnh,
     luuNhap, luuVaGuiDuyet,
   } = dieuKhien
 
@@ -39,7 +40,7 @@ export default function FormDangTin({ dieuKhien, onXong }) {
     )
   }
 
-  const nhom = nhomTruong(form, goi, { sanNgay })
+  const nhom = nhomTruong(form, goi)
   const dangChay = dangLuu != null
   const nhan = nhanTrangThai(trangThai)
 
@@ -58,11 +59,22 @@ export default function FormDangTin({ dieuKhien, onXong }) {
       {/* ─── Trạng thái tin: chỉ hiện khi đang sửa tin đã có ─── */}
       {tin && (
         <div className="card card-pad fdt-trang-thai">
-          <span className={`badge badge-${nhan.tone}`}>{nhan.label}</span>
+          <div className="row" style={{ flexWrap: 'wrap' }}>
+            <span className={`badge badge-${nhan.tone}`}>{nhan.label}</span>
+            {/* price_anomaly: server gắn cờ khi giá dưới ngưỡng thường gặp — không chặn,
+                chỉ để kiểm duyệt viên xem tay (0023, PL-33). */}
+            {tin.price_anomaly && <span className="badge badge-warn">Cần duyệt giá</span>}
+          </div>
           {trangThai === STATUS.TU_CHOI && tin.reject_reason && (
             <p className="t-small fdt-ly-do">
               <AlertCircle size={14} strokeWidth={1.8} />
               Lý do bị từ chối: {tin.reject_reason}
+            </p>
+          )}
+          {tin.price_anomaly && (
+            <p className="t-small fdt-canh-bao-gia">
+              <AlertTriangle size={14} strokeWidth={1.8} />
+              Giá thấp hơn mức thường gặp cho loại xe này — kiểm duyệt viên sẽ xem tay trước khi duyệt.
             </p>
           )}
           {khoaSua && (
@@ -117,6 +129,19 @@ export default function FormDangTin({ dieuKhien, onXong }) {
               />
             ))}
           </div>
+
+          {/* Giá dưới ngưỡng thường gặp: CHỈ cảnh báo, không chặn gửi (0023, PL-33 —
+              ép giá người bán độc lập là rủi ro Luật Cạnh tranh). Server tự gắn
+              `price_anomaly` để người duyệt xem tay. */}
+          {n.key === 'gia' && giaDuoiSan && (
+            <div className="fdt-canh-bao-gia fdt-canh-bao-hop">
+              <AlertTriangle size={16} strokeWidth={1.8} />
+              <span>
+                Giá thấp hơn mức thường gặp cho loại xe này. Tin sẽ được duyệt thủ công.
+                Vui lòng ghi rõ giá đã gồm những gì.
+              </span>
+            </div>
+          )}
 
           {/* Tiện nghi đi kèm nhóm kỹ thuật, chỉ ở gói Đầy Đủ. */}
           {n.key === 'ky_thuat' && (
@@ -193,6 +218,26 @@ export default function FormDangTin({ dieuKhien, onXong }) {
           </p>
         </div>
       </div>
+
+      {/* ─── Hai ô đồng ý bắt buộc trước khi GỬI DUYỆT (0023, PL-05/01). Không
+          tick sẵn, hỏi lại ở mọi lần gửi — lưu nháp chưa cần vì chưa lộ gì. ─── */}
+      <section className="card card-pad stack">
+        <TruongNhap
+          truong={{
+            name: 'dongYSo', type: 'checkbox', disabled: khoaSua,
+            label: 'Tôi đồng ý để Thuê Xe Nhanh hiển thị số điện thoại và Zalo của tôi cho khách thuê. Tôi có thể tắt bất cứ lúc nào.',
+          }}
+          giaTri={dongYSo}
+          loi={loiTruong.dongYSo}
+          onChange={(_ten, gt) => doiDongYSo(gt)}
+        />
+        <TruongNhap
+          truong={{ name: 'dongYAnh', type: 'checkbox', disabled: khoaSua, label: 'Ảnh do tôi chụp hoặc tôi có quyền sử dụng.' }}
+          giaTri={dongYAnh}
+          loi={loiTruong.dongYAnh}
+          onChange={(_ten, gt) => doiDongYAnh(gt)}
+        />
+      </section>
 
       {loiChung && (
         <p className="field-error fdt-loi-chung">

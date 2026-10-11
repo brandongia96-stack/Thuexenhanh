@@ -38,12 +38,8 @@ const chon = (arr) => arr.map((v) => ({ value: v, label: String(v) }))
  * @param {object} form  giá trị hiện tại — cần để đổ dòng xe theo hãng, quận theo tỉnh
  * @param {'co_ban'|'day_du'} goi
  */
-export function nhomTruong(form, goi = GOI.DAY_DU, ctx = {}) {
+export function nhomTruong(form, goi = GOI.DAY_DU) {
   const quanHuyen = districtsOf(form.province)
-  // ctx.sanNgay: giá sàn ngày của xe (đã tính ở hook). Null thì không hiện dòng sàn.
-  const goiySan = ctx.sanNgay
-    ? `Tối thiểu ${Number(ctx.sanNgay).toLocaleString('vi-VN')}đ/ngày cho xe ${form.seats} chỗ`
-    : null
 
   const coBan = [
     {
@@ -66,7 +62,7 @@ export function nhomTruong(form, goi = GOI.DAY_DU, ctx = {}) {
       title: 'Giá thuê',
       desc: 'Ghi đúng giá thật. Khách gọi mà nghe báo giá khác là một lý do để khách báo cáo tin.',
       fields: [
-        { name: 'price_per_day', label: 'Giá theo ngày', type: 'money', required: true, suffix: 'đ / ngày', hint: goiySan },
+        { name: 'price_per_day', label: 'Giá theo ngày', type: 'money', required: true, suffix: 'đ / ngày' },
         // Gói Đầy Đủ có thêm ô "Tiền cọc" dạng số (them.gia) — khi đó trường
         // này chỉ còn là ghi chú, nên đổi nhãn để khỏi trùng tên hai ô.
         goi === GOI.DAY_DU

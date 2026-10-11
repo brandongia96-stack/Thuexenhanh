@@ -9,6 +9,18 @@
 .fdt-trang-thai { display: flex; flex-direction: column; gap: var(--sp-2); align-items: flex-start; }
 .fdt-ly-do { display: inline-flex; align-items: center; gap: 6px; color: var(--m-red); }
 
+/* ─── Cảnh báo giá dưới ngưỡng thường gặp (0023, PL-33) — CHỈ nhắc, không chặn ─── */
+.fdt-canh-bao-gia { display: inline-flex; align-items: center; gap: 6px; color: var(--m-amber); }
+.fdt-canh-bao-hop {
+  display: flex; gap: var(--sp-3); align-items: flex-start;
+  padding: var(--sp-3);
+  background: var(--m-amber-bg);
+  border-radius: var(--r-md);
+  color: var(--m-dark);
+}
+.fdt-canh-bao-hop > svg { color: var(--m-amber); flex-shrink: 0; margin-top: 2px; }
+.fdt-canh-bao-hop > span { font-size: 14px; }
+
 /* ─── Chọn gói ─── */
 .fdt-goi { display: grid; gap: var(--sp-3); grid-template-columns: 1fr 1fr; }
 

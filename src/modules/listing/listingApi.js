@@ -192,6 +192,8 @@ const COT_TIN =
   'collateral_note,delivery_fee_note,delivery_fee,delivery_radius_km,' +
   'limit_km_per_day,extra_km_fee,' +
   'province_id,district_id,address_text,lat,lng,amenity_codes,is_verified,' +
+  // Giá dưới sàn (0023, PL-33) — chỉ server gắn, chỉ để người duyệt xem tay.
+  'price_anomaly,' +
   // Xe điện — NGHIEN-CUU-XE-DIEN.md mục 3. Null với xe xăng/dầu.
   'ev_range_km,battery_kwh,charge_policy,free_charge_km,charge_fee_per_pct,' +
   'pickup_min_pct,return_min_pct,has_portable_charger,battery_ownership,' +
@@ -304,6 +306,29 @@ export async function taiSanGia() {
   } catch {
     return []
   }
+}
+
+// ─────────────────────────────────────────────
+// Đồng ý hiển thị số điện thoại/Zalo (0023, PL-05/01 — contracts/api.md 3e)
+// ─────────────────────────────────────────────
+// Phiên bản câu chữ của chính ô tick này — KHÔNG dùng src/modules/legal/phienBan.js
+// (file đó là văn bản pháp lý có trang riêng do luồng 12 giữ); đây chỉ là một
+// câu đồng ý ngắn gắn liền màn đăng tin. Đổi câu chữ thì tăng số ở đây.
+const PHIEN_BAN_DONG_Y_SO = '1.0'
+
+/**
+ * Ghi MỘT dòng đồng ý hiển thị SĐT/Zalo. Gọi mỗi lần gửi duyệt — bảng
+ * `user_consents` chỉ ghi thêm, không hợp nhất với lần đồng ý trước.
+ */
+export async function ghiDongYHienSo(userId) {
+  const sb = await getSupabase()
+  const { error } = await sb.from('user_consents').insert({
+    user_id: userId,
+    document: 'show_phone',
+    version: PHIEN_BAN_DONG_Y_SO,
+    granted: true,
+  })
+  if (error) throw error
 }
 
 /** Tạo bản nháp. Không gửi `status` — CSDL mặc định `nhap`. */
