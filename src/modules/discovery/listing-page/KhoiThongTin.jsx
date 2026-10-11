@@ -1,6 +1,6 @@
 import {
   Users, Cog, Fuel, Calendar, Palette, Car, Gauge as GaugeIcon,
-  MapPin, ExternalLink, CalendarX2, Hash,
+  MapPin, CalendarX2, Hash,
 } from 'lucide-react'
 // 13 icon tiện nghi — import TỪNG CÁI. Import cả gói lucide-react là hơn 1 MB
 // (HIEU-NANG.md mục 3, CLAUDE.md mục 1.4).
@@ -178,31 +178,51 @@ export function KhoiLichBan({ khoang = [] }) {
  * Nơi nhận xe.
  *
  * HIEU-NANG.md mục 4 + mục 9: CẤM nhúng iframe bản đồ — mỗi iframe vài trăm KB
- * và kéo theo cả đống script của Google. Ở đây là địa chỉ dạng chữ + một nút
- * mở bản đồ ở app ngoài, 0 KB.
+ * và kéo theo cả đống script của Google. Ở đây là địa chỉ dạng chữ + một hình
+ * minh hoạ vòng tròn khu vực, 0 KB, không gọi mạng.
  *
- * Ảnh bản đồ tĩnh cần Google Maps Static API (CLAUDE.md mục 5.3 — "khi lên quy
- * mô"), chưa có khoá thì không vẽ bản đồ giả cho đẹp.
+ * contracts/api.md mục 3e: server đã làm tròn `lat`/`lng` còn ~1km, nên
+ * KHÔNG được cắm ghim ở đúng toạ độ đó — một cái ghim trên bản đồ vẫn trỏ
+ * thẳng vào nhà chủ xe dù số đã làm tròn. Thay bằng vòng tròn + tên quận/tỉnh.
  */
 export function BanDo({ tin }) {
+  // Dòng chủ xe tự khai (vd "gần sân bay Tân Sơn Nhất") — giữ lại, đây là mô
+  // tả bằng lời, không phải toạ độ chính xác.
   const diaChi = [tin.address_text, tin.tenQuan, tin.tenTinh].filter(Boolean).join(', ')
-  if (!diaChi) return null
-
-  const truyVan = tin.lat && tin.lng ? `${tin.lat},${tin.lng}` : diaChi
-  const link = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(truyVan)}`
+  // Khu vực ở độ chi tiết quận/tỉnh — độ chính xác khớp với lat/lng đã làm tròn.
+  const khuVuc = [tin.tenQuan, tin.tenTinh].filter(Boolean).join(', ')
+  if (!diaChi && !khuVuc) return null
 
   return (
     <Khoi title="Nơi nhận xe">
-      <div className="bando">
-        <MapPin size={18} strokeWidth={1.8} />
-        <span>{diaChi}</span>
-        <a className="btn btn-ghost btn-sm" href={link} target="_blank" rel="noreferrer">
-          Mở bản đồ
-          <ExternalLink size={14} strokeWidth={2} />
-        </a>
-      </div>
-      <p className="t-small">Địa chỉ chính xác do chủ xe hẹn khi anh/chị gọi.</p>
+      {diaChi && (
+        <div className="bando-diachi">
+          <MapPin size={18} strokeWidth={1.8} />
+          <span>{diaChi}</span>
+        </div>
+      )}
+      {khuVuc && (
+        <div className="bando-khuvuc">
+          <VongTronKhuVuc />
+          <span className="t-small">
+            Khu vực: <strong>{khuVuc}</strong> — vị trí chính xác do chủ xe hẹn khi anh/chị gọi.
+          </span>
+        </div>
+      )}
     </Khoi>
+  )
+}
+
+/** Vòng tròn minh hoạ bán kính ~1km quanh khu vực — KHÔNG phải bản đồ thật, không ghim chính xác. */
+function VongTronKhuVuc() {
+  return (
+    <svg
+      width="48" height="48" viewBox="0 0 48 48" className="bando-vongtron"
+      role="img" aria-label="Minh hoạ khu vực bán kính khoảng 1 km"
+    >
+      <circle className="bando-vung" cx="24" cy="24" r="20" />
+      <circle className="bando-diem" cx="24" cy="24" r="3" />
+    </svg>
   )
 }
 

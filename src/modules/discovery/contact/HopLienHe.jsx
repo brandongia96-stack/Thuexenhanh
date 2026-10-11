@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation } from 'react-router-dom'
-import { Phone, MessageCircle, Loader2, AlertCircle, LogIn } from 'lucide-react'
+import { Phone, MessageCircle, Loader2, AlertCircle, LogIn, ShieldAlert } from 'lucide-react'
 import { formatPhone } from '../../../lib/format'
 import { telHref, zaloHref } from '../../../lib/phone'
 import { laySoDienThoai, loiThanhLoiNoi } from './lienHeApi'
@@ -71,6 +71,15 @@ export default function HopLienHe({ tin, userId, conHienThi }) {
     <div className="lienhe">
       {!so ? (
         <>
+          {/* Hộp tĩnh, KHÔNG fixed, KHÔNG chạy chữ — nằm ngay trên nút bấm
+              (contracts/api.md mục 3e). */}
+          <div className="coc-canhbao" role="note">
+            <ShieldAlert size={18} strokeWidth={1.8} />
+            <span>
+              Không chuyển cọc trước khi xem xe tận nơi. Thuê Xe Nhanh không nhận và không
+              bảo lãnh tiền cọc.
+            </span>
+          </div>
           <button
             type="button"
             className="btn btn-primary btn-lg btn-block"

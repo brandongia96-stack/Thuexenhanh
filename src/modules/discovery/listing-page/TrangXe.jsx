@@ -126,9 +126,12 @@ export default function TrangXe() {
               )}
             </div>
             
+            {/* Nhãn trung tính theo contracts/api.md mục 3e — CẤM chữ "lừa đảo", "tố cáo",
+                cấm số liệu cụ thể (đếm báo cáo đọc như một lời buộc tội công khai). */}
             {tin.report_count > 0 && (
-              <div style={{ marginTop: '12px', fontSize: '14px', color: 'var(--m-red)', display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'var(--m-red-bg)', padding: '6px 12px', borderRadius: 6, fontWeight: 500 }}>
-                <AlertTriangle size={16} strokeWidth={2} /> Tin này có {tin.report_count} báo cáo vi phạm đã được kiểm duyệt xác nhận.
+              <div className="trangxe-khieunai">
+                <AlertTriangle size={16} strokeWidth={2} />
+                Đang có khiếu nại đã được kiểm duyệt ghi nhận.
               </div>
             )}
           </header>
@@ -169,23 +172,6 @@ export default function TrangXe() {
       </div>
 
       {hienBaoCao && <ModalBaoCao tin={tin} dong={() => setHienBaoCao(false)} />}
-
-      <DaiCanhBaoCoc />
-    </div>
-  )
-}
-
-/**
- * Dải cảnh báo cố định cuối màn hình. Hiện trên MỌI tin, kể cả tin hết hạn —
- * đây là lời nhắc an toàn trước khi khách chuyển tiền, không phải nội dung có thể ẩn.
- */
-function DaiCanhBaoCoc() {
-  return (
-    <div className="dai-canhbao" role="note">
-      <AlertTriangle size={18} strokeWidth={2} />
-      <span>
-        <strong>KHÔNG CHUYỂN CỌC KHI CHƯA XEM XE TRỰC TIẾP.</strong> Thuê Xe Nhanh không bảo lãnh giao dịch.
-      </span>
     </div>
   )
 }

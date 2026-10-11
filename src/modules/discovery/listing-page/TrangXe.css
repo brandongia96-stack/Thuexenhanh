@@ -2,21 +2,30 @@
    CSS thuần, KHÔNG Tailwind. Mọi màu lấy từ token var(--m-...) trong
    contracts/tokens.css — cấm hardcode mã màu mới (CLAUDE.md mục 1.3). */
 
-.trangxe { display: flex; flex-direction: column; gap: var(--sp-4); padding-bottom: 80px; /* chừa chỗ cho dải cảnh báo cố định */ }
+.trangxe { display: flex; flex-direction: column; gap: var(--sp-4); }
 
-/* Dải cảnh báo đỏ cố định cuối màn hình — luôn hiện, không ẩn được. */
-.dai-canhbao {
-  position: fixed; left: 0; right: 0; bottom: 0; z-index: var(--z-header);
-  display: flex; align-items: center; justify-content: center; gap: var(--sp-2);
-  padding: var(--sp-2) var(--sp-4);
-  background: var(--m-red); color: var(--m-surface);
-  font-size: 13px; line-height: 1.45;
+/* Nhãn khiếu nại — trung tính, không có số đếm, không màu đỏ dồn dập
+   (contracts/api.md mục 3e: cấm nhãn "lừa đảo"/"tố cáo" công khai). */
+.trangxe-khieunai {
+  margin-top: var(--sp-3);
+  display: inline-flex; align-items: center; gap: var(--sp-2);
+  font-size: 13px; font-weight: 600; color: var(--m-amber);
+  background: var(--m-amber-bg); padding: var(--sp-2) var(--sp-3);
+  border-radius: var(--r-sm);
 }
-.dai-canhbao strong { font-weight: 800; }
-.dai-canhbao svg { flex: none; }
 
 /* Lỗi khi lấy số + nút đăng nhập (khi hết lượt xem số, chưa đăng nhập). */
 .lienhe-loi-khoi { display: flex; flex-direction: column; gap: var(--sp-2); }
+
+/* Cảnh báo cọc — hộp tĩnh NGAY TRÊN nút "Xem số điện thoại", không fixed,
+   không chạy chữ (contracts/api.md mục 3e). */
+.coc-canhbao {
+  display: flex; align-items: flex-start; gap: var(--sp-2);
+  padding: var(--sp-3); border-radius: var(--r-md);
+  background: var(--m-amber-bg); color: var(--m-dark);
+  font-size: 13px; line-height: 1.5;
+}
+.coc-canhbao svg { flex: none; color: var(--m-amber); margin-top: 1px; }
 
 .trangxe-quaylai {
   display: inline-flex; align-items: center; gap: var(--sp-1);
@@ -169,13 +178,22 @@
 }
 .lichban svg { color: var(--m-red); flex: none; }
 
-.bando {
-  display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap;
-  padding: var(--sp-4); background: var(--m-bg); border-radius: var(--r-md);
+.bando-diachi {
+  display: flex; align-items: center; gap: var(--sp-2);
   font-size: 15px; color: var(--m-dark);
 }
-.bando svg:first-child { color: var(--m-green); flex: none; }
-.bando > span { flex: 1; min-width: 140px; }
+.bando-diachi svg { color: var(--m-green); flex: none; }
+
+/* Vòng tròn khu vực thay cho ghim bản đồ chính xác — xem BanDo() trong
+   KhoiThongTin.jsx và contracts/api.md mục 3e. */
+.bando-khuvuc {
+  display: flex; align-items: center; gap: var(--sp-3);
+  padding: var(--sp-3); background: var(--m-bg); border-radius: var(--r-md);
+}
+.bando-khuvuc strong { color: var(--m-dark); }
+.bando-vongtron { flex: none; }
+.bando-vung { fill: var(--m-green-light); stroke: var(--m-green); stroke-width: 1.5; stroke-dasharray: 3 3; }
+.bando-diem { fill: var(--m-green); }
 
 /* ─── Hộp liên hệ (cột phải) ─── */
 .hop-lienhe { display: flex; flex-direction: column; gap: var(--sp-3); }
@@ -271,10 +289,9 @@
   .trangxe-luoi { grid-template-columns: 1fr; }
   /* Hộp liên hệ bám đáy màn hình: nút lấy số luôn trong tầm ngón cái,
      đó là hành động duy nhất app này cần khách làm. */
-  /* Đặt trên dải cảnh báo cố định (xem .dai-canhbao) — nếu không hộp liên hệ bị dải che. */
   .trangxe-phai {
-    position: sticky; top: auto; bottom: 64px;
-    margin: 0 calc(var(--sp-3) * -1) 0;
+    position: sticky; top: auto; bottom: 0;
+    margin: 0 calc(var(--sp-3) * -1) calc(var(--sp-4) * -1);
     z-index: calc(var(--z-header) - 1);
   }
   .hop-lienhe {
