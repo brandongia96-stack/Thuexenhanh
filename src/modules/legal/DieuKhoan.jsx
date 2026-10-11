@@ -78,7 +78,7 @@ export default function DieuKhoan() {
         <DanhSach items={[
           'Thông tin hai bên và giấy phép lái xe của người lái.',
           'Xe, biển số, thời gian thuê, giá thuê và tổng tiền.',
-          'Tiền cọc: bao nhiêu, giữ bằng hình thức gì, trả lại khi nào.',
+          'Tiền cọc: bao nhiêu, bằng tiền hay xe máy kèm giấy tờ xe, trả lại khi nào.',
           'Giới hạn số km mỗi ngày và phí vượt, nếu có.',
           'Mức nhiên liệu hoặc mức pin khi giao và khi trả.',
           'Ai chịu chi phí gì khi xe hư, khi có tai nạn, khi bị phạt nguội.',
@@ -87,19 +87,34 @@ export default function DieuKhoan() {
         ]} />
         <p className="t-body">
           Gợi ý chi tiết hơn ở mục “Gợi ý để hai bên tự thoả thuận” trong{' '}
-          <Link to="/tro-giup">Câu hỏi thường gặp</Link>. Nền tảng không lưu giữ, không chứng thực
-          và không là một bên trong hợp đồng của các bạn.
+          <Link to="/tro-giup">Câu hỏi thường gặp</Link>, và <Link to="/mau-hop-dong">mẫu hợp đồng,
+          biên bản bàn giao</Link> để tham khảo. Với giấy tờ của khách, chủ xe chỉ xem để đối chiếu rồi
+          trả lại ngay, không giữ bản gốc — xem <Link to="/an-toan">An toàn cho chủ xe</Link>. Nền tảng
+          không lưu giữ, không chứng thực và không là một bên trong hợp đồng của các bạn.
         </p>
       </Muc>
 
-      <Muc n="7" title="Giới hạn trách nhiệm của nền tảng">
+      <Muc n="7" title="Vai trò và cam kết của nền tảng">
         <p className="t-body">
-          Trong phạm vi pháp luật cho phép, chúng tôi không chịu trách nhiệm về chất lượng xe, tình
-          trạng xe, tai nạn, hư hỏng, mất mát, mất tiền cọc, tiền phạt, hay tranh chấp phát sinh
-          giữa chủ xe và khách thuê. Chúng tôi không bảo hiểm cho chuyến thuê và không bồi thường
-          thay cho bên nào. Nhãn “Đã xác minh” chỉ cho biết giấy tờ của chủ xe đã được đối chiếu tại
-          thời điểm xét, <b>không phải bảo đảm về chuyến thuê</b>. Việc giải quyết tranh chấp giữa
-          hai bên theo <Link to="/khieu-nai">Giải quyết khiếu nại</Link>.
+          Thuê Xe Nhanh <b>không phải bên cho thuê xe</b> và không là một bên của hợp đồng thuê giữa
+          chủ xe và khách thuê. Vì vậy chúng tôi không bảo đảm chất lượng xe, không bảo hiểm cho
+          chuyến thuê, và không bồi thường thay cho bên nào những thiệt hại phát sinh từ chuyến thuê
+          (tai nạn, hư hỏng, mất mát, tiền cọc, tiền phạt). Nhãn “Đã xác minh” chỉ cho biết giấy tờ
+          của chủ xe đã được đối chiếu tại thời điểm xét, <b>không phải bảo đảm về chuyến thuê</b>.
+        </p>
+        <p className="t-body">
+          Không phải bên cho thuê <b>không có nghĩa là chúng tôi đứng ngoài</b>. Chúng tôi cam kết:
+        </p>
+        <DanhSach items={[
+          'Kiểm duyệt tin trước khi hiển thị, và kiểm tra lại khi có báo cáo.',
+          'Gỡ tin vi phạm trong 24 giờ kể từ khi nhận được yêu cầu hợp lệ.',
+          'Tiếp nhận và trả lời khiếu nại theo thời hạn nêu ở trang Giải quyết khiếu nại.',
+          'Hợp tác với cơ quan nhà nước có thẩm quyền khi có yêu cầu hợp pháp.',
+        ]} />
+        <p className="t-body">
+          Phần trách nhiệm của chúng tôi do chính nghĩa vụ trên và pháp luật quy định, không rộng hơn.
+          Việc giải quyết tranh chấp giữa hai bên theo{' '}
+          <Link to="/khieu-nai">Giải quyết khiếu nại</Link>.
         </p>
       </Muc>
 
@@ -135,7 +150,8 @@ export default function DieuKhoan() {
       <Muc n="10" title="Khoá tài khoản và gỡ tin">
         <p className="t-body">
           Chúng tôi có thể ẩn tin, gỡ tin hoặc khoá tài khoản khi tin vi phạm điều cấm, bị báo cáo
-          nhiều lần và được xác nhận là sai, hoặc theo yêu cầu của cơ quan có thẩm quyền. Khi gỡ vì
+          nhiều lần và được xác nhận là sai, hoặc theo yêu cầu của cơ quan có thẩm quyền. Tin vi phạm
+          được gỡ trong 24 giờ kể từ khi chúng tôi nhận yêu cầu hợp lệ. Khi gỡ vì
           vi phạm, phí đã dùng cho tin đó không được hoàn. Các mức xử lý và quyền khiếu nại ở{' '}
           <Link to="/quy-che">Quy chế hoạt động</Link> mục 7.
         </p>

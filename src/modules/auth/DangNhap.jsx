@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { nhoDongY } from '../legal/GhiNhanDongY'
 import { LogIn, Smartphone } from 'lucide-react'
 import { useAuth } from './AuthProvider'
 import { HAS_BACKEND, FLAGS } from '../../lib/config'
@@ -9,7 +8,6 @@ export default function DangNhap() {
   const { signInWithGoogle, signInWithEmail, isLoggedIn } = useAuth()
   const [loi, setLoi] = useState(null)
   const [dangChay, setDangChay] = useState(false)
-  const [dongY, setDongY] = useState(false)
   const navigate = useNavigate()
 
   if (isLoggedIn) {
@@ -19,11 +17,6 @@ export default function DangNhap() {
 
   async function dangNhapGoogle() {
     setLoi(null)
-    if (!dongY) {
-      setLoi('Bạn cần đồng ý Điều khoản sử dụng và Chính sách bảo mật để tiếp tục.')
-      return
-    }
-    nhoDongY()
     setDangChay(true)
     try {
       await signInWithGoogle()
@@ -49,26 +42,18 @@ export default function DangNhap() {
           </div>
         )}
 
-        <label className="row t-small" style={{ alignItems: 'flex-start', gap: 'var(--sp-2)' }}>
-          <input
-            type="checkbox"
-            checked={dongY}
-            onChange={(e) => setDongY(e.target.checked)}
-            style={{ marginTop: 3 }}
-          />
-          <span>
-            Tôi đã đọc và đồng ý với <Link to="/dieu-khoan" target="_blank">Điều khoản sử dụng</Link> và{' '}
-            <Link to="/bao-mat" target="_blank">Chính sách bảo mật</Link>.
-          </span>
-        </label>
+        <p className="t-small">
+          Sau khi đăng nhập, bạn sẽ được xem và xác nhận từng mục ở bước “Trước khi bắt đầu”:{' '}
+          <Link to="/dieu-khoan" target="_blank">Điều khoản sử dụng</Link>,{' '}
+          <Link to="/quy-che" target="_blank">Quy chế hoạt động</Link> và{' '}
+          <Link to="/bao-mat" target="_blank">Chính sách bảo vệ dữ liệu cá nhân</Link>.
+        </p>
 
         <form className="stack" style={{ gap: 'var(--sp-3)' }} onSubmit={async (e) => {
           e.preventDefault();
           setLoi(null);
-          if (!dongY) { setLoi('Bạn cần đồng ý Điều khoản sử dụng và Chính sách bảo mật để tiếp tục.'); return; }
           const form = new FormData(e.target);
           try {
-            nhoDongY();
             setDangChay(true);
             await signInWithEmail(form.get('email'), form.get('password'));
           } catch(err) {

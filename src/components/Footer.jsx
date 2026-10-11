@@ -54,6 +54,8 @@ export default function Footer() {
           <Link to="/thue">Thông tin thuế</Link>
           <Link to="/an-toan">An toàn cho chủ xe</Link>
           <Link to="/mau-hop-dong">Mẫu hợp đồng</Link>
+          <Link to="/an-toan">An toàn cho chủ xe</Link>
+          <Link to="/mau-hop-dong">Mẫu hợp đồng</Link>
         </details>
 
         <details className="footer-col">

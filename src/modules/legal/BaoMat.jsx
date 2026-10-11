@@ -32,7 +32,10 @@ export default function BaoMat() {
           'Nội dung tin đăng: hãng xe, dòng xe, biển số, giá, khu vực, ảnh xe, mô tả, điều kiện thuê.',
           'Nhật ký hoạt động: tin bạn xem, lần bạn bấm xem số điện thoại, bấm gọi hoặc nhắn Zalo, từ khoá bạn tìm, xe bạn lưu.',
           'Giao dịch ví token: số token nạp, số token đã dùng, nội dung chuyển khoản dùng để đối soát.',
-          'Dữ liệu kỹ thuật tối thiểu do hạ tầng tự ghi: địa chỉ IP, loại thiết bị và trình duyệt, thời điểm truy cập.',
+          'Nhật ký lấy số điện thoại: tin nào bị lấy số, vào lúc nào, bởi tài khoản nào (hoặc bởi mã IP đã băm nếu người xem chưa đăng nhập). Dùng để chặn thu thập hàng loạt và để chủ xe biết số lượt lấy số của tin mình.',
+          'Địa chỉ IP: khi dùng để chống lạm dụng việc lấy số, chúng tôi băm IP một chiều và chỉ lưu giá trị băm, không lưu IP gốc. Hạ tầng như Cloudflare vẫn thấy IP gốc của mỗi lượt truy cập để vận hành và chống tấn công.',
+          'Vị trí gần đúng của xe: toạ độ trong tin đăng được làm tròn (khoảng 1 km) và bản đồ chỉ vẽ vòng tròn, không chỉ ra đúng địa chỉ.',
+          'Dữ liệu kỹ thuật tối thiểu do hạ tầng tự ghi: loại thiết bị và trình duyệt, thời điểm truy cập.',
         ]} />
         <p className="t-body"><b>Dữ liệu nhạy cảm — chỉ khi bạn chủ động gửi:</b></p>
         <DanhSach items={[
@@ -69,8 +72,11 @@ export default function BaoMat() {
           tăng lên và bạn được hỏi đồng ý lại.
         </p>
         <p className="t-body">
-          Bạn rút lại sự đồng ý bất cứ lúc nào bằng cách yêu cầu xoá tài khoản (xem mục 9).
-          <b> Hậu quả khi rút:</b> chúng tôi không còn cơ sở để vận hành tài khoản cho bạn, nên
+          Bạn rút lại sự đồng ý bất cứ lúc nào. Với mục tuỳ chọn như nhận khuyến mại, bạn tắt ngay
+          trong <Link to="/tai-khoan/du-lieu">Tài khoản → Dữ liệu &amp; Quyền riêng tư</Link>. Với các
+          mục bắt buộc (điều khoản, quy chế, chính sách này, xác nhận đủ 18 tuổi), cách rút là yêu cầu
+          xoá tài khoản (xem mục 9).
+          <b> Hậu quả khi rút mục bắt buộc:</b> chúng tôi không còn cơ sở để vận hành tài khoản cho bạn, nên
           tài khoản sẽ bị đóng và mọi tin đăng của bạn bị ẩn khỏi trang tìm kiếm. Token chưa dùng
           được xử lý theo <Link to="/hoan-token">Chính sách hoàn token</Link>. Việc rút lại không
           làm mất hiệu lực của những việc đã xử lý hợp pháp trước đó, và không xoá được các bản
@@ -145,7 +151,13 @@ export default function BaoMat() {
           ['Phản đối hoặc yêu cầu hạn chế', 'nếu bạn cho rằng chúng tôi dùng dữ liệu sai mục đích đã nêu.'],
           ['Khiếu nại', `gửi khiếu nại cho chúng tôi theo trang Giải quyết khiếu nại, hoặc khiếu nại tới cơ quan nhà nước có thẩm quyền.`],
         ]} />
-        <p className="t-body"><b>Cách gửi yêu cầu:</b></p>
+        <p className="t-body">
+          <b>Làm ngay trong ứng dụng:</b> vào{' '}
+          <Link to="/tai-khoan/du-lieu">Tài khoản → Dữ liệu &amp; Quyền riêng tư</Link> để tải toàn bộ
+          dữ liệu của bạn, bật/tắt đồng ý nhận khuyến mại, hoặc yêu cầu xoá tài khoản (chờ 7 ngày, trong
+          thời gian đó bạn huỷ được).
+        </p>
+        <p className="t-body"><b>Cách gửi yêu cầu khác:</b></p>
         <KhoiLienHe />
         <p className="t-body">
           Chúng tôi xác nhận đã nhận yêu cầu trong <b>{THOI_HAN.tiepNhanKhieuNai}</b> và trả lời
@@ -189,6 +201,19 @@ export default function BaoMat() {
           Chúng tôi tăng số phiên bản và ngày hiệu lực ở đầu trang. Với thay đổi ảnh hưởng tới
           quyền của bạn, chúng tôi yêu cầu bạn đồng ý lại trước khi tiếp tục dùng nền tảng.
         </p>
+      </Muc>
+
+      <Muc n="14" title="Căn cứ pháp lý">
+        <p className="t-body">
+          Chính sách này được soạn dựa trên <b>Luật Bảo vệ dữ liệu cá nhân số 91/2025</b> và{' '}
+          <b>Nghị định 356/2025</b> hướng dẫn thi hành. Nghị định 13/2023 về bảo vệ dữ liệu cá nhân
+          không còn là căn cứ áp dụng của chính sách này.
+        </p>
+        <div className="disclaimer">
+          Số hiệu, ngày hiệu lực và cách áp dụng các văn bản trên <b>cần luật sư xác nhận</b> trước khi
+          áp dụng chính thức. Nếu có chênh lệch giữa chính sách này và quy định pháp luật, chúng tôi
+          tuân theo quy định pháp luật.
+        </div>
       </Muc>
     </LegalLayout>
   )

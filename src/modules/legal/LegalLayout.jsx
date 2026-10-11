@@ -9,6 +9,8 @@ const VAN_BAN_LINKS = [
   ['/hoan-token', 'Hoàn token'],
   ['/khieu-nai', 'Giải quyết khiếu nại'],
   ['/thue', 'Thông tin thuế'],
+  ['/an-toan', 'An toàn cho chủ xe'],
+  ['/mau-hop-dong', 'Mẫu hợp đồng'],
   ['/tro-giup', 'Câu hỏi thường gặp'],
 ]
 

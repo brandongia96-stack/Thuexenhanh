@@ -51,6 +51,7 @@ export default function QuyChe() {
         <DanhSach items={[
           'Công bố công khai quy chế này, điều khoản sử dụng, chính sách bảo vệ dữ liệu cá nhân và chính sách hoàn token.',
           'Duyệt tin và nêu lý do rõ ràng khi từ chối, để chủ xe sửa được.',
+          'Gỡ tin vi phạm trong 24 giờ kể từ khi nhận được yêu cầu hợp lệ.',
           'Bảo vệ dữ liệu cá nhân của người dùng theo chính sách đã công bố.',
           'Ghi sổ ví token minh bạch: mọi lần nạp và mọi lần trừ đều có dòng trong sổ, chủ xe xem được.',
           `Tiếp nhận và trả lời khiếu nại theo thời hạn đã cam kết (${THOI_HAN.tiepNhanKhieuNai} để xác nhận, ${THOI_HAN.xuLyKhieuNai} để trả lời).`,
@@ -125,7 +126,7 @@ export default function QuyChe() {
         <DanhSachNhan items={[
           ['Nhắc và yêu cầu sửa', 'với lỗi nhẹ: ảnh mờ, mô tả thiếu, sai thông tin không trọng yếu.'],
           ['Tự động ẩn để kiểm tra', 'khi một tin nhận nhiều báo cáo. Tin được mở lại nếu kiểm tra cho thấy báo cáo không đúng.'],
-          ['Gỡ tin', 'với tin sai sự thật, xe không có quyền cho thuê, hoặc ảnh không phải xe thật. Phí đã dùng cho tin bị gỡ do vi phạm không được hoàn.'],
+          ['Gỡ tin', 'với tin sai sự thật, xe không có quyền cho thuê, hoặc ảnh không phải xe thật. Chúng tôi gỡ trong 24 giờ kể từ khi nhận yêu cầu hợp lệ. Phí đã dùng cho tin bị gỡ do vi phạm không được hoàn.'],
           ['Thu hồi huy hiệu xác minh', 'khi giấy tờ đã hết hiệu lực hoặc phát hiện giấy tờ không đúng.'],
           ['Khoá tài khoản', 'với hành vi lừa đảo, tái phạm nhiều lần, hoặc theo yêu cầu của cơ quan có thẩm quyền.'],
         ]} />

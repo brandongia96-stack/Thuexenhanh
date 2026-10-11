@@ -197,7 +197,7 @@ async function main() {
 // Trước đây là file tĩnh gõ tay trong `public/`. Gõ tay thì mỗi lần thêm
 // trang lại quên cập nhật, và không thể liệt kê trang SEO vì danh sách đổi
 // theo dữ liệu. Sinh ở đây để luôn khớp với trang thật sự tồn tại.
-const TRANG_TINH = ['/', '/thue-xe', '/gioi-thieu', '/quy-che', '/dieu-khoan', '/bao-mat', '/hoan-token', '/khieu-nai', '/thue', '/tro-giup', '/lien-he']
+const TRANG_TINH = ['/', '/thue-xe', '/gioi-thieu', '/quy-che', '/dieu-khoan', '/bao-mat', '/hoan-token', '/khieu-nai', '/thue', '/an-toan', '/mau-hop-dong', '/tro-giup', '/lien-he']
 
 function viet_sitemap(duongDanSeo) {
   const hom_nay = new Date().toISOString().slice(0, 10)

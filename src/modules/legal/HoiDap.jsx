@@ -11,6 +11,7 @@ const CAU_HOI = [
   ['Thuê Xe Nhanh có giữ tiền cọc không?', 'Không. Tiền thuê và tiền cọc do bạn và chủ xe tự thoả thuận và trả trực tiếp cho nhau. Chúng tôi không tham gia dòng tiền, nên cũng không hoàn cọc được cho ai.'],
   ['Tích xanh có mất phí không?', 'Không. Tích xanh xét theo giấy tờ và hoàn toàn miễn phí. Chúng tôi không bán huy hiệu này.'],
   ['Khách thuê có phải trả phí cho nền tảng không?', 'Không. Tìm xe và xem số điện thoại chủ xe đều miễn phí. Chỉ chủ xe trả phí hiển thị tin.'],
+  ['Chủ xe có được giữ CCCD hay bằng lái gốc của khách không?', 'Không. Bạn xem giấy tờ gốc để đối chiếu rồi trả lại ngay cho khách. Cọc bằng tiền, hoặc xe máy kèm giấy tờ xe. Xem trang An toàn cho chủ xe.'],
   ['Tôi khiếu nại ở đâu?', 'Xem trang Giải quyết khiếu nại. Lưu ý có hai loại việc khác nhau: khiếu nại về nền tảng thì chúng tôi xử lý, còn tranh chấp giữa chủ xe và khách thì chúng tôi không phân xử được.'],
   ['Chủ xe có bị trừ thuế không?', 'Chúng tôi không thu tiền thuê xe nên không khấu trừ thuế của bạn; bạn tự kê khai. Xem trang Thông tin thuế, và nhớ xác nhận lại với kế toán.'],
 ]
@@ -18,7 +19,7 @@ const CAU_HOI = [
 // Gợi ý thay cho các chính sách mình KHÔNG có (huỷ chuyến, phí huỷ, giao nhận).
 // NGHIEN-CUU-PHAP-LY.md §3 phần ⚪: đúng mô hình, mà vẫn giúp người thuê tối đa.
 const GOI_Y = [
-  ['Tiền cọc', 'Bao nhiêu, trả bằng hình thức gì, trả lại lúc nào và trong bao lâu sau khi trả xe. Nên tránh đặt cọc bằng giấy tờ tuỳ thân gốc — nếu buộc phải giữ giấy tờ thì ghi rõ trong biên bản là giữ giấy gì.'],
+  ['Tiền cọc', 'Bao nhiêu, trả bằng hình thức gì (tiền, hoặc xe máy kèm giấy tờ xe), trả lại lúc nào và trong bao lâu sau khi trả xe. Không nên dùng CCCD hay bằng lái gốc làm vật cọc — xem rồi trả lại ngay.'],
   ['Huỷ hẹn', 'Huỷ trước bao lâu thì không mất gì, huỷ sát giờ thì mất bao nhiêu. Thống nhất cho cả hai chiều: khách huỷ và chủ xe huỷ.'],
   ['Trả xe trễ', 'Trễ bao nhiêu phút thì bắt đầu tính phí, tính theo giờ hay theo ngày, mức bao nhiêu.'],
   ['Nhiên liệu hoặc pin khi trả', 'Xe xăng: giao đầy thì trả đầy, hay giao bao nhiêu trả bao nhiêu. Xe điện: thống nhất mức pin phần trăm khi giao và khi trả, ai trả tiền sạc, có được dùng sạc nhanh không.'],

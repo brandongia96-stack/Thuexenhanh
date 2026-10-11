@@ -10,13 +10,28 @@
 //                privacy 2.0 (viết lại thành Bảo vệ dữ liệu cá nhân),
 //                refund 1.1 (chốt thời hạn hoàn tiền),
 //                operation/complaint/tax 1.0 (ba văn bản mới)
+//   11/10/2026 — terms 1.2 (bỏ giọng miễn trừ tuyệt đối → cam kết kiểm duyệt/gỡ 24h/hỗ trợ khiếu nại),
+//                privacy 2.1 (dẫn căn cứ luật, ghi nhật ký lấy số / IP băm / vị trí gần đúng,
+//                             quyền tải dữ liệu + xoá tài khoản ngay trong Tài khoản),
+//                operation 1.1 (thêm hạn gỡ tin vi phạm 24 giờ),
+//                safety 1.0 + template 1.0 (hai trang mới)
 export const VAN_BAN = {
-  terms: { phienBan: '1.1', hieuLuc: '02/10/2026' },
-  privacy: { phienBan: '2.0', hieuLuc: '02/10/2026' },
+  terms: { phienBan: '1.2', hieuLuc: '11/10/2026' },
+  privacy: { phienBan: '2.1', hieuLuc: '11/10/2026' },
   refund: { phienBan: '1.2', hieuLuc: '02/10/2026' },
-  operation: { phienBan: '1.0', hieuLuc: '02/10/2026' },
+  operation: { phienBan: '1.1', hieuLuc: '11/10/2026' },
   complaint: { phienBan: '1.0', hieuLuc: '02/10/2026' },
   tax: { phienBan: '1.0', hieuLuc: '02/10/2026' },
+  safety: { phienBan: '1.0', hieuLuc: '11/10/2026' },
+  template: { phienBan: '1.0', hieuLuc: '11/10/2026' },
+}
+
+// "Có gì thay đổi" — hiện ở màn "Trước khi bắt đầu" cho người đã đồng ý bản cũ.
+// Mỗi dòng mô tả phiên bản HIỆN TẠI của văn bản. Tăng phiên bản thì sửa dòng này.
+export const THAY_DOI = {
+  terms: 'Làm rõ: Thuê Xe Nhanh không phải bên cho thuê xe, nhưng có cam kết kiểm duyệt tin, gỡ tin vi phạm trong 24 giờ và hỗ trợ khiếu nại.',
+  operation: 'Thêm hạn gỡ tin vi phạm: 24 giờ kể từ khi nhận yêu cầu hợp lệ.',
+  privacy: 'Viết lại theo luật bảo vệ dữ liệu cá nhân mới; ghi rõ nhật ký lấy số, IP băm, vị trí gần đúng; bạn tải dữ liệu và xoá tài khoản được ngay trong Tài khoản.',
 }
 
 // ─────────────────────────────────────────────────────────────
