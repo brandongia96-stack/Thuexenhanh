@@ -67,6 +67,51 @@
   color: var(--m-dark);
 }
 
+/* Cột chân trang là <details>: gập trên di động để đỡ cuộn dài, luôn mở trên
+   máy tính — không JS, chữ vẫn trong DOM (không hại SEO). */
+.footer-col summary {
+  list-style: none;
+}
+.footer-col summary::-webkit-details-marker {
+  display: none;
+}
+.footer-col summary h4 {
+  margin-bottom: 0;
+}
+
+@media (max-width: 768px) {
+  .footer-col summary {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--sp-2) 0;
+  }
+  .footer-col summary::after {
+    content: '+';
+    font-size: 20px;
+    color: var(--m-subtle);
+    transition: transform var(--t-fast);
+  }
+  .footer-col[open] summary::after {
+    content: '−';
+  }
+  .footer-col a {
+    padding-top: var(--sp-1);
+  }
+}
+
+@media (min-width: 769px) {
+  /* Luôn hiện đủ, bất kể thuộc tính `open` — khỏi cần JS theo dõi khung hình. */
+  .footer-col summary {
+    cursor: default;
+    pointer-events: none;
+  }
+  .footer-col:not([open]) > :not(summary) {
+    display: block !important;
+  }
+}
+
 .footer-col-no-title {
   padding-top: 38px;
 }

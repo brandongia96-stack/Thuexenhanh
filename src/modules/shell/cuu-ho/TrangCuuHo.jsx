@@ -1,18 +1,21 @@
 import { useEffect, useState } from 'react'
-import { Navigate } from 'react-router-dom'
-import { Phone } from 'lucide-react'
+import { Navigate, Link } from 'react-router-dom'
+import { Phone, Flag } from 'lucide-react'
 
 import { PROVINCES } from '../../../data/provinces'
 import { trySupabase } from '../../../lib/supabase'
 import { idDiaGioi } from '../../discovery/search/idDiaGioi'
+import { useAuth } from '../../auth/AuthProvider'
+import { formatDate } from '../../../lib/format'
 import { useMeta } from '../seo-xe/useMeta'
 import '../TrangChu.css'
 
 // Cột danh bạ — liệt kê rõ, cấm select * (HIEU-NANG.md mục 2.1).
-const COT = 'id,name,phone,service,note,sort_order'
+// `updated_at`: để tính dòng "Cập nhật: dd/mm/yyyy" từ dữ liệu THẬT, không ghi tay.
+const COT = 'id,name,phone,service,note,sort_order,updated_at'
 
 /**
- * Cứu hộ 24/7: chọn tỉnh → danh sách số cứu hộ thật kèm nút Gọi.
+ * Cứu hộ 24/7: chọn tỉnh → danh sách số cứu hộ thật kèm nút Gọi + Báo số sai.
  *
  * Bảng `rescue_contacts` rỗng (hoặc chưa có) → trang ẩn hẳn, chuyển về trang
  * chủ. Menu cũng phải ẩn theo cùng điều kiện (việc của Header, luồng nền tảng).
@@ -73,6 +76,12 @@ export default function TrangCuuHo() {
   if (trang === 'an') return <Navigate to="/" replace />
   if (trang === 'dang_tai') return null
 
+  // Mới nhất trong các số ĐANG HIỆN — không phải của cả bảng, để đúng nghĩa
+  // "dữ liệu khách đang xem được cập nhật khi nào".
+  const capNhatGanNhat = ds.length
+    ? ds.reduce((max, x) => (x.updated_at > max ? x.updated_at : max), ds[0].updated_at)
+    : null
+
   return (
     <div className="page stack tc">
       <div>
@@ -93,23 +102,68 @@ export default function TrangCuuHo() {
       )}
 
       {ds.length > 0 && (
-        <div className="grid-cards">
-          {ds.map((x) => (
-            <div key={x.id} className="card card-pad stack" style={{ gap: 'var(--sp-2)' }}>
-              <div className="t-h3">{x.name}</div>
-              {x.service && <p className="t-small">{x.service}</p>}
-              {x.note && <p className="t-small">{x.note}</p>}
-              <a href={`tel:${String(x.phone).replace(/[^+\d]/g, '')}`} className="btn btn-primary">
-                <Phone size={18} strokeWidth={1.8} /> Gọi {x.phone}
-              </a>
-            </div>
-          ))}
-        </div>
+        <>
+          <p className="t-small">Cập nhật: {formatDate(capNhatGanNhat)}</p>
+          <div className="grid-cards">
+            {ds.map((x) => <TheCuuHo key={x.id} x={x} />)}
+          </div>
+        </>
       )}
 
       <p className="t-small" style={{ fontStyle: 'italic' }}>
         Danh bạ tổng hợp công khai. Thuê Xe Nhanh không thu phí và không chịu trách nhiệm về giá/chất lượng dịch vụ.
       </p>
+    </div>
+  )
+}
+
+function TheCuuHo({ x }) {
+  const { user, isLoggedIn } = useAuth()
+  // idle | can_dang_nhap | dang_gui | xong | loi
+  const [trangBao, setTrangBao] = useState('idle')
+
+  async function baoSoSai() {
+    if (!isLoggedIn) { setTrangBao('can_dang_nhap'); return }
+    setTrangBao('dang_gui')
+    const sb = await trySupabase()
+    if (!sb) { setTrangBao('loi'); return }
+    const { error } = await sb.from('complaints').insert({
+      user_id: user.id,
+      kind: 'khac',
+      content: `Báo số cứu hộ sai: "${x.name}" — ${x.phone} (mã liên hệ ${x.id}).`,
+    })
+    setTrangBao(error ? 'loi' : 'xong')
+  }
+
+  return (
+    <div className="card card-pad stack" style={{ gap: 'var(--sp-2)' }}>
+      <div className="t-h3">{x.name}</div>
+      {x.service && <p className="t-small">{x.service}</p>}
+      {x.note && <p className="t-small">{x.note}</p>}
+      {/* KHÔNG dùng `lib/phone.js` ở đây: nó chỉ nhận số di động VN, còn danh
+          bạ cứu hộ có cả tổng đài/hotline (vd. 1900..., số bàn 028...) — hợp
+          lệ bị `isValidPhone` từ chối thì mất nút Gọi. Chỉ lọc ký tự. */}
+      <a href={`tel:${String(x.phone).replace(/[^+\d]/g, '')}`} className="btn btn-primary">
+        <Phone size={18} strokeWidth={1.8} /> Gọi {x.phone}
+      </a>
+
+      {trangBao === 'xong' ? (
+        <p className="t-small">Đã gửi báo cáo, cảm ơn anh/chị.</p>
+      ) : trangBao === 'can_dang_nhap' ? (
+        <p className="t-small">
+          Cần <Link to="/dang-nhap">đăng nhập</Link> để báo số sai.
+        </p>
+      ) : (
+        <button
+          type="button"
+          className="btn btn-ghost btn-sm"
+          onClick={baoSoSai}
+          disabled={trangBao === 'dang_gui'}
+        >
+          <Flag size={14} strokeWidth={1.8} />
+          {trangBao === 'dang_gui' ? 'Đang gửi…' : trangBao === 'loi' ? 'Gửi lỗi, bấm lại' : 'Báo số sai'}
+        </button>
+      )}
     </div>
   )
 }

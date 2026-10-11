@@ -27,35 +27,40 @@ export default function Footer() {
           <p><Link to="/lien-he">Liên hệ với chúng tôi</Link></p>
         </div>
 
-        <div className="footer-col">
-          <h4>Khách thuê</h4>
+        {/* <details> thuần: gập trên di động, luôn mở trên máy tính (CSS ép
+            hiện, xem Footer.css) — không thêm JS/thư viện, chữ vẫn nằm trong
+            DOM nên không ảnh hưởng SEO. */}
+        <details className="footer-col">
+          <summary><h4>Khách thuê</h4></summary>
           <Link to="/thue-xe">Tìm xe</Link>
           <Link to="/da-luu">Xe đã lưu</Link>
           <Link to="/tro-giup">Câu hỏi thường gặp</Link>
-        </div>
+        </details>
 
-        <div className="footer-col">
-          <h4>Chủ xe</h4>
+        <details className="footer-col">
+          <summary><h4>Chủ xe</h4></summary>
           <Link to="/chu-xe/dang-tin">Đăng tin cho thuê</Link>
           <Link to="/chu-xe">Xe của tôi</Link>
           <Link to="/chu-xe/vi">Ví token</Link>
-        </div>
+        </details>
 
-        <div className="footer-col">
-          <h4>Chính sách</h4>
+        <details className="footer-col">
+          <summary><h4>Chính sách</h4></summary>
           <Link to="/quy-che">Quy chế hoạt động</Link>
           <Link to="/dieu-khoan">Điều khoản sử dụng</Link>
           <Link to="/bao-mat">Bảo vệ dữ liệu cá nhân</Link>
           <Link to="/hoan-token">Chính sách hoàn token</Link>
           <Link to="/khieu-nai">Giải quyết khiếu nại</Link>
           <Link to="/thue">Thông tin thuế</Link>
-        </div>
+          <Link to="/an-toan">An toàn cho chủ xe</Link>
+          <Link to="/mau-hop-dong">Mẫu hợp đồng</Link>
+        </details>
 
-        <div className="footer-col">
-          <h4>Về chúng tôi</h4>
+        <details className="footer-col">
+          <summary><h4>Về chúng tôi</h4></summary>
           <Link to="/gioi-thieu">Giới thiệu</Link>
           <Link to="/lien-he">Liên hệ</Link>
-        </div>
+        </details>
       </div>
 
       <div className="footer-v2-bot page" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-4)' }}>
