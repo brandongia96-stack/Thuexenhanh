@@ -6,7 +6,7 @@
 
 import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AlertTriangle, CalendarClock, Car, Eye, Phone, Plus, Wallet, Download } from 'lucide-react'
+import { AlertTriangle, CalendarClock, Car, Eye, Phone, Plus, ShieldCheck, Wallet, Download } from 'lucide-react'
 import { useAuth } from '../auth/AuthProvider'
 import EmptyState from '../../components/EmptyState'
 import { Skeleton } from '../../components/Loading'
@@ -15,9 +15,11 @@ import { TOKENS_PER_MONTH } from '../../lib/config'
 import { soDuVi } from '../billing/billingApi'
 import '../billing/billing.css' // HopTraPhi dùng class của billing.css (hop-nen, chon-luoi…)
 import {
-  danhSachXeCuaToi, soLieuNhieuXe, thongTinRieng,
+  danhSachXeCuaToi, docHienSdt, ghiHienSdt, soLieuNhieuXe, thongTinCo, thongTinRieng,
   tongQuanXe, tongSoLieuChuXe, viTriGia,
 } from './ownerApi'
+import { lyDoCanhBao } from './canhBao'
+import CongTacHienSdt from './CongTacHienSdt'
 import { chuoiDayDu, dinhDangTyLe, gopTheoXe, soRong, tyLeLaySo } from './soLieu'
 import ChiSo from './ChiSo'
 import TheXe from './TheXe'
@@ -46,6 +48,12 @@ export default function TrangChuXe() {
   const [soLieu, setSoLieu] = useState(() => new Map())
   const [dangTaiSoLieu, setDangTaiSoLieu] = useState(false)
   const [rieng, setRieng] = useState(() => new Map())
+  const [co, setCo] = useState(() => new Map())
+
+  // Đồng ý cho khách xem SĐT: true/false, null = không đọc được (ẩn khối).
+  const [hienSdt, setHienSdt] = useState(null)
+  const [dangGhiSdt, setDangGhiSdt] = useState(false)
+  const [loiSdt, setLoiSdt] = useState(null)
 
   const [quan, setQuan] = useState(null)       // đếm xe + hạn gần nhất
   const [tong, setTong] = useState(null)       // tổng lượt xem / lấy số
@@ -64,12 +72,16 @@ export default function TrangChuXe() {
     if (!moi.length) return
     const ids = moi.map((x) => x.id)
     setDangTaiSoLieu(true)
-    const [hang, ttRieng] = await Promise.allSettled([
+    const [hang, ttRieng, ttCo] = await Promise.allSettled([
       soLieuNhieuXe(ownerId, ids),
       thongTinRieng(ids),
+      thongTinCo(ids),
     ])
     if (ttRieng.status === 'fulfilled') {
       setRieng((cu) => new Map([...cu, ...ttRieng.value]))
+    }
+    if (ttCo.status === 'fulfilled') {
+      setCo((cu) => new Map([...cu, ...ttCo.value]))
     }
     if (hang.status === 'fulfilled') {
       const theoXe = gopTheoXe(hang.value)
@@ -124,6 +136,30 @@ export default function TrangChuXe() {
   }, [ownerId])
 
   useEffect(() => { taiTongQuan() }, [taiTongQuan])
+
+  useEffect(() => {
+    if (!ownerId) return
+    let huy = false
+    docHienSdt(ownerId).then((v) => { if (!huy) setHienSdt(v) })
+    return () => { huy = true }
+  }, [ownerId])
+
+  // Đổi công tắc ngay (HIEU-NANG.md mục 6), ghi ngầm, lỗi thì hoàn lại + báo.
+  const doiHienSdt = useCallback(async (bat) => {
+    const cu = hienSdt
+    setHienSdt(bat)
+    setLoiSdt(null)
+    setDangGhiSdt(true)
+    try {
+      await ghiHienSdt(ownerId, bat)
+    } catch (e) {
+      setHienSdt(cu)
+      setLoiSdt('Chưa lưu được lựa chọn. Anh thử lại giúp em.')
+      if (import.meta.env.DEV) console.warn('[owner] ghi show_phone lỗi:', e?.message)
+    } finally {
+      setDangGhiSdt(false)
+    }
+  }, [ownerId, hienSdt])
 
   const bamMoRong = useCallback((id) => {
     setMoRong((cu) => (cu === id ? null : id))
@@ -209,6 +245,20 @@ export default function TrangChuXe() {
         </p>
       )}
 
+      <CongTacHienSdt bat={hienSdt} dangGhi={dangGhiSdt} loi={loiSdt} onDoi={doiHienSdt} />
+
+      {/* Mẹo an toàn. CCCD: xem rồi trả lại ngay, KHÔNG khuyên giữ giấy tờ gốc (NĐ 282/2025). */}
+      <aside className="cx-meo" aria-label="Mẹo an toàn">
+        <ShieldCheck size={18} strokeWidth={1.8} />
+        <div>
+          <strong>Mẹo an toàn khi giao xe</strong>
+          <ul className="cx-meo-ds">
+            <li>Xem CCCD và bằng lái của khách, đối chiếu với người thật rồi trả lại ngay. Không giữ giấy tờ gốc.</li>
+            <li>Chụp ảnh tình trạng xe cùng khách lúc giao và lúc nhận lại.</li>
+          </ul>
+        </div>
+      </aside>
+
       {/* Quà tặng biểu mẫu cho chủ xe (Mức 2) */}
       <div className="card card-pad row" style={{ gap: 'var(--sp-4)', marginTop: 'var(--sp-2)', marginBottom: 'var(--sp-4)', backgroundColor: 'var(--m-blue-bg)' }}>
         <div style={{ flex: 1 }}>
@@ -269,6 +319,8 @@ export default function TrangChuXe() {
             soLieu={soLieu.get(xe.id)}
             dangTaiSoLieu={dangTaiSoLieu}
             rieng={rieng.get(xe.id)}
+            canhBao={lyDoCanhBao(xe, co.get(xe.id))}
+            anLienHe={hienSdt === false}
             moRong={moRong === xe.id}
             viTri={viTri.get(xe.id)}
             onMoRong={bamMoRong}

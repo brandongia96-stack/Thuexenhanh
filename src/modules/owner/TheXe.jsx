@@ -8,7 +8,7 @@
 
 import { memo } from 'react'
 import { Link } from 'react-router-dom'
-import { BarChart3, Car, ChevronDown, Pencil, Phone, RefreshCw } from 'lucide-react'
+import { BarChart3, Car, ChevronDown, Pencil, Phone, PhoneOff, RefreshCw, ShieldAlert } from 'lucide-react'
 import Badge, { VerifiedBadge } from '../../components/Badge'
 import { formatVnd, formatDate, formatPhone } from '../../lib/format'
 import { coTheGiaHan, coTheSua, loiNhacHan, nhanTrangThai, trangThaiThuc } from '../listing/lifecycle'
@@ -46,7 +46,7 @@ function Anh({ xe, uuTien }) {
   )
 }
 
-function TheXe({ xe, soLieu, rieng, uuTien = false, dangTaiSoLieu = false, moRong = false, viTri, onMoRong, onGiaHan }) {
+function TheXe({ xe, soLieu, rieng, canhBao, anLienHe, uuTien = false, dangTaiSoLieu = false, moRong = false, viTri, onMoRong, onGiaHan }) {
   const status = trangThaiThuc(xe)
   const nhan = nhanTrangThai(status)
   const nhacHan = loiNhacHan(xe)
@@ -62,6 +62,7 @@ function TheXe({ xe, soLieu, rieng, uuTien = false, dangTaiSoLieu = false, moRon
           <div className="row the-xe-nhan">
             <Badge tone={nhan.tone}>{nhan.label}</Badge>
             <VerifiedBadge verified={xe.is_verified} />
+            {anLienHe && <Badge tone="warn" icon={PhoneOff}>Tạm ẩn liên hệ</Badge>}
           </div>
           <h3 className="t-h3">
             {xe.brand_text} {xe.model_text}
@@ -76,6 +77,19 @@ function TheXe({ xe, soLieu, rieng, uuTien = false, dangTaiSoLieu = false, moRon
         <div className="the-xe-rieng t-small">
           {rieng.contact_phone && <span><Phone size={13} strokeWidth={1.8} /> {formatPhone(rieng.contact_phone)}</span>}
           {rieng.plate && <span>Biển số {rieng.plate}</span>}
+        </div>
+      )}
+
+      {canhBao?.length > 0 && (
+        // Lý do thật từ CSDL. Kháng cáo trỏ sang trang Giải quyết khiếu nại (luồng 12).
+        <div className="the-xe-co" role="note">
+          <div className="the-xe-co-ds">
+            <ShieldAlert size={16} strokeWidth={1.8} />
+            <ul>
+              {canhBao.map((c) => <li key={c.key}>{c.text}</li>)}
+            </ul>
+          </div>
+          <Link to="/khieu-nai" className="btn btn-ghost btn-sm">Kháng cáo</Link>
         </div>
       )}
 

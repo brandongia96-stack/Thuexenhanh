@@ -78,3 +78,37 @@
 .bd-chu-giai { display: flex; gap: var(--sp-4); font-size: 12px; color: var(--m-mid); }
 .bd-chu-giai span { display: inline-flex; align-items: center; gap: 6px; }
 .bd-chu-giai i { width: 10px; height: 10px; border-radius: var(--r-full); display: inline-block; }
+
+/* ── Công tắc hiển thị SĐT ── */
+.cx-sdt { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-4); }
+.cx-sdt-chu { display: flex; flex-direction: column; gap: var(--sp-1); min-width: 0; }
+.cx-sdt-tieu { gap: var(--sp-2); }
+.cx-cong-tac {
+  flex-shrink: 0; width: 52px; height: 30px; border-radius: var(--r-full);
+  background: var(--m-border); position: relative; transition: background var(--t-fast);
+}
+.cx-cong-tac.bat { background: var(--m-green); }
+.cx-cong-tac:disabled { opacity: .6; cursor: progress; }
+.cx-cong-tac-nut {
+  position: absolute; top: 3px; left: 3px; width: 24px; height: 24px; border-radius: var(--r-full);
+  background: var(--m-surface); box-shadow: var(--shadow-sm); transition: transform var(--t-fast);
+}
+.cx-cong-tac.bat .cx-cong-tac-nut { transform: translateX(22px); }
+
+/* ── Mẹo an toàn ── */
+.cx-meo {
+  display: flex; gap: var(--sp-3); align-items: flex-start;
+  padding: var(--sp-3) var(--sp-4); border-radius: var(--r-md);
+  background: var(--m-green-light); color: var(--m-dark); font-size: 14px;
+}
+.cx-meo > svg { color: var(--m-green); flex-shrink: 0; margin-top: 2px; }
+.cx-meo-ds { margin: var(--sp-1) 0 0 var(--sp-4); list-style: disc; display: flex; flex-direction: column; gap: var(--sp-1); }
+
+/* ── Lý do cờ + kháng cáo trên thẻ xe ── */
+.the-xe-co {
+  margin: 0 var(--sp-4) var(--sp-2); padding: var(--sp-3); border-radius: var(--r-sm);
+  background: var(--m-red-bg); display: flex; flex-direction: column; gap: var(--sp-2); align-items: flex-start;
+}
+.the-xe-co-ds { display: flex; gap: var(--sp-2); font-size: 13px; color: var(--m-dark); }
+.the-xe-co-ds > svg { color: var(--m-red); flex-shrink: 0; margin-top: 2px; }
+.the-xe-co-ds ul { display: flex; flex-direction: column; gap: var(--sp-1); }

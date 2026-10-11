@@ -18,7 +18,7 @@ export const TRANG = 20
 const COT_THE =
   'id,status,brand_text,model_text,year,seats,transmission,fuel,price_per_day,' +
   'province_id,district_id,is_verified,published_at,expires_at,' +
-  'cover_thumb,cover_blur,cover_width,cover_height'
+  'cover_thumb,cover_blur,cover_width,cover_height,report_count'
 
 // Nhóm lọc ở màn "Xe của tôi". Lọc theo cột `status` trong CSDL (server cập nhật
 // theo cron) — lọc ở server vì phân trang keyset không lọc lại phía client được.
@@ -222,4 +222,78 @@ export async function tongSoLieuChuXe(ownerId, { soNgay = SO_NGAY } = {}) {
   for (const r of data ?? []) tong[r.kind] += Number(r.count) || 0
 
   return tong
+}
+
+// ─────────────────────────────────────────────
+// Đồng ý hiển thị số điện thoại + cờ của tin (contracts/api.md §3e, 0023)
+// ─────────────────────────────────────────────
+
+// Phiên bản ghi vào `user_consents.version`. `show_phone` chưa có văn bản riêng
+// trong `legal/phienBan.js` (file của luồng 12) nên giữ hằng số tại đây.
+const PHIEN_BAN_HIEN_SDT = '1.0'
+
+/**
+ * Chủ xe đang cho khách xem số điện thoại hay không.
+ *   true  = đang cho (dòng mới nhất `granted: true`, HOẶC chưa từng chọn gì)
+ *   false = đã chủ động tắt (dòng mới nhất `granted: false`)
+ *   null  = không đọc được → giao diện ẩn cả khối, không đoán.
+ *
+ * Cố ý KHÔNG dùng `rpc('da_dong_y')`: hàm đó trả `false` khi chưa có dòng nào
+ * (`coalesce(..., false)`), tức mọi chủ xe cũ sẽ bị hiện "Tạm ẩn liên hệ" dù
+ * chưa từng tắt gì. Ở đây cần phân biệt "chưa chọn" với "đã tắt".
+ */
+export async function docHienSdt(userId) {
+  try {
+    const sb = await getSupabase()
+    const { data, error } = await sb
+      .from('user_consents')
+      .select('granted')
+      .eq('user_id', userId)
+      .eq('document', 'show_phone')
+      .order('accepted_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    if (error) throw error
+    return data ? data.granted === true : true
+  } catch (e) {
+    if (import.meta.env.DEV) console.warn('[owner] không đọc được đồng ý show_phone:', e?.message)
+    return null
+  }
+}
+
+/**
+ * Ghi lựa chọn. Bảng chỉ ghi thêm: bật/tắt = thêm MỘT dòng mới, dòng mới nhất quyết định.
+ * Ném lỗi để giao diện hoàn lại công tắc.
+ */
+export async function ghiHienSdt(userId, bat) {
+  const sb = await getSupabase()
+  const { error } = await sb.from('user_consents').insert({
+    user_id: userId,
+    document: 'show_phone',
+    version: PHIEN_BAN_HIEN_SDT,
+    granted: bat === true,
+  })
+  if (error) throw error
+}
+
+/**
+ * Cờ riêng của từng tin mà `listing_card` không có: `price_anomaly` (giá dưới
+ * ngưỡng, chờ duyệt tay) và `reject_reason`. Một lượt cho cả trang. Lỗi thì trả
+ * bảng rỗng — màn vẫn dùng được, chỉ không hiện lý do.
+ */
+export async function thongTinCo(listingIds) {
+  const ra = new Map()
+  if (!listingIds?.length) return ra
+  try {
+    const sb = await getSupabase()
+    const { data, error } = await sb
+      .from('listings')
+      .select('id,price_anomaly,reject_reason')
+      .in('id', listingIds)
+    if (error) throw error
+    for (const r of data ?? []) ra.set(r.id, r)
+  } catch (e) {
+    if (import.meta.env.DEV) console.warn('[owner] không lấy được cờ tin:', e?.message)
+  }
+  return ra
 }
