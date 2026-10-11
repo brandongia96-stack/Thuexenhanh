@@ -23,6 +23,7 @@ export default function ModalBaoCao({ tin, dong }) {
   const [loi, setLoi] = useState(null)
   const [thanhCong, setThanhCong] = useState(false)
   const [files, setFiles] = useState([])
+  const [camKet, setCamKet] = useState(false)
 
   // Bắt đăng nhập mới được báo cáo (báo cáo gắn với tài khoản — chống báo cáo
   // ẩn danh hàng loạt; mỗi người chỉ báo cáo một tin một lần, DB đã chặn).
@@ -40,6 +41,10 @@ export default function ModalBaoCao({ tin, dong }) {
     }
     if (lyDo === 'lua_dao' && files.length === 0) {
       setLoi('Báo cáo lừa đảo cần ít nhất 1 ảnh hoặc PDF làm bằng chứng.')
+      return
+    }
+    if (!camKet) {
+      setLoi('Vui lòng xác nhận cam kết thông tin ở dưới trước khi gửi.')
       return
     }
 
@@ -116,6 +121,9 @@ export default function ModalBaoCao({ tin, dong }) {
               <label className="t-small" style={{ fontWeight: 500 }}>
                 Bằng chứng {lyDo === 'lua_dao' ? '(bắt buộc)' : '(tuỳ chọn)'}: tối đa {SO_FILE_BANG_CHUNG_TOI_DA} ảnh/PDF, mỗi file ≤ 5MB
               </label>
+              <div className="t-small" style={{ color: 'var(--m-subtle)' }}>
+                Chỉ đội ngũ Thuê Xe Nhanh xem được. Hãy che số CCCD, số tài khoản và khuôn mặt người không liên quan.
+              </div>
               <input
                 type="file"
                 accept={LOAI_BANG_CHUNG.join(',')}
@@ -132,11 +140,23 @@ export default function ModalBaoCao({ tin, dong }) {
               />
             </div>
 
+            <label className="row" style={{ gap: 8, cursor: 'pointer', alignItems: 'flex-start' }}>
+              <input
+                type="checkbox"
+                checked={camKet}
+                onChange={e => setCamKet(e.target.checked)}
+                style={{ marginTop: 3 }}
+              />
+              <span className="t-small">
+                Thông tin tôi cung cấp là đúng sự thật, tôi chịu trách nhiệm nếu khai sai.
+              </span>
+            </label>
+
             {loi && <div className="ad-loi" role="alert">{loi}</div>}
 
             <div className="row" style={{ gap: 'var(--sp-3)', justifyContent: 'flex-end', marginTop: 8 }}>
               <button type="button" className="btn btn-ghost" onClick={dong} disabled={dangGui}>Hủy</button>
-              <button type="submit" className="btn btn-primary" disabled={dangGui || !lyDo} style={{ background: 'var(--m-red)', borderColor: 'var(--m-red)' }}>
+              <button type="submit" className="btn btn-primary" disabled={dangGui || !lyDo || !camKet} style={{ background: 'var(--m-red)', borderColor: 'var(--m-red)' }}>
                 {dangGui ? 'Đang gửi...' : 'Gửi báo cáo'}
               </button>
             </div>

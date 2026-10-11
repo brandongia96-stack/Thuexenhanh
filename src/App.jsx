@@ -7,7 +7,7 @@ import RequireRole from './components/RequireRole'
 import { PageLoading } from './components/Loading'
 import TrangChu from './modules/shell/TrangChu'
 import ChuaLam from './modules/shell/ChuaLam'
-import GhiNhanDongY from './modules/legal/GhiNhanDongY'
+import TruocKhiBatDau from './modules/legal/TruocKhiBatDau'
 
 // HIEU-NANG.md mục 3: chia gói theo route. Khách vào trang tìm kiếm KHÔNG
 // tải code của ví token, quản trị hay form đăng xe.
@@ -16,6 +16,8 @@ const DangNhap = lazy(() => import('./modules/auth/DangNhap'))
 const TrangTaiKhoan = lazy(() => import('./modules/auth/TrangTaiKhoan'))
 const TrangQuanTri = lazy(() => import('./modules/admin/TrangQuanTri'))
 const TrangThongBao = lazy(() => import('./modules/notify/TrangThongBao'))
+// Luồng 08 — khiếu nại CÓ CHỨC NĂNG (khác /khieu-nai, trang tĩnh giải thích chính sách).
+const TrangKhieuNaiCuaToi = lazy(() => import('./modules/trust/complaint/TrangKhieuNaiCuaToi'))
 const DieuKhoan = lazy(() => import('./modules/legal/DieuKhoan'))
 const BaoMat = lazy(() => import('./modules/legal/BaoMat'))
 const HoanToken = lazy(() => import('./modules/legal/HoanToken'))
@@ -25,6 +27,9 @@ const HoiDap = lazy(() => import('./modules/legal/HoiDap'))
 const QuyChe = lazy(() => import('./modules/legal/QuyChe'))
 const KhieuNai = lazy(() => import('./modules/legal/KhieuNai'))
 const ThongTinThue = lazy(() => import('./modules/legal/ThongTinThue'))
+const AnToan = lazy(() => import('./modules/legal/AnToan'))
+const MauHopDong = lazy(() => import('./modules/legal/MauHopDong'))
+const TrangDuLieu = lazy(() => import('./modules/legal/TrangDuLieu'))
 // Luồng 05 — trang xem xe và xe đã lưu. Tách gói riêng: khách vào trang chủ
 // không phải tải slider ảnh, hộp liên hệ hay 13 icon tiện nghi.
 const TrangXe = lazy(() => import('./modules/discovery/listing-page/TrangXe'))
@@ -52,8 +57,8 @@ const LichXeTong = lazy(() => import('./modules/owner/LichXeTong'))
 export default function App() {
   return (
     <AuthProvider>
-      <GhiNhanDongY />
       <BrowserRouter>
+        <TruocKhiBatDau />
         <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
           <Header />
           <main style={{ flex: 1 }}>
@@ -80,6 +85,12 @@ export default function App() {
               } />
               <Route path="/thong-bao" element={
                 <RequireRole><TrangThongBao /></RequireRole>
+              } />
+              <Route path="/tai-khoan/du-lieu" element={
+                <RequireRole><TrangDuLieu /></RequireRole>
+              } />
+              <Route path="/tai-khoan/khieu-nai" element={
+                <RequireRole><TrangKhieuNaiCuaToi /></RequireRole>
               } />
 
               {/* ── Chủ xe ── */}
@@ -114,6 +125,8 @@ export default function App() {
               <Route path="/hoan-token" element={<HoanToken />} />
               <Route path="/khieu-nai" element={<KhieuNai />} />
               <Route path="/thue" element={<ThongTinThue />} />
+              <Route path="/an-toan" element={<AnToan />} />
+              <Route path="/mau-hop-dong" element={<MauHopDong />} />
               <Route path="/gioi-thieu" element={<GioiThieu />} />
               <Route path="/tro-giup" element={<HoiDap />} />
               <Route path="/lien-he" element={<LienHe />} />

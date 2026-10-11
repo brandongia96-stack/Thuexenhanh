@@ -1,0 +1,45 @@
+.kn-nhan {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: var(--r-full);
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.kn-nhan-info { background: var(--m-blue); color: #fff; opacity: 0.85; }
+.kn-nhan-warn { background: var(--m-amber); color: #fff; }
+.kn-nhan-ok   { background: var(--m-green); color: #fff; }
+.kn-nhan-mid  { background: var(--m-border); color: var(--m-mid); }
+
+.kn-dong {
+  display: block;
+  width: 100%;
+  text-align: left;
+  cursor: pointer;
+  border: 1px solid var(--m-border);
+  background: var(--m-surface);
+}
+.kn-dong:hover { border-color: var(--m-blue); }
+
+.kn-trich {
+  margin-top: 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+
+.kn-tin {
+  padding: var(--sp-3);
+  border-radius: var(--r-md);
+  max-width: 85%;
+}
+.kn-tin-minh  { background: var(--m-green-light); align-self: flex-end; margin-left: auto; }
+.kn-tin-staff { background: var(--m-bg); }
+
+.kn-ket-qua {
+  padding: var(--sp-3);
+  background: var(--m-green-light);
+  border-radius: var(--r-md);
+}

@@ -89,7 +89,10 @@ function TheXe({ xe, soLieu, rieng, canhBao, anLienHe, uuTien = false, dangTaiSo
               {canhBao.map((c) => <li key={c.key}>{c.text}</li>)}
             </ul>
           </div>
-          <Link to="/khieu-nai" className="btn btn-ghost btn-sm">Kháng cáo</Link>
+          {/* Trước trỏ sang /khieu-nai (trang tĩnh giải thích chính sách, không
+              tạo được hồ sơ thật). Luồng 08 đã dựng trang chức năng thật ở
+              /tai-khoan/khieu-nai — kèm sẵn loại + tin đăng để chủ xe khỏi gõ lại. */}
+          <Link to={`/tai-khoan/khieu-nai?kind=bao_cao_sai&listing_id=${xe.id}`} className="btn btn-ghost btn-sm">Kháng cáo</Link>
         </div>
       )}
 

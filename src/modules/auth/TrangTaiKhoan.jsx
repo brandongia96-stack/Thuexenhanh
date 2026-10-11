@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Phone, Save, LogOut, ChevronRight, Heart, Car, CalendarDays, Wallet,
-  MessageCircle, Settings, ArrowLeft,
+  MessageCircle, Settings, ArrowLeft, ShieldAlert,
 } from 'lucide-react'
 import { useAuth } from './AuthProvider'
 import { getSupabase } from '../../lib/supabase'
@@ -177,6 +177,7 @@ export default function TrangTaiKhoan() {
         )}
 
         <div className="tk-divider" />
+        <MucMenu to="/tai-khoan/khieu-nai" icon={ShieldAlert} chu="Khiếu nại của tôi" />
         <MucMenu to="/lien-he" icon={MessageCircle} chu="Liên hệ" />
         <MucMenu onClick={() => setView('profile')} icon={Settings} chu="Cài đặt thông tin" />
         <MucMenu onClick={signOut} icon={LogOut} chu="Thoát tài khoản" />
