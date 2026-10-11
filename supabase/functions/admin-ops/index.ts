@@ -217,6 +217,14 @@ Deno.serve(async (req) => {
       return json({ urls })
     }
 
+    // ── yêu cầu gỡ nội dung: chỉ admin, hạn 24h ──
+    case 'execute_takedown': {
+      if (!vai.admin) return loi('khong_co_quyen', 'Chỉ quản trị viên được xử lý yêu cầu gỡ')
+      const id = uuid(b.id)
+      if (!id) return sai('id', 'Thiếu mã')
+      return rpc('admin_execute_takedown', { p_actor: actor, p_id: id })
+    }
+
     default:
       return loi('du_lieu_khong_hop_le', 'action không hợp lệ')
   }

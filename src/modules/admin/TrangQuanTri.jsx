@@ -18,6 +18,10 @@ const QuanLyBaoCao = lazy(() => import('./QuanLyBaoCao'))
 const GiaSan = lazy(() => import('./GiaSan'))
 const GiaNhienLieu = lazy(() => import('./GiaNhienLieu'))
 const CuuHo = lazy(() => import('./CuuHo'))
+const KhieuNai = lazy(() => import('./KhieuNai'))
+const YeuCauGo = lazy(() => import('./YeuCauGo'))
+const CungCapDuLieu = lazy(() => import('./CungCapDuLieu'))
+const XoaTaiKhoan = lazy(() => import('./XoaTaiKhoan'))
 
 const TABS = [
   { to: 'duyet-tin', nhan: 'Duyệt tin' },
@@ -29,6 +33,10 @@ const TABS = [
   { to: 'gia-san', nhan: 'Giá sàn' },
   { to: 'gia-nhien-lieu', nhan: 'Giá nhiên liệu' },
   { to: 'cuu-ho', nhan: 'Cứu hộ' },
+  { to: 'khieu-nai', nhan: 'Khiếu nại' },
+  { to: 'yeu-cau-go', nhan: 'Yêu cầu gỡ' },
+  { to: 'cung-cap-du-lieu', nhan: 'Cung cấp dữ liệu' },
+  { to: 'xoa-tai-khoan', nhan: 'Xoá tài khoản' },
 ]
 
 export default function TrangQuanTri() {
@@ -54,6 +62,10 @@ export default function TrangQuanTri() {
           <Route path="gia-san" element={<GiaSan />} />
           <Route path="gia-nhien-lieu" element={<GiaNhienLieu />} />
           <Route path="cuu-ho" element={<CuuHo />} />
+          <Route path="khieu-nai" element={<KhieuNai />} />
+          <Route path="yeu-cau-go" element={<YeuCauGo />} />
+          <Route path="cung-cap-du-lieu" element={<CungCapDuLieu />} />
+          <Route path="xoa-tai-khoan" element={<XoaTaiKhoan />} />
           <Route path="*" element={<Navigate to="/admin/duyet-tin" replace />} />
         </Routes>
       </Suspense>

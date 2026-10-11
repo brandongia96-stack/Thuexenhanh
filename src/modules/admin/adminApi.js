@@ -69,7 +69,7 @@ async function ghepCotRieng(sb, tins) {
 // cần chúng để đối chiếu giấy tờ, nên lấy qua `listing_private_many` bên dưới.
 const COT_TIN_CHO =
   'id,owner_id,brand_text,model_text,year,color,seats,transmission,fuel,' +
-  'price_per_day,description,province_id,address_text,created_at,' +
+  'price_per_day,price_anomaly,description,province_id,address_text,created_at,' +
   'owner:users!listings_owner_id_fkey(full_name,phone,verify_status),' +
   'listing_images(url_thumb,url_medium,sort_order,deleted_at),' +
   'moderation_queue(status,created_at)'
@@ -242,3 +242,113 @@ export const xoaCuuHo = (id, reason) => op('delete_rescue', { id, reason })
 
 /** Link ký 60 giây tới ảnh/PDF bằng chứng. Gọi lại mỗi lần bấm xem: link hết hạn nhanh. */
 export const bangChungCuaBaoCao = (reportId) => op('evidence_urls', { report_id: reportId })
+
+// ─── KHIẾU NẠI, GỠ TIN, CUNG CẤP DỮ LIỆU, XOÁ TÀI KHOẢN (0023) ───
+//
+// Bốn bảng này có RLS riêng cho kiểm duyệt/admin ghi trực tiếp (0023_tuan_thu_phap_ly.sql)
+// — khác billing/ví, KHÔNG đi qua admin-ops. Ngoại lệ: nút "Ẩn ngay" của yêu cầu
+// gỡ cần hai việc trong một transaction (ẩn đối tượng + đóng hàng đợi), nên đó
+// vẫn là một hàm server gọi qua admin-ops (action `execute_takedown`).
+
+const COT_KHIEU_NAI =
+  'id,code,kind,content,status,due_at,resolution,created_at,resolved_at,' +
+  'user:users!complaints_user_id_fkey(full_name,phone),' +
+  'listing:listings(brand_text,model_text)'
+
+/** Hàng đợi khiếu nại, hạn gần nhất lên trước. `status` null = mọi trạng thái chưa đóng. */
+export async function hangDoiKhieuNai({ status = null } = {}) {
+  const sb = await getSupabase()
+  let q = sb.from('complaints').select(COT_KHIEU_NAI).order('due_at').limit(TRANG)
+  q = status ? q.eq('status', status) : q.neq('status', 'dong')
+  const { data, error } = await q
+  if (error) throw error
+  return data ?? []
+}
+
+export async function tinNhanKhieuNai(complaintId) {
+  const sb = await getSupabase()
+  const { data, error } = await sb
+    .from('complaint_messages').select('id,author_id,is_staff,body,created_at')
+    .eq('complaint_id', complaintId).order('created_at')
+  if (error) throw error
+  return data ?? []
+}
+
+/** Đổi trạng thái + ghi kết quả. RLS `complaints_staff` chặn ai không phải kiểm duyệt/admin. */
+export async function xuLyKhieuNai(complaintId, { status, resolution, actorId }) {
+  const sb = await getSupabase()
+  const patch = { status }
+  if (resolution !== undefined) patch.resolution = resolution
+  if (status === 'da_giai_quyet' || status === 'dong') {
+    patch.handled_by = actorId
+    patch.resolved_at = new Date().toISOString()
+  }
+  const { error } = await sb.from('complaints').update(patch).eq('id', complaintId)
+  if (error) throw error
+}
+
+export async function traLoiKhieuNai(complaintId, body, actorId) {
+  const sb = await getSupabase()
+  const { error } = await sb.from('complaint_messages')
+    .insert({ complaint_id: complaintId, author_id: actorId, is_staff: true, body })
+  if (error) throw error
+}
+
+const COT_GO_TIN =
+  'id,source,requester,doc_ref,target_type,target_id,reason,received_at,deadline_at,' +
+  'status,handled_by,handled_at,note'
+
+/** Hàng đợi yêu cầu gỡ, hạn gần nhất lên trước. */
+export async function hangDoiYeuCauGo() {
+  const sb = await getSupabase()
+  const { data, error } = await sb
+    .from('takedown_requests').select(COT_GO_TIN).order('deadline_at').limit(TRANG)
+  if (error) throw error
+  return data ?? []
+}
+
+export async function themYeuCauGo(fields) {
+  const sb = await getSupabase()
+  const { error } = await sb.from('takedown_requests').insert(fields)
+  if (error) throw error
+}
+
+/** Từ chối gỡ (không phải vi phạm thật) — ghi lý do, KHÔNG đụng đối tượng. */
+export async function tuChoiYeuCauGo(id, note, actorId) {
+  const sb = await getSupabase()
+  const { error } = await sb.from('takedown_requests')
+    .update({ status: 'tu_choi', note, handled_by: actorId, handled_at: new Date().toISOString() })
+    .eq('id', id)
+  if (error) throw error
+}
+
+/** "Ẩn ngay": ẩn đối tượng + đóng hàng đợi trong một transaction (xem ghi chú đầu mục). */
+export const anNgayYeuCauGo = (id) => op('execute_takedown', { id })
+
+/** Sổ cung cấp dữ liệu cho cơ quan chức năng. Bắt buộc số văn bản (RLS không chặn nhưng form phải ép). */
+export async function soCungCapDuLieu() {
+  const sb = await getSupabase()
+  const { data, error } = await sb
+    .from('authority_requests').select('id,agency,doc_number,doc_date,scope,delivered_at,note,created_at')
+    .order('created_at', { ascending: false }).limit(TRANG)
+  if (error) throw error
+  return data ?? []
+}
+
+export async function themYeuCauCoQuan(fields, actorId) {
+  const sb = await getSupabase()
+  const { error } = await sb.from('authority_requests').insert({ ...fields, handled_by: actorId })
+  if (error) throw error
+}
+
+/** Yêu cầu xoá tài khoản. Chỉ đọc — xoá thật do cron `thuc_hien_xoa_tai_khoan` làm. */
+export async function yeuCauXoaTaiKhoan() {
+  const sb = await getSupabase()
+  const { data, error } = await sb
+    .from('account_deletion_requests')
+    .select('id,user_id,requested_at,execute_after,status,done_at,' +
+      'user:users!account_deletion_requests_user_id_fkey(full_name,phone,email)')
+    .order('requested_at', { ascending: false }).limit(TRANG)
+  if (error) throw error
+  return data ?? []
+}

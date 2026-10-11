@@ -5,7 +5,7 @@
 // Từ chối bắt buộc có lý do — chủ xe nhận đúng lý do đó.
 
 import { useEffect, useState } from 'react'
-import { CheckCircle2, XCircle, ShieldCheck } from 'lucide-react'
+import { CheckCircle2, XCircle, ShieldCheck, AlertTriangle } from 'lucide-react'
 import Badge from '../../components/Badge'
 import EmptyState from '../../components/EmptyState'
 import { Skeleton } from '../../components/Loading'
@@ -54,8 +54,16 @@ function TinCho({ tin, onXong }) {
           <div className="t-h3">{tin.brand_text} {tin.model_text} {tin.year ?? ''}</div>
           <div className="t-small">Gửi {timeAgo(tin.created_at)}</div>
         </div>
-        {chu?.verify_status === 'da_xac_minh' && <Badge tone="verified" icon={ShieldCheck}>Chủ xe đã xác minh</Badge>}
+        <div className="row" style={{ gap: 'var(--sp-2)' }}>
+          {tin.price_anomaly && <Badge tone="warn" icon={AlertTriangle}>Giá bất thường</Badge>}
+          {chu?.verify_status === 'da_xac_minh' && <Badge tone="verified" icon={ShieldCheck}>Chủ xe đã xác minh</Badge>}
+        </div>
       </div>
+      {tin.price_anomaly && (
+        <div className="ad-canh-bao" role="alert">
+          Giá {formatVnd(tin.price_per_day)}/ngày thấp hơn mức sàn tham khảo cho {tin.seats ?? '?'} chỗ — không chặn, chỉ cảnh báo để duyệt tay.
+        </div>
+      )}
 
       {anh.length > 0 ? (
         <div className="ad-anh">
