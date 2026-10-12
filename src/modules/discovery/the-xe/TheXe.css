@@ -85,18 +85,16 @@
 .thexe-ten:hover { color: var(--m-green); }
 .thexe-dang { display: inline-flex; align-items: center; gap: 4px; position: relative; z-index: 2; }
 
-/* Lưới thông số: mỗi thứ một ô xám. */
-.thexe-thongso { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-2) var(--sp-2); }
+/* Lưới thông số 2×2, KHÔNG hộp nền — chỉ icon + chữ cho thẻ gọn. Chữ dài
+   (tên quận + tỉnh) cắt bằng dấu … trong đúng ô của nó, không tràn sang ô bên. */
+.thexe-thongso { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--sp-2) var(--sp-3); }
 .thexe-thongso span {
-  display: flex; align-items: center; gap: var(--sp-2); min-width: 0;
-  padding: var(--sp-2) var(--sp-3);
-  border-radius: var(--r-sm);
-  background: var(--m-bg); color: var(--m-mid);
-  font-size: 12px; font-weight: 500;
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  display: flex; align-items: center; gap: 6px; min-width: 0;
+  color: var(--m-mid);
+  font-size: 13px; font-weight: 500;
 }
+.thexe-thongso i { font-style: normal; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .thexe-thongso svg { flex: none; color: var(--m-subtle); }
-.thexe-noi { grid-column: 1 / -1; }
 
 /* Đẩy chân thẻ xuống đáy để các thẻ cùng hàng thẳng hàng nhau. */
 .thexe-chan {

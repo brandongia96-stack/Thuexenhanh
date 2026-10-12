@@ -95,16 +95,19 @@ function TheXe({ the, bangDiaGioi, uuTien = false }) {
           )}
         </div>
 
-        {/* Ô nào thiếu dữ liệu thì ẩn ô đó; không có ô nào thì ẩn cả lưới. */}
+        {/* Tối đa 4 thông số, lưới 2×2, không hộp nền (anh chốt 12/10).
+            Xe điện: ô nhiên liệu đổi thành quãng đường/lần sạc — đã ngầm hiểu
+            là điện, và giữ mọi thẻ đúng 4 ô cho cân. Thiếu dữ liệu thì ẩn ô đó. */}
         {(the.seats || hopSo || nhienLieu || noi || the.ev_range_km) && (
           <div className="thexe-thongso">
-            {the.seats && <span><Users size={14} strokeWidth={1.8} />{the.seats} chỗ</span>}
-            {hopSo && <span><Cog size={14} strokeWidth={1.8} />{hopSo}</span>}
-            {nhienLieu && <span><Fuel size={14} strokeWidth={1.8} />{nhienLieu}</span>}
-            {the.ev_range_km != null && (
-              <span><Zap size={14} strokeWidth={1.8} />{the.ev_range_km} km/sạc</span>
-            )}
-            {noi && <span className="thexe-noi"><MapPin size={14} strokeWidth={1.8} />{noi}</span>}
+            {the.seats && <span><Users size={15} strokeWidth={1.8} /><i>{the.seats} chỗ</i></span>}
+            {hopSo && <span><Cog size={15} strokeWidth={1.8} /><i>{hopSo}</i></span>}
+            {the.ev_range_km != null ? (
+              <span><Zap size={15} strokeWidth={1.8} /><i>{the.ev_range_km} km/sạc</i></span>
+            ) : nhienLieu ? (
+              <span><Fuel size={15} strokeWidth={1.8} /><i>{nhienLieu}</i></span>
+            ) : null}
+            {noi && <span title={noi}><MapPin size={15} strokeWidth={1.8} /><i>{noi}</i></span>}
           </div>
         )}
 
