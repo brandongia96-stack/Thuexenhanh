@@ -48,6 +48,7 @@ export default function BoChonThoiGian({ gioNhan, gioTra, onChange }) {
     setChonNhan(gioNhan)
     setChonTra(gioTra)
     setThangHienTai(new Date(gioNhan.getFullYear(), gioNhan.getMonth(), 1))
+    // Luôn luôn tự động bắt đầu từ bước chọn ngày nhận trước
     setBuocChon('nhan')
     setMo(true)
   }
@@ -58,31 +59,42 @@ export default function BoChonThoiGian({ gioNhan, gioTra, onChange }) {
   }
 
   function bamNgay(d) {
-    const dTime = d.getTime()
+    const dTime = new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
+    const nhanTime = new Date(chonNhan.getFullYear(), chonNhan.getMonth(), chonNhan.getDate()).getTime()
+
     if (buocChon === 'nhan') {
       const newNhan = new Date(d)
       newNhan.setHours(chonNhan.getHours(), chonNhan.getMinutes(), 0, 0)
       setChonNhan(newNhan)
       
-      // Nếu ngày nhận vượt ngày trả, đẩy ngày trả lên +1 ngày
+      // Nếu ngày nhận mới >= ngày trả hiện tại, tự động đẩy ngày trả lên +1 ngày
       if (newNhan >= chonTra) {
         const newTra = new Date(newNhan)
         newTra.setDate(newTra.getDate() + 1)
         newTra.setHours(chonTra.getHours(), chonTra.getMinutes(), 0, 0)
         setChonTra(newTra)
       }
+      // Sau khi chọn ngày nhận xong -> tự động chuyển sang chọn ngày trả
       setBuocChon('tra')
     } else {
-      const newTra = new Date(d)
-      newTra.setHours(chonTra.getHours(), chonTra.getMinutes(), 0, 0)
-      
-      if (newTra <= chonNhan) {
-        // Nếu lỡ bấm ngày trả bé hơn ngày nhận, coi như bấm lại ngày nhận
-        setChonNhan(newTra)
+      // Đang ở bước chọn ngày trả
+      if (dTime < nhanTime) {
+        // Nếu lỡ bấm ngày trước ngày nhận, tự động hiểu là chọn lại ngày nhận mới
+        const newNhan = new Date(d)
+        newNhan.setHours(chonNhan.getHours(), chonNhan.getMinutes(), 0, 0)
+        setChonNhan(newNhan)
+
+        const newTra = new Date(newNhan)
+        newTra.setDate(newTra.getDate() + 1)
+        newTra.setHours(chonTra.getHours(), chonTra.getMinutes(), 0, 0)
+        setChonTra(newTra)
         setBuocChon('tra')
       } else {
+        const newTra = new Date(d)
+        newTra.setHours(chonTra.getHours(), chonTra.getMinutes(), 0, 0)
         setChonTra(newTra)
-        // setBuocChon('nhan') // Giữ nguyên ở 'tra' để khách sửa lại nếu muốn
+        // Đã chọn xong ngày trả, chuyển về 'nhan' để lần click tiếp theo sẽ tự động chọn lại từ ngày nhận
+        setBuocChon('nhan')
       }
     }
   }
@@ -203,7 +215,10 @@ export default function BoChonThoiGian({ gioNhan, gioTra, onChange }) {
                   className={`cal-tab ${buocChon === 'nhan' ? 'active' : ''}`}
                   onClick={() => setBuocChon('nhan')}
                 >
-                  <span className="cal-tab-nhan">1. Nhận xe</span>
+                  <div className="cal-tab-top">
+                    <span className="cal-tab-nhan">1. Ngày nhận xe</span>
+                    {buocChon === 'nhan' && <span className="cal-tab-badge">Đang chọn</span>}
+                  </div>
                   <span className="cal-tab-val">{dinhDangInputString(chonNhan)}</span>
                 </button>
                 <button
@@ -211,9 +226,20 @@ export default function BoChonThoiGian({ gioNhan, gioTra, onChange }) {
                   className={`cal-tab ${buocChon === 'tra' ? 'active' : ''}`}
                   onClick={() => setBuocChon('tra')}
                 >
-                  <span className="cal-tab-nhan">2. Trả xe</span>
+                  <div className="cal-tab-top">
+                    <span className="cal-tab-nhan">2. Ngày trả xe</span>
+                    {buocChon === 'tra' && <span className="cal-tab-badge">Đang chọn</span>}
+                  </div>
                   <span className="cal-tab-val">{dinhDangInputString(chonTra)}</span>
                 </button>
+              </div>
+
+              <div className="cal-huong-dan">
+                {buocChon === 'nhan' ? (
+                  <span>👉 Bước 1: <strong>Chọn ngày nhận xe</strong> trên lịch bên dưới</span>
+                ) : (
+                  <span>👉 Bước 2: <strong>Chọn ngày trả xe</strong> trên lịch bên dưới</span>
+                )}
               </div>
               <div className="cal-header-nav">
                 <button type="button" className="btn-nav" onClick={() => chuyenThang(-1)}>←</button>

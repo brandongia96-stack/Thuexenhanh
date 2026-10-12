@@ -121,11 +121,46 @@
   color: var(--m-green);
 }
 
+.cal-tab-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  gap: var(--sp-1);
+}
+
+.cal-tab-badge {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--m-green);
+  background: var(--m-green-light);
+  padding: 1px 6px;
+  border-radius: var(--r-box);
+  white-space: nowrap;
+}
+
 .cal-tab-val {
   font-size: 13px;
   font-weight: 700;
   color: var(--m-dark);
 }
+
+.cal-huong-dan {
+  display: flex;
+  align-items: center;
+  padding: 8px var(--sp-3);
+  background: var(--m-green-light);
+  border: 1px dashed var(--m-green);
+  border-radius: var(--r-box);
+  font-size: 13px;
+  color: var(--m-green-hover);
+  margin-bottom: var(--sp-2);
+}
+
+.cal-huong-dan strong {
+  color: var(--m-dark);
+}
+
 
 .modal-overlay {
   position: fixed;
