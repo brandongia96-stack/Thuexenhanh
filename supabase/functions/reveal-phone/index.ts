@@ -33,6 +33,22 @@ const GIOI_HAN_24H = 10
 // rất nhiều máy, để 10 là chặn oan cả xóm. Nới cho IP; muốn hơn thì đăng nhập.
 const GIOI_HAN_IP_24H = 30
 
+// Lấy IP TIN CẬY để đếm hạn mức.
+//
+// Bài học bảo mật (rà 12/10): KHÔNG tin `cf-connecting-ip` và KHÔNG lấy phần
+// TRÁI nhất của `X-Forwarded-For` — cả hai đều do client tự khai. Cách cũ
+// (`cf-connecting-ip ?? xff.split(',')[0]`) cho kẻ cào gửi header giả khác
+// nhau mỗi request → mỗi lần một IP băm mới → bộ đếm luôn ra 0 → cào sạch
+// danh bạ chủ xe không cần đăng nhập.
+//
+// XFF được hạ tầng nối từ TRÁI sang PHẢI: phần tử PHẢI nhất là IP do gateway
+// Supabase thêm vào — thứ client khó giả nhất. Chỉ tin phần tử đó.
+function layIpTinCay(req: Request): string {
+  const xff = req.headers.get('x-forwarded-for') ?? ''
+  const cac = xff.split(',').map((s) => s.trim()).filter(Boolean)
+  return cac.length ? cac[cac.length - 1] : ''
+}
+
 // Băm IP trước khi lưu: đủ để đếm, không lưu IP thật (Bảo vệ dữ liệu cá nhân).
 async function bamIp(ip: string) {
   const muoi = Deno.env.get('IP_SALT') ?? Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
@@ -102,12 +118,19 @@ Deno.serve(async (req) => {
   // Chủ xe tự xem tin mình: trả số bình thường nhưng KHÔNG tính lượt.
   const laChuXe = actor_id != null && actor_id === tin.owner_id
 
-  const ip = (req.headers.get('cf-connecting-ip')
-    ?? req.headers.get('x-forwarded-for')?.split(',')[0]
-    ?? '').trim()
+  const ip = layIpTinCay(req)
   const ipBam = ip ? await bamIp(ip) : null
 
   if (!laChuXe) {
+    // Ẩn danh mà không xác định nổi IP tin cậy = mức CHẶT NHẤT: không trả số.
+    // Trước đây IP rỗng khiến bộ đếm luôn ra 0 (xem vô hạn) — nay chặn thẳng,
+    // mời đăng nhập. Chủ xe xem tin mình (laChuXe) không rơi vào nhánh này.
+    if (!actor_id && !ipBam) {
+      return loi('vuot_gioi_han',
+        'Chưa xác định được thiết bị của anh/chị. Vui lòng đăng nhập để xem số điện thoại.',
+        200)
+    }
+
     const { data: daXem, error: loiDem } = await admin.rpc('reveal_da_xem_24h', {
       p_actor: actor_id, p_ip: ipBam, p_listing: listing_id,
     })
