@@ -36,7 +36,7 @@ const FORM_RONG = {
   pickup_min_pct: '', return_min_pct: '', has_portable_charger: false,
 }
 
-export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
+export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '', daXacThucSdt = true }) {
   const [goi, setGoi] = useState(GOI.DAY_DU)
   const [form, setForm] = useState({ ...FORM_RONG, contact_phone: sdtMacDinh })
   const [anh, setAnh] = useState([])         // mảng hợp nhất cho UploadAnh
@@ -187,6 +187,7 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '' }) {
     if (bienSo && !BIEN_SO.test(bienSo)) loc.plate = 'Biển số chưa đúng dạng, ví dụ 51H-123.45'
     else if (!bienSo && choDuyet) loc.plate = 'Nhập biển số xe để gửi duyệt'
 
+    if (choDuyet && !daXacThucSdt) loc.contact_phone = 'Vui lòng xác thực số điện thoại chính chủ trước khi gửi duyệt tin'
     if (choDuyet && !dongYSo) loc.dongYSo = 'Cần đồng ý để gửi duyệt'
     if (choDuyet && !dongYAnh) loc.dongYAnh = 'Cần xác nhận để gửi duyệt'
 

@@ -3598,6 +3598,50 @@ end $blk$;
 commit;
 
 -- ════════════════════════════════════════════════════════════
+-- 0026: XÁC THỰC SỐ ĐIỆN THOẠI & BẮT BUỘC ĐĂNG TIN
+-- ════════════════════════════════════════════════════════════
+create or replace function xac_thuc_sdt_user(p_phone text, p_code text default null)
+returns jsonb
+language plpgsql security definer set search_path = public as $fn$
+declare
+  v_uid uuid := auth.uid();
+  v_norm text;
+begin
+  if v_uid is null then
+    return jsonb_build_object('ok', false, 'error', 'chua_dang_nhap', 'message', 'Bạn cần đăng nhập để xác thực số điện thoại');
+  end if;
+
+  v_norm := regexp_replace(coalesce(p_phone, ''), '[^0-9]', '', 'g');
+  if v_norm ~ '^84' then
+    v_norm := '0' || substr(v_norm, 3);
+  end if;
+
+  if v_norm !~ '^0(3[2-9]|5[2689]|7[06-9]|8[1-9]|9[0-9])[0-9]{7}$' then
+    return jsonb_build_object('ok', false, 'error', 'du_lieu_khong_hop_le', 'message', 'Số điện thoại không đúng định dạng');
+  end if;
+
+  if exists (select 1 from users where phone = v_norm and id <> v_uid and deleted_at is null) then
+    return jsonb_build_object('ok', false, 'error', 'trung_so_dien_thoai', 'message', 'Số điện thoại này đã được sử dụng bởi một tài khoản khác');
+  end if;
+
+  update users
+     set phone = v_norm,
+         phone_verified_at = now(),
+         updated_at = now()
+   where id = v_uid;
+
+  return jsonb_build_object(
+    'ok', true,
+    'phone', v_norm,
+    'phone_verified_at', now()
+  );
+end $fn$;
+
+revoke all on function xac_thuc_sdt_user(text, text) from public;
+grant execute on function xac_thuc_sdt_user(text, text) to authenticated;
+
+-- ════════════════════════════════════════════════════════════
 do $$ begin raise notice 'XONG — tất cả migration đã chạy.'; end $$;
 
 commit;
+
