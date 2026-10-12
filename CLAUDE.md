@@ -106,6 +106,7 @@ Bốn luật hay bị quên nhất:
     git add -A; git commit -m "<luồng>: <việc đã làm>"
     ```
 12. **Ghi một dòng vào `CHANGELOG.md`.**
+13. 🛑 **CẤM tự ý `git push` lên `main` và `dev` khi chưa có lệnh trực tiếp của anh.** Mọi thay đổi code chỉ dừng ở commit cục bộ (local). Chỉ khi nào anh yêu cầu rõ ràng mới được phép push lên GitHub.
 
 ### 2.4 Ba lớp an toàn
 | Lớp | Công cụ | Khi nào |
