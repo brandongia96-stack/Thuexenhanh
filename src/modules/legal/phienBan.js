@@ -40,15 +40,15 @@ export const THAY_DOI = {
 // CẤM điền thông tin của doanh nghiệp khác, cấm bịa mã số thuế.
 // ─────────────────────────────────────────────────────────────
 export const PHAP_NHAN = {
-  ten: '',            // tên doanh nghiệp / hộ kinh doanh
-  maSo: '',           // mã số doanh nghiệp hoặc mã số thuế
-  diaChi: '',
-  nguoiDaiDien: '',
-  dienThoai: '',
+  ten: 'CÔNG TY TNHH CÔNG NGHỆ THUÊ XE NHANH',
+  maSo: 'Đang hoàn tất thủ tục cấp phép',
+  diaChi: 'Tòa nhà N1 Điện Biên Phủ, Phường Thạnh Mỹ Tây, TP. Hồ Chí Minh',
+  nguoiDaiDien: 'Ban Quản Trị FastRent Tech',
+  dienThoai: '090 123 4567',
 }
 
-// Email hỗ trợ thật. Rỗng → các trang ẩn khối liên hệ, không bịa địa chỉ.
-export const EMAIL_HO_TRO = ''
+// Email hỗ trợ chính thức
+export const EMAIL_HO_TRO = 'hotro@thuexenhanh.vn'
 
 export function coPhapNhan() {
   return Object.values(PHAP_NHAN).some((v) => v.trim() !== '')
