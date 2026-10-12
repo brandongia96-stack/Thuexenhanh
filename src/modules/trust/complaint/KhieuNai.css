@@ -1,3 +1,10 @@
+.kn-the-form {
+  border: 1px solid var(--m-border) !important;
+  border-radius: var(--r-lg) !important;
+  background: var(--m-surface) !important;
+  box-shadow: var(--shadow-sm) !important;
+}
+
 .kn-nhan {
   display: inline-block;
   padding: 2px 10px;
@@ -18,8 +25,13 @@
   cursor: pointer;
   border: 1px solid var(--m-border);
   background: var(--m-surface);
+  border-radius: var(--r-md);
+  transition: border-color var(--t-fast), box-shadow var(--t-fast);
 }
-.kn-dong:hover { border-color: var(--m-blue); }
+.kn-dong:hover {
+  border-color: var(--m-green);
+  box-shadow: var(--shadow-sm);
+}
 
 .kn-trich {
   margin-top: 4px;

@@ -1,17 +1,15 @@
 // trust/complaint/TrangKhieuNaiCuaToi — Tài khoản → Khiếu nại.
 //
-// Khác /khieu-nai (trang tĩnh giải thích chính sách, pháp lý viết): đây là
-// màn CHỨC NĂNG — tạo khiếu nại thật, theo dõi mã hồ sơ + hạn xử lý, nhắn
-// thêm. Dữ liệu đọc/ghi thẳng bảng `complaints`/`complaint_messages`, RLS đã
-// chặn chỉ thấy khiếu nại của chính mình (migration 0023).
-//
-// Vào từ "Kháng cáo" trên thẻ xe (owner/TheXe.jsx) có kèm query string
-// ?kind=bao_cao_sai&listing_id=<id> để điền sẵn — chủ xe vẫn gửi thủ công,
-// không tự động hoá hoàn toàn.
+// Màn CHỨC NĂNG: tạo khiếu nại thật, theo dõi mã hồ sơ + hạn xử lý, nhắn thêm.
+// Dữ liệu đọc/ghi bảng `complaints`/`complaint_messages`, RLS đã chặn chỉ thấy
+// khiếu nại của chính mình.
 
 import { useEffect, useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import { ArrowLeft, Clock, MessageSquarePlus, Plus, ShieldAlert } from 'lucide-react'
+import { useSearchParams, Link, useNavigate } from 'react-router-dom'
+import {
+  ArrowLeft, Clock, MessageSquarePlus, Plus, ShieldAlert,
+  AlertCircle, CheckCircle2, RefreshCw, X,
+} from 'lucide-react'
 import { useAuth } from '../../auth/AuthProvider'
 import EmptyState from '../../../components/EmptyState'
 import { PageLoading } from '../../../components/Loading'
@@ -25,7 +23,7 @@ import './KhieuNai.css'
 const NHAN_TRANG_THAI = {
   da_nhan: { label: 'Đã nhận', tone: 'info' },
   dang_xu_ly: { label: 'Đang xử lý', tone: 'info' },
-  cho_bo_sung: { label: 'Chờ anh/chị bổ sung', tone: 'warn' },
+  cho_bo_sung: { label: 'Chờ bổ sung', tone: 'warn' },
   da_giai_quyet: { label: 'Đã giải quyết', tone: 'ok' },
   dong: { label: 'Đã đóng', tone: 'mid' },
 }
@@ -35,7 +33,7 @@ function NhanTrangThai({ status }) {
   return <span className={`kn-nhan kn-nhan-${n.tone}`}>{n.label}</span>
 }
 
-function FormTaoMoi({ userId, macDinh, onTao, dangGui }) {
+function FormTaoMoi({ userId, macDinh, onTao, onHuy, dangGui }) {
   const [kind, setKind] = useState(macDinh.kind || 'nen_tang')
   const [content, setContent] = useState('')
   const [loi, setLoi] = useState(null)
@@ -43,47 +41,128 @@ function FormTaoMoi({ userId, macDinh, onTao, dangGui }) {
   async function xuLy(e) {
     e.preventDefault()
     setLoi(null)
+    const noiDung = content.trim()
+    if (noiDung.length < 10) {
+      setLoi('Nội dung khiếu nại cần ít nhất 10 ký tự.')
+      return
+    }
+
     try {
       let reportId = null
       if (kind === 'bao_cao_sai' && macDinh.listingId) {
         reportId = await layBaoCaoDaXacNhan(macDinh.listingId)
       }
-      await onTao({ userId, kind, content, listingId: macDinh.listingId ?? null, reportId })
+      await onTao({ userId, kind, content: noiDung, listingId: macDinh.listingId ?? null, reportId })
       setContent('')
     } catch (err) {
-      setLoi(err.message || 'Không gửi được, thử lại sau.')
+      setLoi(err?.message || 'Không gửi được khiếu nại, vui lòng thử lại sau.')
     }
   }
 
   return (
-    <form onSubmit={xuLy} className="card card-pad stack" style={{ gap: 'var(--sp-3)' }}>
-      <h3 className="t-h3">Gửi khiếu nại mới</h3>
+    <form onSubmit={xuLy} className="card card-pad kn-the-form stack" style={{ gap: 'var(--sp-4)' }}>
+      <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+        <h3 className="t-h3" style={{ margin: 0 }}>Gửi khiếu nại mới</h3>
+        {onHuy && (
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            onClick={onHuy}
+            style={{ padding: '0 8px', height: 32 }}
+            disabled={dangGui}
+          >
+            <X size={16} /> Đóng
+          </button>
+        )}
+      </div>
+
       {macDinh.listingId && kind === 'bao_cao_sai' && (
-        <div className="t-small" style={{ color: 'var(--m-subtle)' }}>
-          Kháng cáo cho tin <code>{macDinh.listingId}</code>.
+        <div
+          className="t-small"
+          style={{
+            color: 'var(--m-subtle)',
+            background: 'var(--m-bg)',
+            padding: '8px 12px',
+            borderRadius: 'var(--r-md)',
+            border: '1px solid var(--m-border)',
+          }}
+        >
+          Kháng cáo cho tin đăng: <code>{macDinh.listingId}</code>
         </div>
       )}
-      <div>
-        <label className="truong-nhan">Loại khiếu nại</label>
-        <select className="truong-o" value={kind} onChange={e => setKind(e.target.value)}>
-          {LOAI_KHIEU_NAI.map(l => <option key={l.code} value={l.code}>{l.label}</option>)}
+
+      {/* Trường: Loại khiếu nại */}
+      <div className="field">
+        <label className="field-label" htmlFor="kn-loai" style={{ margin: 0 }}>
+          Loại khiếu nại
+        </label>
+        <select
+          id="kn-loai"
+          className="select"
+          value={kind}
+          onChange={(e) => setKind(e.target.value)}
+        >
+          {LOAI_KHIEU_NAI.map((l) => (
+            <option key={l.code} value={l.code}>
+              {l.label}
+            </option>
+          ))}
         </select>
       </div>
-      <div>
-        <label className="truong-nhan">Nội dung</label>
+
+      {/* Trường: Nội dung */}
+      <div className="field">
+        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <label className="field-label" htmlFor="kn-noidung" style={{ margin: 0 }}>
+            Nội dung khiếu nại
+          </label>
+          <span className="field-hint" style={{ margin: 0 }}>
+            {content.trim().length}/10 ký tự tối thiểu
+          </span>
+        </div>
         <textarea
-          className="truong-o" rows={4}
-          placeholder="Mô tả cụ thể việc anh/chị cần chúng em xử lý…"
+          id="kn-noidung"
+          className="textarea"
+          rows={5}
+          placeholder="Mô tả cụ thể sự việc cần đội ngũ Thuê Xe Nhanh hỗ trợ xử lý…"
           value={content}
-          onChange={e => setContent(e.target.value)}
+          onChange={(e) => setContent(e.target.value)}
+          required
         />
-        <div className="truong-phu">Ít nhất 10 ký tự.</div>
+        <div className="field-hint" style={{ marginTop: 2 }}>
+          Ít nhất 10 ký tự. Vui lòng cung cấp chi tiết ngày giờ, thông tin xe hoặc người liên quan (nếu có).
+        </div>
       </div>
-      {loi && <div className="loi-he-thong">{loi}</div>}
-      <div className="row" style={{ justifyContent: 'flex-end' }}>
-        <button type="submit" className="btn btn-primary" disabled={dangGui || content.trim().length < 10}>
-          <Plus size={16} strokeWidth={2} />
-          {dangGui ? 'Đang gửi…' : 'Gửi khiếu nại'}
+
+      {loi && (
+        <div className="loi-he-thong" style={{ margin: 0 }}>
+          <AlertCircle size={16} />
+          <span>{loi}</span>
+        </div>
+      )}
+
+      <div className="row" style={{ justifyContent: 'flex-end', gap: 'var(--sp-2)' }}>
+        {onHuy && (
+          <button type="button" className="btn btn-ghost" onClick={onHuy} disabled={dangGui}>
+            Huỷ
+          </button>
+        )}
+        <button
+          type="submit"
+          className="btn btn-primary"
+          disabled={dangGui || content.trim().length < 10}
+        >
+          {dangGui ? (
+            <>
+              <RefreshCw size={16} className="fdt-quay" />
+              Đang gửi…
+            </>
+          ) : (
+            <>
+              <Plus size={16} strokeWidth={2} />
+              Gửi khiếu nại
+            </>
+          )}
         </button>
       </div>
     </form>
@@ -97,8 +176,14 @@ function ChiTiet({ complaintId, userId, onDong }) {
 
   useEffect(() => {
     let huy = false
-    layChiTietKhieuNai(complaintId).then(kq => { if (!huy) setState(kq) })
-    return () => { huy = true }
+    layChiTietKhieuNai(complaintId)
+      .then((kq) => {
+        if (!huy) setState(kq)
+      })
+      .catch(() => {})
+    return () => {
+      huy = true
+    }
   }, [complaintId])
 
   async function boSung(e) {
@@ -107,7 +192,9 @@ function ChiTiet({ complaintId, userId, onDong }) {
     setDangGui(true)
     try {
       const dong = await guiBoSung({ complaintId, userId, body: tinMoi })
-      setState(s => ({ ...s, tinNhan: [...s.tinNhan, dong] }))
+      if (dong) {
+        setState((s) => ({ ...s, tinNhan: [...s.tinNhan, dong] }))
+      }
       setTinMoi('')
     } finally {
       setDangGui(false)
@@ -123,29 +210,31 @@ function ChiTiet({ complaintId, userId, onDong }) {
         <ArrowLeft size={16} strokeWidth={2} /> Quay lại danh sách
       </button>
 
-      <div className="card card-pad stack" style={{ gap: 'var(--sp-2)' }}>
-        <div className="row" style={{ justifyContent: 'space-between' }}>
-          <span className="t-h3">{khieuNai.code}</span>
+      <div className="card card-pad stack kn-the-form" style={{ gap: 'var(--sp-2)' }}>
+        <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+          <span className="t-h3" style={{ margin: 0 }}>{khieuNai.code}</span>
           <NhanTrangThai status={khieuNai.status} />
         </div>
-        <div className="t-small" style={{ color: 'var(--m-subtle)' }}>
-          <Clock size={13} strokeWidth={2} /> Hạn xử lý {formatDate(khieuNai.due_at)}
+        <div className="t-small" style={{ color: 'var(--m-subtle)', display: 'flex', alignItems: 'center', gap: 6 }}>
+          <Clock size={13} strokeWidth={2} /> Hạn xử lý: {formatDate(khieuNai.due_at)}
         </div>
-        <p className="t-body">{khieuNai.content}</p>
+        <p className="t-body" style={{ margin: 'var(--sp-2) 0', whiteSpace: 'pre-wrap' }}>
+          {khieuNai.content}
+        </p>
         {khieuNai.resolution && (
           <div className="kn-ket-qua">
-            <b>Kết quả:</b> {khieuNai.resolution}
+            <b>Kết quả giải quyết:</b> {khieuNai.resolution}
           </div>
         )}
       </div>
 
       <div className="stack" style={{ gap: 'var(--sp-2)' }}>
-        {tinNhan.map(tn => (
+        {tinNhan.map((tn) => (
           <div key={tn.id} className={`kn-tin ${tn.is_staff ? 'kn-tin-staff' : 'kn-tin-minh'}`}>
             <div className="t-small" style={{ color: 'var(--m-subtle)' }}>
-              {tn.is_staff ? 'Thuê Xe Nhanh' : 'Anh/chị'} · {formatDateTime(tn.created_at)}
+              {tn.is_staff ? 'Thuê Xe Nhanh' : 'Bạn'} · {formatDateTime(tn.created_at)}
             </div>
-            <div>{tn.body}</div>
+            <div style={{ marginTop: 2, whiteSpace: 'pre-wrap' }}>{tn.body}</div>
           </div>
         ))}
       </div>
@@ -153,10 +242,11 @@ function ChiTiet({ complaintId, userId, onDong }) {
       {khieuNai.status !== 'dong' && (
         <form onSubmit={boSung} className="row" style={{ gap: 'var(--sp-2)' }}>
           <input
-            className="truong-o" style={{ flex: 1 }}
-            placeholder="Bổ sung thông tin…"
+            className="input"
+            style={{ flex: 1 }}
+            placeholder="Bổ sung thông tin trao đổi…"
             value={tinMoi}
-            onChange={e => setTinMoi(e.target.value)}
+            onChange={(e) => setTinMoi(e.target.value)}
           />
           <button type="submit" className="btn btn-primary" disabled={dangGui || !tinMoi.trim()}>
             <MessageSquarePlus size={16} strokeWidth={2} />
@@ -171,11 +261,14 @@ function ChiTiet({ complaintId, userId, onDong }) {
 export default function TrangKhieuNaiCuaToi() {
   const { user, loading: dangKiemTraDangNhap } = useAuth()
   const [params] = useSearchParams()
-  const [danhSach, setDanhSach] = useState(null)
+  const navigate = useNavigate()
+
+  const [danhSach, setDanhSach] = useState([])
   const [dangTai, setDangTai] = useState(true)
-  const [dangMo, setDangMo] = useState(null) // id khiếu nại đang xem chi tiết, hoặc null
+  const [dangMo, setDangMo] = useState(null)
   const [dangGuiMoi, setDangGuiMoi] = useState(false)
   const [hienForm, setHienForm] = useState(() => params.get('kind') === 'bao_cao_sai')
+  const [thongBaoThanhCong, setThongBaoThanhCong] = useState(null)
 
   const macDinh = useMemo(() => ({
     kind: params.get('kind') || '',
@@ -183,22 +276,56 @@ export default function TrangKhieuNaiCuaToi() {
   }), [params])
 
   useEffect(() => {
-    if (!user?.id) return
-    layDanhSachKhieuNai().then(d => { setDanhSach(d); setDangTai(false) }).catch(() => setDangTai(false))
-  }, [user?.id])
+    if (dangKiemTraDangNhap) return
+    if (!user?.id) {
+      setDangTai(false)
+      return
+    }
+
+    layDanhSachKhieuNai()
+      .then((d) => {
+        setDanhSach(d || [])
+      })
+      .catch(() => {})
+      .finally(() => {
+        setDangTai(false)
+      })
+  }, [user?.id, dangKiemTraDangNhap])
 
   async function taoMoi(payload) {
     setDangGuiMoi(true)
+    setThongBaoThanhCong(null)
     try {
       const moi = await taoKhieuNai(payload)
-      setDanhSach(d => [moi, ...(d ?? [])])
+      setDanhSach((d) => [moi, ...(d ?? [])])
       setHienForm(false)
+      setThongBaoThanhCong(`Gửi khiếu nại thành công! Mã hồ sơ: ${moi?.code || ''}`)
+      setTimeout(() => {
+        setThongBaoThanhCong(null)
+      }, 5000)
     } finally {
       setDangGuiMoi(false)
     }
   }
 
   if (dangKiemTraDangNhap || dangTai) return <PageLoading />
+
+  if (!user) {
+    return (
+      <div className="page" style={{ maxWidth: 640 }}>
+        <EmptyState
+          icon={ShieldAlert}
+          title="Cần đăng nhập để xem khiếu nại"
+          hint="Vui lòng đăng nhập vào tài khoản để tạo và theo dõi tiến độ xử lý khiếu nại của bạn."
+          action={
+            <button className="btn btn-primary" onClick={() => navigate('/dang-nhap')}>
+              Đăng nhập
+            </button>
+          }
+        />
+      </div>
+    )
+  }
 
   if (dangMo) {
     return (
@@ -213,35 +340,66 @@ export default function TrangKhieuNaiCuaToi() {
       <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
         <h1 className="t-h2" style={{ margin: 0 }}>Khiếu nại của tôi</h1>
         {!hienForm && (
-          <button type="button" className="btn btn-primary btn-sm" onClick={() => setHienForm(true)}>
+          <button
+            type="button"
+            className="btn btn-primary btn-sm"
+            onClick={() => setHienForm(true)}
+          >
             <Plus size={16} strokeWidth={2} /> Khiếu nại mới
           </button>
         )}
       </div>
 
+      {thongBaoThanhCong && (
+        <div
+          style={{
+            padding: '10px 14px',
+            background: 'var(--m-green-light)',
+            color: 'var(--m-green-hover)',
+            borderRadius: 'var(--r-md)',
+            fontWeight: 500,
+            fontSize: 14,
+            display: 'flex',
+            alignItems: 'center',
+            gap: 8,
+          }}
+        >
+          <CheckCircle2 size={16} />
+          <span>{thongBaoThanhCong}</span>
+        </div>
+      )}
+
       {hienForm && (
-        <FormTaoMoi userId={user.id} macDinh={macDinh} onTao={taoMoi} dangGui={dangGuiMoi} />
+        <FormTaoMoi
+          userId={user.id}
+          macDinh={macDinh}
+          onTao={taoMoi}
+          onHuy={() => setHienForm(false)}
+          dangGui={dangGuiMoi}
+        />
       )}
 
       {(!danhSach || danhSach.length === 0) ? (
         <EmptyState
           icon={ShieldAlert}
           title="Chưa có khiếu nại nào"
-          hint="Khi có việc cần chúng em xử lý, anh/chị bấm &quot;Khiếu nại mới&quot; ở trên."
+          hint="Khi có vấn đề cần chúng em hỗ trợ xử lý, bấm nút &quot;Khiếu nại mới&quot; ở trên."
         />
       ) : (
-        <div className="stack" style={{ gap: 'var(--sp-2)' }}>
-          {danhSach.map(kn => (
+        <div className="stack" style={{ gap: 'var(--sp-3)' }}>
+          {danhSach.map((kn) => (
             <button
-              key={kn.id} type="button" className="card card-pad kn-dong"
+              key={kn.id}
+              type="button"
+              className="card card-pad kn-dong"
               onClick={() => setDangMo(kn.id)}
             >
-              <div className="row" style={{ justifyContent: 'space-between' }}>
-                <span style={{ fontWeight: 600 }}>{kn.code}</span>
+              <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontWeight: 600, fontSize: 15 }}>{kn.code}</span>
                 <NhanTrangThai status={kn.status} />
               </div>
-              <div className="t-small" style={{ color: 'var(--m-subtle)' }}>
-                Hạn xử lý {formatDate(kn.due_at)}
+              <div className="t-small" style={{ color: 'var(--m-subtle)', marginTop: 2 }}>
+                Hạn xử lý: {formatDate(kn.due_at)}
               </div>
               <div className="t-body kn-trich">{kn.content}</div>
             </button>
