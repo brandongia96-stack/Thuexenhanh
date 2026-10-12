@@ -124,9 +124,8 @@ function TheXe({ the, bangDiaGioi, uuTien = false }) {
             <VerifiedBadge verified={the.is_verified} />
             {/* Khoảng cách CHỈ có khi người dùng bật vị trí hoặc server tính sẵn. Không có thì ẩn. */}
             {khoangCach != null && (
-              <span className="thexe-khoang-cach" title={`Cách vị trí của bạn khoảng ${dinhDangKhoangCach(khoangCach)}`}>
-                <MapPin size={11} strokeWidth={2} />
-                khoảng {dinhDangKhoangCach(khoangCach)}
+              <span className="thexe-khoang-cach" title={`Cách vị trí của bạn ${dinhDangKhoangCach(khoangCach)}`}>
+                {dinhDangKhoangCach(khoangCach)}
               </span>
             )}
           </div>

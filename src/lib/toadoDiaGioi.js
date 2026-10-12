@@ -160,9 +160,9 @@ export function dinhDangKhoangCach(km) {
     return `${m}m`
   }
   if (n < 10) {
-    return `${n.toFixed(1)} km`
+    return `${n.toFixed(1)}km`
   }
-  return `${Math.round(n)} km`
+  return `${Math.round(n)}km`
 }
 
 /**

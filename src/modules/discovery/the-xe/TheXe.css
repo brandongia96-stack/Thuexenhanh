@@ -109,13 +109,9 @@
 .thexe-khoang-cach {
   display: inline-flex;
   align-items: center;
-  gap: 3px;
-  font-size: 12px;
+  font-size: 13px;
   font-weight: 700;
-  color: var(--m-green);
-  background: var(--m-green-light);
-  padding: 2px 8px;
-  border-radius: var(--r-full);
+  color: var(--m-mid);
 }
 
 /* ─── Dạng danh sách (ngang), chỉ từ máy tính bảng trở lên ─── */
