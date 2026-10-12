@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Phone, ShieldCheck, Wallet, MapPin, Zap } from 'lucide-react'
 
@@ -9,6 +9,8 @@ import { taiTenDiaGioi } from '../discovery/diaGioi'
 import TheXe from '../discovery/the-xe/TheXe'
 import OTimKiem from '../discovery/search/OTimKiem'
 import { duongDanTimKiem } from '../discovery/filter/loc'
+import { useViTri } from '../../context/ViTriContext'
+import { tinhKhoangCachToiXe } from '../../lib/toadoDiaGioi'
 import './TrangChu.css'
 
 // Cột thẻ xe — khớp view `listing_card`, cấm select * (HIEU-NANG.md mục 2.1).
@@ -275,40 +277,80 @@ function Diem({ icon: Icon, title, desc }) {
 
 
 function XeGanBan() {
+  const { batViTri, viTri, dangLay: dangLayGPS, xinQuyenViTri } = useViTri()
   const [trangThai, setTrangThai] = useState('cho')
   const [ds, setDs] = useState([])
   const [bang, setBang] = useState({ tinh: {}, quan: {} })
 
-  function timXeGanDay() {
+  const taiXeTheoToaDo = useCallback(async (latBan, lngBan) => {
     setTrangThai('dang_tim')
-    if (!navigator.geolocation) {
-      setTrangThai('loi_gps')
-      return
-    }
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      const { latitude: latBan, longitude: lngBan } = pos.coords
-      const sb = await trySupabase()
-      if (!sb) { setTrangThai('khong_co'); return }
-      
-      // Tính khoảng cách TRÊN SERVER (migration 0013): lọc bán kính 50 km,
-      // trả tối đa 8 thẻ kèm distance_km. Không kéo toạ độ của mọi tin về máy.
+    const sb = await trySupabase()
+    if (!sb) { setTrangThai('khong_co'); return }
+
+    const ten = await taiTenDiaGioi()
+    setBang(ten)
+
+    // 1. Thử gọi RPC server 0013
+    try {
       const { data, error } = await sb.rpc('get_nearby_listings', {
         p_lat: latBan, p_lng: lngBan, p_radius_km: 50, p_limit: 8,
       })
-      if (error || !data?.length) { setTrangThai('khong_co'); return }
+      if (!error && data && data.length > 0) {
+        const dsCuoi = data.map((x) => ({ ...x, khoangCach: Number(x.distance_km) }))
+        setDs(dsCuoi)
+        setTrangThai('co_xe')
+        return
+      }
+    } catch {}
 
-      const dsCuoi = data.map((x) => ({ ...x, khoangCach: Number(x.distance_km) }))
+    // 2. Dự phòng: nếu các tin trong DB chưa có toạ độ chi tiết (lat/lng null),
+    // kéo danh sách tin đang hiển thị và tính khoảng cách theo toạ độ quận/tỉnh
+    try {
+      const { data: tinMoi } = await sb
+        .from('listing_card')
+        .select(COT_THE)
+        .eq('status', 'dang_hien_thi')
+        .gt('expires_at', new Date().toISOString())
+        .limit(30)
 
-      const ten = await taiTenDiaGioi()
-      setBang(ten)
-      setDs(dsCuoi)
-      setTrangThai('co_xe')
-    }, () => {
-      setTrangThai('loi_gps')
-    }, { enableHighAccuracy: false, timeout: 10000, maximumAge: 300000 })
+      if (tinMoi?.length) {
+        const coKhoangCach = tinMoi
+          .map((x) => ({
+            ...x,
+            khoangCach: tinhKhoangCachToiXe({ lat: latBan, lng: lngBan }, x),
+          }))
+          .filter((x) => x.khoangCach != null)
+          .sort((a, b) => a.khoangCach - b.khoangCach)
+          .slice(0, 8)
+
+        if (coKhoangCach.length > 0) {
+          setDs(coKhoangCach)
+          setTrangThai('co_xe')
+          return
+        }
+      }
+    } catch {}
+
+    setTrangThai('khong_co')
+  }, [])
+
+  useEffect(() => {
+    if (batViTri && viTri?.lat && viTri?.lng) {
+      taiXeTheoToaDo(viTri.lat, viTri.lng)
+    }
+  }, [batViTri, viTri?.lat, viTri?.lng, taiXeTheoToaDo])
+
+  function timXeGanDay() {
+    if (viTri?.lat && viTri?.lng) {
+      taiXeTheoToaDo(viTri.lat, viTri.lng)
+    } else {
+      xinQuyenViTri((td) => {
+        taiXeTheoToaDo(td.lat, td.lng)
+      })
+    }
   }
 
-  if (trangThai === 'khong_co' || trangThai === 'loi_gps') return null
+  if (trangThai === 'khong_co') return null
 
   return (
     <section className="stack">
@@ -322,16 +364,16 @@ function XeGanBan() {
       {trangThai === 'cho' && (
         <div className="card card-pad empty" style={{ border: '1px dashed var(--m-border)', background: 'var(--m-bg)' }}>
           <p className="t-body" style={{ color: 'var(--m-dark)' }}>Cho phép định vị để xem các xe đang ở gần bạn nhất (bán kính 50km).</p>
-          <button className="btn btn-primary" onClick={timXeGanDay}>
-            <MapPin size={18} /> Quét radar tìm xe gần đây
+          <button className="btn btn-primary" onClick={timXeGanDay} disabled={dangLayGPS}>
+            <MapPin size={18} /> {dangLayGPS ? 'Đang định vị...' : 'Quét radar tìm xe gần đây'}
           </button>
         </div>
       )}
 
       {trangThai === 'dang_tim' && (
         <div className="card card-pad empty" style={{ border: '1px dashed var(--m-border)' }}>
-          <div className="skeleton" style={{ width: 120, height: 40, borderRadius: 20 }}></div>
-          <p className="t-small" style={{ marginTop: 8 }}>Đang lấy toạ độ GPS của bạn...</p>
+          <div className="skeleton" style={{ width: 120, height: 40, borderRadius: 'var(--r-box)' }}></div>
+          <p className="t-small" style={{ marginTop: 8 }}>Đang tìm xe gần vị trí của bạn...</p>
         </div>
       )}
 

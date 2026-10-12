@@ -113,3 +113,18 @@
   margin-top: var(--sp-6);
   padding-bottom: var(--sp-6);
 }
+
+/* ─── Công tắc bật/tắt vị trí ─── */
+.tk-cong-tac {
+  flex-shrink: 0; width: 50px; height: 28px; border-radius: var(--r-full);
+  background: var(--m-border); position: relative; transition: background var(--t-fast);
+  border: none; cursor: pointer;
+}
+.tk-cong-tac.bat { background: var(--m-green); }
+.tk-cong-tac:disabled { opacity: .6; cursor: progress; }
+.tk-cong-tac-nut {
+  position: absolute; top: 2px; left: 2px; width: 24px; height: 24px; border-radius: var(--r-full);
+  background: var(--m-surface); box-shadow: var(--shadow-sm); transition: transform var(--t-fast);
+}
+.tk-cong-tac.bat .tk-cong-tac-nut { transform: translateX(22px); }
+

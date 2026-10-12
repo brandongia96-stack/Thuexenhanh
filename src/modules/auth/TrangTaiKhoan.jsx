@@ -2,9 +2,10 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Phone, Save, LogOut, ChevronRight, Heart, Car, CalendarDays, Wallet,
-  MessageCircle, Settings, ArrowLeft, ShieldAlert, ShieldCheck,
+  MessageCircle, Settings, ArrowLeft, ShieldAlert, ShieldCheck, MapPin, RefreshCw,
 } from 'lucide-react'
 import { useAuth } from './AuthProvider'
+import { useViTri } from '../../context/ViTriContext'
 import { getSupabase } from '../../lib/supabase'
 import './TrangTaiKhoan.css'
 
@@ -42,6 +43,7 @@ function MucMenu({ to, onClick, icon: Icon, chu }) {
 
 export default function TrangTaiKhoan() {
   const { profile, user, signOut, isOwner } = useAuth()
+  const { batViTri, doiBatViTri, viTri, dangLay: dangLayViTri, loiViTri, xinQuyenViTri } = useViTri()
   
   const [view, setView] = useState('menu') // 'menu' | 'profile'
 
@@ -144,6 +146,52 @@ export default function TrangTaiKhoan() {
               </div>
             </form>
           </div>
+
+          {/* Cài đặt vị trí & khoảng cách */}
+          <div className="card card-pad stack">
+            <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-2)' }}>
+                <MapPin size={20} color="var(--m-green)" />
+                <h2 className="t-h3" style={{ margin: 0 }}>Vị trí &amp; Khoảng cách</h2>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={batViTri}
+                aria-label="Bật tắt chia sẻ vị trí"
+                className={`tk-cong-tac${batViTri ? ' bat' : ''}`}
+                disabled={dangLayViTri}
+                onClick={() => doiBatViTri(!batViTri)}
+              >
+                <span className="tk-cong-tac-nut" />
+              </button>
+            </div>
+
+            <p className="t-small" style={{ color: 'var(--m-mid)' }}>
+              {batViTri
+                ? 'Đang bật định vị. Hệ thống dùng vị trí của bạn để tính số km tới từng chiếc xe trên các thẻ xe.'
+                : 'Đang tắt định vị. Bật để xem các xe đang ở gần bạn nhất và khoảng cách chính xác.'}
+            </p>
+
+            {loiViTri && <div className="field-error">{loiViTri}</div>}
+
+            {batViTri && (
+              <div className="row" style={{ justifyContent: 'space-between', alignItems: 'center', paddingTop: 'var(--sp-2)', borderTop: '1px solid var(--m-border)' }}>
+                <span className="t-small" style={{ color: 'var(--m-subtle)' }}>
+                  {viTri ? 'Đã lưu toạ độ vị trí hiện tại' : 'Chưa lấy được toạ độ'}
+                </span>
+                <button
+                  type="button"
+                  className="btn btn-ghost btn-sm"
+                  disabled={dangLayViTri}
+                  onClick={() => xinQuyenViTri()}
+                >
+                  <RefreshCw size={14} className={dangLayViTri ? 'fdt-quay' : ''} />
+                  {dangLayViTri ? 'Đang cập nhật...' : 'Cập nhật lại GPS'}
+                </button>
+              </div>
+            )}
+          </div>
         </div>
       </div>
     )
@@ -180,6 +228,7 @@ export default function TrangTaiKhoan() {
         <MucMenu to="/tai-khoan/khieu-nai" icon={ShieldAlert} chu="Khiếu nại của tôi" />
         <MucMenu to="/lien-he" icon={MessageCircle} chu="Liên hệ" />
         <MucMenu onClick={() => setView('profile')} icon={Settings} chu="Cài đặt thông tin" />
+        <MucMenu onClick={() => setView('profile')} icon={MapPin} chu={`Vị trí: ${batViTri ? 'Đang bật' : 'Đang tắt'}`} />
         <MucMenu to="/tai-khoan/du-lieu" icon={ShieldCheck} chu="Dữ liệu & Quyền riêng tư" />
         <MucMenu onClick={signOut} icon={LogOut} chu="Thoát tài khoản" />
       </div>
