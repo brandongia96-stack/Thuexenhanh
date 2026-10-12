@@ -5,7 +5,8 @@
 //   2. Không hứa hẹn tin sẽ lên ngay — tin đi qua kiểm duyệt và tốn token.
 //   3. Chủ xe không tự đặt được tích xanh. Không có ô nào cho việc đó.
 
-import { AlertCircle, AlertTriangle, CheckCircle2, Info, Loader2, Save, Send } from 'lucide-react'
+import { useState } from 'react'
+import { AlertCircle, AlertTriangle, CheckCircle2, HelpCircle, Info, Loader2, Save, Send } from 'lucide-react'
 import { AMENITIES } from '../../../data/amenities'
 import { TOKENS_PER_MONTH } from '../../../lib/config'
 import { vndForMonths } from '../../../lib/pricing'
@@ -14,6 +15,7 @@ import { GOI, GOI_LABEL, GOI_MO_TA, nhomTruong } from '../fieldGroups'
 import { nhanTrangThai, STATUS } from '../lifecycle/vongDoi'
 import LichChanNgay from '../availability/LichChanNgay'
 import UploadAnh from '../media/UploadAnh'
+import ModalSoSanhGoi from './ModalSoSanhGoi'
 import TruongNhap from './TruongNhap'
 import './FormDangTin.css'
 
@@ -29,6 +31,8 @@ export default function FormDangTin({ dieuKhien, onXong }) {
     dongYSo, doiDongYSo, dongYAnh, doiDongYAnh,
     luuNhap, luuVaGuiDuyet,
   } = dieuKhien
+
+  const [moSoSanh, setMoSoSanh] = useState(false)
 
   if (dangTai) {
     return (
@@ -91,12 +95,24 @@ export default function FormDangTin({ dieuKhien, onXong }) {
           <h2 className="t-h3">Khai báo bao nhiêu thông tin?</h2>
         </div>
 
-        <div className="fdt-hint-goi">
-          <Info size={16} strokeWidth={1.8} />
-          <span>
-            <strong>Cùng mức phí ({TOKENS_PER_MONTH} token/tháng):</strong> Gói <strong>Cơ bản</strong> có ưu điểm lên tin siêu nhanh (~2 phút, chỉ thông tin thiết yếu); Gói <strong>Đầy đủ</strong> thêm tiện nghi, tiền cọc &amp; lịch xe bận giúp tin uy tín hơn, khách nắm rõ điều kiện đỡ phải gọi hỏi nhiều.
-          </span>
+        <div className="fdt-link-sosanh-wrap">
+          <button
+            type="button"
+            className="fdt-btn-sosanh"
+            onClick={() => setMoSoSanh(true)}
+          >
+            <HelpCircle size={15} strokeWidth={2} />
+            <span>Có gì khác nhau giữa 2 cách đăng tin?</span>
+          </button>
         </div>
+
+        {moSoSanh && (
+          <ModalSoSanhGoi
+            onDong={() => setMoSoSanh(false)}
+            goiHienTai={goi}
+            onChonGoi={(g) => doiGoi(g)}
+          />
+        )}
 
         <div className="fdt-goi" role="radiogroup" aria-label="Mức khai thông tin">
           {[GOI.CO_BAN, GOI.DAY_DU].map((g) => (

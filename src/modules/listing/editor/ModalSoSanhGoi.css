@@ -1,0 +1,231 @@
+.mssg-nen {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--sp-4);
+  animation: mssgFadeIn 0.2s ease-out;
+}
+
+@keyframes mssgFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.mssg-hop {
+  background: var(--m-surface);
+  border-radius: var(--r-xl);
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  max-width: 760px;
+  max-height: 90vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--m-border);
+}
+
+.mssg-dau {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  padding: var(--sp-5) var(--sp-6);
+  border-bottom: 1px solid var(--m-border);
+  background: linear-gradient(to right, var(--m-surface), var(--m-blue-bg));
+}
+
+.mssg-dong {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--m-subtle);
+  padding: var(--sp-1);
+  border-radius: var(--r-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--t-fast);
+}
+
+.mssg-dong:hover {
+  background: var(--m-bg);
+  color: var(--m-dark);
+}
+
+.mssg-than {
+  padding: var(--sp-6);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-6);
+}
+
+/* ─── 2 Thẻ Gói Trên ─── */
+.mssg-cards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-4);
+}
+
+.mssg-card {
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-lg);
+  padding: var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  position: relative;
+  background: var(--m-surface);
+  transition: all var(--t-fast);
+}
+
+.mssg-card-highlight {
+  border: 2px solid var(--m-green);
+  background: linear-gradient(180deg, #f0fdf4 0%, var(--m-surface) 100%);
+  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.1);
+}
+
+.mssg-badge-hot {
+  position: absolute;
+  top: -12px;
+  right: var(--sp-4);
+  background: var(--m-green);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 2px 10px;
+  border-radius: var(--r-full);
+  box-shadow: var(--shadow-sm);
+}
+
+.mssg-card-title {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--m-dark);
+}
+
+.mssg-price {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+}
+
+.mssg-price-num {
+  font-size: 26px;
+  font-weight: 800;
+  color: var(--m-dark);
+}
+
+.mssg-price-unit {
+  font-size: 13px;
+  color: var(--m-subtle);
+  font-weight: 500;
+}
+
+/* ─── Bảng So Sánh Tính Năng ─── */
+.mssg-bang-wrap {
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-lg);
+  overflow: hidden;
+  background: var(--m-surface);
+}
+
+.mssg-bang {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  text-align: left;
+}
+
+.mssg-bang th {
+  padding: var(--sp-3) var(--sp-4);
+  background: #f8fafc;
+  color: var(--m-mid);
+  font-weight: 600;
+  border-bottom: 1px solid var(--m-border);
+  font-size: 13px;
+}
+
+.mssg-bang th.center,
+.mssg-bang td.center {
+  text-align: center;
+  width: 160px;
+}
+
+.mssg-bang tr {
+  border-bottom: 1px solid var(--m-border);
+  transition: background var(--t-fast);
+}
+
+.mssg-bang tr:last-child {
+  border-bottom: none;
+}
+
+.mssg-bang tr:hover {
+  background: #f8fafc;
+}
+
+.mssg-bang td {
+  padding: var(--sp-3) var(--sp-4);
+  color: var(--m-dark);
+}
+
+.mssg-bang tr.highlight-col td.center:last-child {
+  background: rgba(16, 185, 129, 0.04);
+}
+
+.mssg-check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--r-full);
+  background: #ecfdf5;
+  color: var(--m-green);
+}
+
+.mssg-cross {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--r-full);
+  background: #f1f5f9;
+  color: #94a3b8;
+}
+
+/* ─── Footer Dẫn Đến Trang Ví ─── */
+.mssg-chan {
+  padding: var(--sp-4) var(--sp-6);
+  border-top: 1px solid var(--m-border);
+  background: #f8fafc;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
+}
+
+@media (max-width: 640px) {
+  .mssg-cards {
+    grid-template-columns: 1fr;
+  }
+  .mssg-bang th.center,
+  .mssg-bang td.center {
+    width: 100px;
+    padding: var(--sp-2) var(--sp-2);
+  }
+  .mssg-chan {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}
