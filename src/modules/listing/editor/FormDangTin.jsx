@@ -89,7 +89,13 @@ export default function FormDangTin({ dieuKhien, onXong }) {
       <div className="card card-pad stack">
         <div>
           <h2 className="t-h3">Khai báo bao nhiêu thông tin?</h2>
-          <p className="t-small">Hai lựa chọn dưới đây <strong>cùng một giá</strong>. Khác nhau ở số trường phải điền, không phải ở tiền.</p>
+        </div>
+
+        <div className="fdt-hint-goi">
+          <Info size={16} strokeWidth={1.8} />
+          <span>
+            <strong>Cùng mức phí ({TOKENS_PER_MONTH} token/tháng):</strong> Gói <strong>Cơ bản</strong> có ưu điểm lên tin siêu nhanh (~2 phút, chỉ thông tin thiết yếu); Gói <strong>Đầy đủ</strong> thêm tiện nghi, tiền cọc &amp; lịch xe bận giúp tin uy tín hơn, khách nắm rõ điều kiện đỡ phải gọi hỏi nhiều.
+          </span>
         </div>
 
         <div className="fdt-goi" role="radiogroup" aria-label="Mức khai thông tin">
