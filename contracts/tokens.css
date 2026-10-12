@@ -43,12 +43,29 @@
   --shadow-lg: 0 12px 40px rgba(0,0,0,.10), 0 4px 12px rgba(0,0,0,.06);
   --shadow-xl: 0 24px 64px rgba(0,0,0,.14), 0 8px 24px rgba(0,0,0,.08);
 
-  /* ─── Bo góc ─── */
-  --r-sm: 8px;
-  --r-md: 12px;
-  --r-lg: 16px;
-  --r-xl: 20px;
-  --r-full: 9999px;
+  /* ─── Bo góc ───
+     MỘT độ vuông duy nhất cho mọi ô: ô nhập, nút, tab, chip, thẻ, khung ảnh,
+     hộp thoại. Không phân biệt kích cỡ — ô to hay nhỏ đều cùng 12px, nên nhìn
+     là biết cùng một họ. (Ô cao dưới 24px tự bo thành viên thuốc vì 12px đã
+     bằng nửa chiều cao; đó là hiệu ứng của cùng một con số, không phải kiểu bo
+     riêng.)
+
+     Trước 12/10 có 5 mức (8/12/16/20/9999) và mỗi luồng tự chọn một mức:
+     ô tìm kiếm thành viên thuốc, khối trang xe thì vuông. Giờ cả 5 tên cũ
+     đều trỏ về MỘT giá trị. Giữ tên cũ để code luồng khác không vỡ, nhưng
+     đổi số ở đây là đổi cả app — muốn bo khác đi thì sửa DUY NHẤT dòng
+     `--r-box`, đừng tách tên cũ ra thành giá trị riêng. */
+  --r-box: 12px;
+
+  /* Hình tròn thật: ảnh đại diện, chấm trạng thái. KHÔNG dùng cho ô có chữ. */
+  --r-circle: 50%;
+
+  /* Tên cũ — bí danh của --r-box. Code mới dùng `--r-box`. */
+  --r-sm:   var(--r-box);
+  --r-md:   var(--r-box);
+  --r-lg:   var(--r-box);
+  --r-xl:   var(--r-box);
+  --r-full: var(--r-box);
 
   /* ─── Khoảng cách ─── */
   --sp-1: 4px;  --sp-2: 8px;  --sp-3: 12px; --sp-4: 16px;

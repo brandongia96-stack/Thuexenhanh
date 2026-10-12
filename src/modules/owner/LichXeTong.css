@@ -31,7 +31,7 @@
   overflow-x: auto;
   background: var(--m-surface);
   border: 1px solid var(--m-border);
-  border-radius: var(--r-2);
+  border-radius: var(--r-box);
   box-shadow: var(--shadow-sm);
   margin-top: var(--sp-4);
 }
@@ -74,7 +74,7 @@
 .lich-xe-info img {
   width: 48px;
   height: 36px;
-  border-radius: 4px;
+  border-radius: var(--r-box);
   object-fit: cover;
   background: var(--m-bg);
 }
@@ -136,7 +136,7 @@
   right: 2px;
   background: #FFEbee;
   border: 1px solid #FFCDD2;
-  border-radius: 4px;
+  border-radius: var(--r-box);
 }
 
 /* Kéo dài background trắng cho cột sticky để đè lên viền */

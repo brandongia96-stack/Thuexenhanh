@@ -60,7 +60,7 @@
   right: var(--sp-4);
   background: none;
   border: 1px solid var(--m-border);
-  border-radius: 50%;
+  border-radius: var(--r-box);
   width: 32px;
   height: 32px;
   display: flex;
@@ -160,13 +160,13 @@
 }
 
 .cal-cell.start-range {
-  border-top-left-radius: 18px;
-  border-bottom-left-radius: 18px;
+  border-top-left-radius: var(--r-box);
+  border-bottom-left-radius: var(--r-box);
 }
 
 .cal-cell.end-range {
-  border-top-right-radius: 18px;
-  border-bottom-right-radius: 18px;
+  border-top-right-radius: var(--r-box);
+  border-bottom-right-radius: var(--r-box);
 }
 
 .time-selectors {

@@ -8,7 +8,8 @@
     "build": "vite build && node scripts/prerender-seo.mjs",
     "preview": "vite preview",
     "test": "vitest run",
-    "build:spa": "vite build"
+    "build:spa": "vite build",
+    "kiem:bogoc": "node scripts/kiem-bo-goc.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.47.0",
