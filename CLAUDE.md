@@ -113,6 +113,7 @@ Bốn luật hay bị quên nhất:
 | 1. Lịch sử từng thay đổi | **Git** (đã cài, repo đã khởi tạo) | commit sau mỗi việc chạy được |
 | 2. Ảnh chụp toàn bộ | `scripts/backup.ps1` → `_backup/*.zip`, giữ 20 bản | trước mỗi phiên sửa lớn |
 | 3. Bản gốc | `Web thue xe.rar` | không đụng tới |
+| 4. **Bản sao đầy đủ** | `scripts/backup-master.ps1` → `..\_Backup master\` (thư mục nhân đôi **+** file zip, có cả `.git` và `.env`), **giữ 3 bản**, tự xoá bản cũ | **khi anh nói "backup"** — luồng nền tảng chạy ngay, không hỏi lại |
 
 > **Lớp thứ 4 — GitHub private:** ổ cứng hỏng thì Git local mất theo. Việc này giao cho **luồng 13** (`LUONG-CHAT/13-deploy.md`).
 
@@ -275,6 +276,9 @@ Dữ liệu tĩnh bê từ code cũ: 27 hãng xe + model, 39 tỉnh thành, qu�
 
 ```bash
 powershell -ExecutionPolicy Bypass -File scripts\backup.ps1
+```
+```bash
+powershell -ExecutionPolicy Bypass -File scriptsackup-master.ps1
 ```
 ```bash
 git add -A; git commit -m "mo ta viec da lam"
