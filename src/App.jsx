@@ -8,6 +8,8 @@ import { PageLoading } from './components/Loading'
 import TrangChu from './modules/shell/TrangChu'
 import ChuaLam from './modules/shell/ChuaLam'
 import TruocKhiBatDau from './modules/legal/TruocKhiBatDau'
+import { ViTriProvider } from './context/ViTriContext'
+import BannerHoiViTri from './components/BannerHoiViTri'
 
 // HIEU-NANG.md mục 3: chia gói theo route. Khách vào trang tìm kiếm KHÔNG
 // tải code của ví token, quản trị hay form đăng xe.
@@ -57,11 +59,13 @@ const LichXeTong = lazy(() => import('./modules/owner/LichXeTong'))
 export default function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
-        <TruocKhiBatDau />
-        <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
-          <Header />
-          <main style={{ flex: 1 }}>
+      <ViTriProvider>
+        <BrowserRouter>
+          <TruocKhiBatDau />
+          <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+            <Header />
+            <BannerHoiViTri />
+            <main style={{ flex: 1 }}>
             <Suspense fallback={<PageLoading />}>
             <Routes>
               <Route path="/" element={<TrangChu />} />
@@ -138,6 +142,7 @@ export default function App() {
           <Footer />
         </div>
       </BrowserRouter>
+      </ViTriProvider>
     </AuthProvider>
   )
 }

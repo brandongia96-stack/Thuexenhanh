@@ -31,16 +31,23 @@ const KIEU_XEP = {
   moi:      { cot: 'published_at',  tang: false },
   gia_tang: { cot: 'price_per_day', tang: true },
   gia_giam: { cot: 'price_per_day', tang: false },
+  // "Gần bạn nhất" (contracts/api.md §3f) — chỉ dùng khi có toạ độ, xem dungGan bên dưới.
+  gan:      { cot: 'distance_km',   tang: true },
 }
 
 /**
  * @param {ReturnType<import('../filter/loc').locHieuLuc>} loc  bộ lọc ĐÃ gộp phần đoán
- * @param {{cursor?: object|null, signal?: AbortSignal}} opt
+ * @param {{cursor?: object|null, signal?: AbortSignal, viTri?: {lat:number,lng:number}|null}} opt
  * @returns {Promise<{items: object[], conNua: boolean, cursor: object|null}>}
  */
-export async function timTheXe(loc, { cursor = null, signal } = {}) {
+export async function timTheXe(loc, { cursor = null, signal, viTri = null } = {}) {
   const sb = await getSupabase()
-  const xep = KIEU_XEP[loc.xep] ?? KIEU_XEP.moi
+  // Chọn "Gần bạn nhất" mà chưa có toạ độ (link chia sẻ, chưa cấp quyền) thì lùi
+  // về "Mới cập nhật" — im lặng, không báo lỗi (TrangTimKiem.jsx đã tự xin quyền
+  // trước khi đặt xep='gan' vào URL, nên đây chỉ là lưới an toàn).
+  const dungGan = loc.xep === 'gan' && viTri?.lat != null && viTri?.lng != null
+  const xepKey = loc.xep === 'gan' && !dungGan ? 'moi' : loc.xep
+  const xep = KIEU_XEP[xepKey] ?? KIEU_XEP.moi
 
   // Đổi tên tỉnh/quận sang id. Có chọn mà không tra ra id thì trả RỖNG chứ không
   // lặng lẽ bỏ bộ lọc — bỏ đi là khách ở Huế thấy xe Hà Nội mà không biết vì sao.
@@ -52,9 +59,13 @@ export async function timTheXe(loc, { cursor = null, signal } = {}) {
     }
   }
 
-  let q = sb
-    .from('listing_card')
-    .select(COT_THE)
+  // RPC trả mọi cột của listing_card + distance_km, gắn tiếp bộ lọc/sắp xếp/
+  // keyset y như đọc thẳng view (contracts/api.md §3f) — select phải có `id`.
+  let q = dungGan
+    ? sb.rpc('listing_card_gan', { p_lat: viTri.lat, p_lng: viTri.lng }).select(`${COT_THE},distance_km`)
+    : sb.from('listing_card').select(COT_THE)
+
+  q = q
     .in('status', TRANG_THAI_HIEN)
     // Hết hạn là không hiện, kể cả khi cron chưa kịp đổi trạng thái.
     .gt('expires_at', new Date().toISOString())
@@ -102,7 +113,10 @@ export async function timTheXe(loc, { cursor = null, signal } = {}) {
   if (error) throw error
 
   const conNua = data.length > CO_TRANG
-  const items = data.slice(0, CO_TRANG)
+  let items = data.slice(0, CO_TRANG)
+  // TheXe.jsx đọc the.khoangCach để hiện huy hiệu — chỉ RPC gan mới có số thật
+  // từ server, ưu tiên hơn số gần đúng client tự tính (toadoDiaGioi.js).
+  if (dungGan) items = items.map((r) => ({ ...r, khoangCach: Number(r.distance_km) }))
   const cuoi = items[items.length - 1]
   return {
     items,

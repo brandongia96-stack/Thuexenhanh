@@ -14,6 +14,7 @@ import {
 import { taiTenDiaGioi } from '../diaGioi'
 import { layDanhSach, nhoDanhSach, useNhoViTriCuon } from '../boNhoPhien'
 import { trackSearch } from '../../analytics/events'
+import { useViTri } from '../../../context/ViTriContext'
 import './TimKiem.css'
 
 // Số thẻ đầu tiên tải ảnh ngay (không lazy) — vừa màn hình đầu trên điện thoại
@@ -51,6 +52,16 @@ export default function TrangTimKiem() {
   locRef.current = loc
   const khoaRef = useRef(khoa)
   khoaRef.current = khoa
+
+  // "Gần bạn nhất" (contracts/api.md §3f) cần toạ độ — đọc qua ref như locRef:
+  // hiệu lực đổi không được tự tải lại trang (chỉ đổi khi khoá tức URL đổi).
+  const { viTri, xinQuyenViTri } = useViTri()
+  const viTriRef = useRef(viTri)
+  viTriRef.current = viTri
+  // Chưa có vị trí mà URL đã mang ?xep=gan (link chia sẻ) hoặc vừa bị từ chối
+  // quyền → báo một dòng nhẹ, KHÔNG phải ô lỗi đỏ (searchApi.js tự lùi về "mới").
+  const [tuChoiViTri, setTuChoiViTri] = useState(false)
+  const canhBaoViTri = loc.xep === 'gan' && !viTri
 
   const [trang, setTrang] = useState(() => layDanhSach(khoa))
   const [dangTai, setDangTai] = useState(() => !layDanhSach(khoa))
@@ -115,6 +126,25 @@ export default function TrangTimKiem() {
     setSp(locSangUrl(moi), { replace: true })
   }, [setSp])
 
+  // Đổi kiểu sắp xếp. "Gần bạn nhất" cần toạ độ: có sẵn thì dùng luôn, chưa có
+  // thì xin quyền NGAY LÚC NÀY (không hỏi trước, không hỏi khi vào trang) —
+  // từ chối/lỗi thì giữ nguyên bộ lọc hiện tại và báo một dòng nhẹ.
+  const doiXep = useCallback((xepMoi) => {
+    if (xepMoi === 'gan' && !viTriRef.current) {
+      setTuChoiViTri(false)
+      xinQuyenViTri(
+        (toado) => {
+          viTriRef.current = toado
+          doiLoc({ ...locRef.current, xep: 'gan' })
+        },
+        () => setTuChoiViTri(true),
+      )
+      return
+    }
+    setTuChoiViTri(false)
+    doiLoc({ ...locRef.current, xep: xepMoi })
+  }, [doiLoc, xinQuyenViTri])
+
   // Tải trang đầu mỗi khi bộ lọc (tức URL) đổi.
   useEffect(() => {
     setLoiThem(false)
@@ -133,7 +163,7 @@ export default function TrangTimKiem() {
     setLoi(null)
 
     const hieuLuc = locHieuLuc(locRef.current)
-    timTheXe(hieuLuc, { signal: ac.signal })
+    timTheXe(hieuLuc, { signal: ac.signal, viTri: viTriRef.current })
       .then((kq) => {
         setTrang(kq)
         nhoDanhSach(khoa, kq)
@@ -166,7 +196,7 @@ export default function TrangTimKiem() {
     setDangThem(true)
     setLoiThem(false)
     try {
-      const kq = await timTheXe(locHieuLuc(locRef.current), { cursor: trang.cursor, signal: ac.signal })
+      const kq = await timTheXe(locHieuLuc(locRef.current), { cursor: trang.cursor, signal: ac.signal, viTri: viTriRef.current })
       if (ac.signal.aborted) return
       // Trong lúc chờ mà URL đã đổi thì kết quả này thuộc bộ lọc cũ, bỏ đi.
       if (khoaLuc !== khoaRef.current) return
@@ -220,7 +250,7 @@ export default function TrangTimKiem() {
           className="select tk-xep"
           aria-label="Sắp xếp"
           value={loc.xep}
-          onChange={(e) => doiLoc({ ...loc, xep: e.target.value })}
+          onChange={(e) => doiXep(e.target.value)}
         >
           {SAP_XEP.map((x) => <option key={x.value} value={x.value}>{x.label}</option>)}
         </select>
@@ -235,6 +265,10 @@ export default function TrangTimKiem() {
           {kieuXem === 'ds' ? <LayoutGrid size={18} strokeWidth={2} /> : <List size={18} strokeWidth={2} />}
         </button>
       </div>
+
+      {(tuChoiViTri || canhBaoViTri) && (
+        <p className="t-small tk-canhbao-vitri">Cần bật vị trí để xếp theo khoảng cách.</p>
+      )}
 
       <ChipLoc loc={loc} onDoi={doiLoc} />
 

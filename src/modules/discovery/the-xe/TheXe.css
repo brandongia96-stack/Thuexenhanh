@@ -106,6 +106,18 @@
 .thexe-gia strong { font-size: 20px; font-weight: 800; letter-spacing: -.02em; color: var(--m-red); }
 .thexe-gia span { font-size: 12px; font-weight: 500; color: var(--m-subtle); }
 
+.thexe-khoang-cach {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--m-green);
+  background: var(--m-green-light);
+  padding: 2px 8px;
+  border-radius: var(--r-full);
+}
+
 /* ─── Dạng danh sách (ngang), chỉ từ máy tính bảng trở lên ─── */
 @media (min-width: 768px) {
   .tk-ds .thexe { flex-direction: row; }

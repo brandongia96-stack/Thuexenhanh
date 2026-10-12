@@ -1,0 +1,81 @@
+/* components/BannerHoiViTri.css — thanh thông báo hỏi quyền vị trí */
+
+.banner-vitri {
+  background: var(--m-green-light);
+  border-bottom: 1px solid var(--m-green-border);
+  padding: var(--sp-2) var(--sp-4);
+  position: relative;
+  z-index: 90;
+  transition: opacity var(--t-fast);
+}
+
+.banner-vitri-noi-dung {
+  max-width: var(--w-page);
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+
+.banner-vitri-trai {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  color: var(--m-dark);
+  font-size: 13.5px;
+  line-height: 1.4;
+}
+
+.banner-vitri-icon {
+  color: var(--m-green);
+  flex-shrink: 0;
+}
+
+.banner-vitri-nut {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+}
+
+.banner-vitri-btn-bat {
+  background: var(--m-green);
+  color: #fff;
+  border-radius: var(--r-full);
+  font-size: 13px;
+  font-weight: 600;
+  padding: 6px 14px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  transition: background var(--t-fast);
+}
+
+.banner-vitri-btn-bat:hover:not(:disabled) {
+  background: var(--m-green-hover);
+}
+
+.banner-vitri-btn-boqua {
+  color: var(--m-mid);
+  font-size: 13px;
+  padding: 6px 10px;
+  border-radius: var(--r-full);
+  transition: background var(--t-fast);
+}
+
+.banner-vitri-btn-boqua:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 640px) {
+  .banner-vitri-noi-dung {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-2);
+  }
+  .banner-vitri-nut {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

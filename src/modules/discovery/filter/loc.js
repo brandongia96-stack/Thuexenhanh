@@ -23,6 +23,9 @@ export const SAP_XEP = [
   { value: 'moi', label: 'Mới cập nhật' },
   { value: 'gia_tang', label: 'Giá thấp trước' },
   { value: 'gia_giam', label: 'Giá cao trước' },
+  // Cần toạ độ người dùng — xin quyền định vị khi chọn (xem TrangTimKiem.jsx).
+  // Chưa có toạ độ thì searchApi.js tự lùi về 'moi' (không gãy, không lỗi đỏ).
+  { value: 'gan', label: 'Gần bạn nhất' },
 ]
 
 export const KHOANG_GIA = [

@@ -8,6 +8,8 @@ import { TRANSMISSIONS, FUELS } from '../../../data/options'
 import { napTruocTin } from '../listing-page/chiTietApi'
 import { tenNoi } from '../diaGioi'
 import NutLuu from '../saved/NutLuu'
+import { useViTri } from '../../../context/ViTriContext'
+import { dinhDangKhoangCach } from '../../../lib/toadoDiaGioi'
 import './TheXe.css'
 
 /**
@@ -40,6 +42,8 @@ function TheXe({ the, bangDiaGioi, uuTien = false }) {
   const hopSo = TRANSMISSIONS.find((x) => x.value === the.transmission)?.label
   const nhienLieu = FUELS.find((x) => x.value === the.fuel)?.label
   const dang = timeAgo(the.published_at)
+  const { tinhKhoangCach } = useViTri()
+  const khoangCach = the.khoangCach ?? tinhKhoangCach(the)
   // "Free sạc" = chủ xe khai miễn phí toàn bộ hoặc miễn phí trong giới hạn km
   // (NGHIEN-CUU-XE-DIEN.md mục 3). Chưa khai (null) thì không hiện gì cả —
   // đây là lời hứa của CHỦ XE, không phải cam kết của app (CLAUDE.md 1.2).
@@ -118,17 +122,18 @@ function TheXe({ the, bangDiaGioi, uuTien = false }) {
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <VerifiedBadge verified={the.is_verified} />
-            {/* Khoảng cách CHỈ có khi người dùng cho vị trí (Xe gần bạn). Không có thì ẩn. */}
-            {the.khoangCach != null && (
-              <span style={{ fontSize: 12, fontWeight: 700, color: 'var(--m-green)', background: 'var(--m-green-light)', padding: '2px 8px', borderRadius: 12 }}>
-                {the.khoangCach > 20 ? '20+ km' : `${the.khoangCach.toFixed(1)}km`}
+            {/* Khoảng cách CHỈ có khi người dùng bật vị trí hoặc server tính sẵn. Không có thì ẩn. */}
+            {khoangCach != null && (
+              <span className="thexe-khoang-cach" title={`Cách vị trí của bạn khoảng ${dinhDangKhoangCach(khoangCach)}`}>
+                <MapPin size={11} strokeWidth={2} />
+                khoảng {dinhDangKhoangCach(khoangCach)}
               </span>
             )}
           </div>
         </div>
         
         {the.report_count > 0 && (
-          <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--m-red)', display: 'flex', alignItems: 'center', gap: '4px', background: 'var(--m-red-bg)', padding: '4px 8px', borderRadius: 4, fontWeight: 500 }}>
+          <div style={{ marginTop: '8px', fontSize: '12px', color: 'var(--m-red)', display: 'flex', alignItems: 'center', gap: '4px', background: 'var(--m-red-bg)', padding: '4px 8px', borderRadius: 'var(--r-box)', fontWeight: 500 }}>
             <AlertTriangle size={14} strokeWidth={2} /> {the.report_count} báo cáo vi phạm đã xác nhận
           </div>
         )}
