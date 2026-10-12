@@ -27,25 +27,22 @@ export default function Footer() {
           <p><Link to="/lien-he">Liên hệ với chúng tôi</Link></p>
         </div>
 
-        {/* <details> thuần: gập trên di động, luôn mở trên máy tính (CSS ép
-            hiện, xem Footer.css) — không thêm JS/thư viện, chữ vẫn nằm trong
-            DOM nên không ảnh hưởng SEO. */}
-        <details className="footer-col">
-          <summary><h4>Khách thuê</h4></summary>
+        <div className="footer-col">
+          <h4>Khách thuê</h4>
           <Link to="/thue-xe">Tìm xe</Link>
           <Link to="/da-luu">Xe đã lưu</Link>
           <Link to="/tro-giup">Câu hỏi thường gặp</Link>
-        </details>
+        </div>
 
-        <details className="footer-col">
-          <summary><h4>Chủ xe</h4></summary>
+        <div className="footer-col">
+          <h4>Chủ xe</h4>
           <Link to="/chu-xe/dang-tin">Đăng tin cho thuê</Link>
           <Link to="/chu-xe">Xe của tôi</Link>
           <Link to="/chu-xe/vi">Ví token</Link>
-        </details>
+        </div>
 
-        <details className="footer-col">
-          <summary><h4>Chính sách</h4></summary>
+        <div className="footer-col">
+          <h4>Chính sách</h4>
           <Link to="/quy-che">Quy chế hoạt động</Link>
           <Link to="/dieu-khoan">Điều khoản sử dụng</Link>
           <Link to="/bao-mat">Bảo vệ dữ liệu cá nhân</Link>
@@ -54,15 +51,13 @@ export default function Footer() {
           <Link to="/thue">Thông tin thuế</Link>
           <Link to="/an-toan">An toàn cho chủ xe</Link>
           <Link to="/mau-hop-dong">Mẫu hợp đồng</Link>
-          <Link to="/an-toan">An toàn cho chủ xe</Link>
-          <Link to="/mau-hop-dong">Mẫu hợp đồng</Link>
-        </details>
+        </div>
 
-        <details className="footer-col">
-          <summary><h4>Về chúng tôi</h4></summary>
+        <div className="footer-col">
+          <h4>Về chúng tôi</h4>
           <Link to="/gioi-thieu">Giới thiệu</Link>
           <Link to="/lien-he">Liên hệ</Link>
-        </details>
+        </div>
       </div>
 
       <div className="footer-v2-bot page" style={{ display: 'flex', flexDirection: 'column', gap: 'var(--sp-4)' }}>
@@ -81,6 +76,11 @@ export default function Footer() {
             {PHAP_NHAN.dienThoai && <div>Điện thoại: {PHAP_NHAN.dienThoai}</div>}
           </div>
         )}
+
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--sp-2)', fontSize: '13px', color: 'var(--m-subtle)', paddingTop: 'var(--sp-2)', borderTop: '1px solid var(--m-border)' }}>
+          <span>© {new Date().getFullYear()} Thuê Xe Nhanh. Toàn quyền bảo lưu.</span>
+          <span>Nền tảng kết nối thuê xe tự lái trực tiếp</span>
+        </div>
       </div>
     </footer>
   )
