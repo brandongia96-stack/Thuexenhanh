@@ -154,35 +154,67 @@ export default function BoChonThoiGian({ gioNhan, gioTra, onChange }) {
   const thoiGianThueThuc = (chonTra - chonNhan) / (1000 * 60 * 60)
   const hopLe = thoiGianThueThuc >= 1 // Thuê ít nhất 1 tiếng
 
-  // Render trigger inputs
+  const khoangThoiGianText = tinhKhoangThoiGian(gioNhan, gioTra)
+
+  // Render 1 ô kích hoạt duy nhất
   return (
     <>
-      <div className="banggia-nhap-to">
-        <div className="banggia-picker" onClick={moModal}>
-          <span className="field-label">Nhận xe lúc</span>
-          <div className="input" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '42px', background: 'var(--m-surface)' }}>
-            <span style={{ fontWeight: 600, color: 'var(--m-dark)' }}>{dinhDangInputString(gioNhan)}</span>
-            <Calendar size={18} color="var(--m-mid)" />
+      <div className="banggia-thoigian-nhom">
+        <span className="field-label">Thời gian nhận – trả xe</span>
+        <button
+          type="button"
+          className="banggia-trigger-hopnhat"
+          onClick={moModal}
+          title="Bấm để chọn thời gian nhận và trả xe"
+        >
+          <div className="banggia-trigger-khoi">
+            <span className="banggia-trigger-nhan">Nhận xe</span>
+            <span className="banggia-trigger-giatri">{dinhDangInputString(gioNhan)}</span>
           </div>
-        </div>
-        <div className="banggia-picker" onClick={moModal}>
-          <span className="field-label">Trả xe lúc</span>
-          <div className="input" style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '42px', background: 'var(--m-surface)' }}>
-            <span style={{ fontWeight: 600, color: 'var(--m-dark)' }}>{dinhDangInputString(gioTra)}</span>
-            <Calendar size={18} color="var(--m-mid)" />
+
+          <div className="banggia-trigger-ngan">
+            <span className="banggia-trigger-badge">{khoangThoiGianText}</span>
+            <ArrowRight size={14} className="banggia-trigger-arrow" />
           </div>
-        </div>
+
+          <div className="banggia-trigger-khoi banggia-trigger-khoi-tra">
+            <span className="banggia-trigger-nhan">Trả xe</span>
+            <span className="banggia-trigger-giatri">{dinhDangInputString(gioTra)}</span>
+          </div>
+
+          <div className="banggia-trigger-lich">
+            <Calendar size={18} />
+          </div>
+        </button>
       </div>
 
       {mo && (
         <div className="modal-overlay" onClick={() => setMo(false)}>
           <div className="modal-box time-picker-modal" onClick={e => e.stopPropagation()}>
             <div className="modal-head">
-              <h3 style={{ fontSize: 18, fontWeight: 700 }}>Thời gian</h3>
-              <button type="button" className="btn-close" onClick={() => setMo(false)}><X size={20}/></button>
+              <h3 style={{ fontSize: 18, fontWeight: 700 }}>Chọn thời gian thuê</h3>
+              <button type="button" className="btn-close" onClick={() => setMo(false)} aria-label="Đóng"><X size={20}/></button>
             </div>
             
             <div className="modal-body stack">
+              <div className="cal-tabs">
+                <button
+                  type="button"
+                  className={`cal-tab ${buocChon === 'nhan' ? 'active' : ''}`}
+                  onClick={() => setBuocChon('nhan')}
+                >
+                  <span className="cal-tab-nhan">1. Nhận xe</span>
+                  <span className="cal-tab-val">{dinhDangInputString(chonNhan)}</span>
+                </button>
+                <button
+                  type="button"
+                  className={`cal-tab ${buocChon === 'tra' ? 'active' : ''}`}
+                  onClick={() => setBuocChon('tra')}
+                >
+                  <span className="cal-tab-nhan">2. Trả xe</span>
+                  <span className="cal-tab-val">{dinhDangInputString(chonTra)}</span>
+                </button>
+              </div>
               <div className="cal-header-nav">
                 <button type="button" className="btn-nav" onClick={() => chuyenThang(-1)}>←</button>
                 <div style={{flex: 1}}></div>
@@ -244,5 +276,13 @@ export default function BoChonThoiGian({ gioNhan, gioTra, onChange }) {
 
 function dinhDangInputString(d) {
   const p = (n) => String(n).padStart(2, '0')
-  return `${p(d.getHours())}:${p(d.getMinutes())} ${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()}`
+  return `${p(d.getHours())}:${p(d.getMinutes())} · ${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()}`
+}
+
+function tinhKhoangThoiGian(nhan, tra) {
+  const gio = (tra - nhan) / (1000 * 60 * 60)
+  if (gio <= 0) return '0 giờ'
+  if (gio < 24) return `${+(gio.toFixed(1))} giờ`
+  const ngay = +(gio / 24).toFixed(1)
+  return `${ngay % 1 === 0 ? Math.round(ngay) : ngay} ngày`
 }

@@ -102,38 +102,59 @@ export default function BangTinhTongTien({ tin, userId, conHienThi }) {
     }
   }
 
+  const phuDeGiaoXe = useMemo(() => {
+    if (tin.delivery_fee != null) {
+      return tin.delivery_fee === 0 ? 'Miễn phí giao xe' : `+${formatVnd(tin.delivery_fee)}`
+    }
+    return tin.delivery_fee_note || 'Thỏa thuận theo cự ly'
+  }, [tin.delivery_fee, tin.delivery_fee_note])
+
   if (!conHienThi) return null
 
   return (
     <Khoi title="Ước tính chi phí thuê">
       <div className="banggia">
-        <div className="banggia-nhap">
+        {/* Khung cấu hình thời gian & tùy chọn */}
+        <div className="banggia-khung-nhap">
           <BoChonThoiGian 
             gioNhan={gioNhan} 
             gioTra={gioTra} 
             onChange={(n, t) => { setGioNhan(n); setGioTra(t) }} 
           />
-          <label className="field">
-            <span className="field-label">Quãng đường dự kiến</span>
-            <input
-              type="number"
-              min="0"
-              inputMode="numeric"
-              className="input"
-              placeholder="VD: 300"
-              value={kmText}
-              onChange={(e) => setKmText(e.target.value)}
-            />
-          </label>
-          <label className="banggia-checkbox">
-            <input
-              type="checkbox"
-              checked={canGiaoXe}
-              onChange={(e) => setCanGiaoXe(e.target.checked)}
-            />
-            <Truck size={16} strokeWidth={1.8} />
-            Cần giao xe tận nơi
-          </label>
+
+          <div className="banggia-hang-phu">
+            <label className="field banggia-field-km">
+              <span className="field-label">Quãng đường dự kiến</span>
+              <div className="banggia-input-km-wrap">
+                <input
+                  type="number"
+                  min="0"
+                  inputMode="numeric"
+                  className="input banggia-input-km"
+                  placeholder="VD: 150"
+                  value={kmText}
+                  onChange={(e) => setKmText(e.target.value)}
+                />
+                <span className="banggia-km-donvi">km</span>
+              </div>
+            </label>
+
+            <label className={`banggia-the-giaoxe ${canGiaoXe ? 'active' : ''}`}>
+              <input
+                type="checkbox"
+                className="banggia-giaoxe-check"
+                checked={canGiaoXe}
+                onChange={(e) => setCanGiaoXe(e.target.checked)}
+              />
+              <div className="banggia-giaoxe-noidung">
+                <div className="banggia-giaoxe-tieude">
+                  <Truck size={16} strokeWidth={2} />
+                  <span>Cần giao xe tận nơi</span>
+                </div>
+                <span className="banggia-giaoxe-phu">{phuDeGiaoXe}</span>
+              </div>
+            </label>
+          </div>
         </div>
 
         {!ketQua ? (
@@ -142,48 +163,55 @@ export default function BangTinhTongTien({ tin, userId, conHienThi }) {
             Chọn giờ nhận và giờ trả hợp lệ để xem ước tính.
           </p>
         ) : (
-          <>
+          <div className="banggia-chitiet">
             <dl className="banggia-dong">
               {ketQua.dong.map((d) => (
-                <div key={d.khoa}>
+                <div key={d.khoa} className="banggia-khoan-muc">
                   <div className="banggia-dong-dau">
                     <dt>{d.nhan}</dt>
                     <dd>{d.soTien != null ? formatVnd(d.soTien) : <span className="t-small">—</span>}</dd>
                   </div>
-                  <span className="t-small">{d.moTa}</span>
+                  {d.moTa && <span className="t-small banggia-mota">{d.moTa}</span>}
                   {d.ghiChu && <span className="t-small banggia-ghichu">{d.ghiChu}</span>}
                 </div>
               ))}
             </dl>
 
-            <div className="banggia-tong">
-              <span>TỔNG DỰ KIẾN</span>
-              <span className="t-price">{formatVnd(ketQua.tongTien)}</span>
+            <div className="banggia-tong-box">
+              <div className="banggia-tong-chu-khoi">
+                <span className="banggia-tong-chu">TỔNG DỰ KIẾN</span>
+                <span className="banggia-tong-phu">Chưa gồm tiền cọc / thế chấp</span>
+              </div>
+              <span className="banggia-tong-tien">{formatVnd(ketQua.tongTien)}</span>
             </div>
 
-            {ketQua.coc && (
-              <div className="banggia-rieng">
-                <span>Cọc (hoàn lại khi trả xe)</span>
-                <span>{ketQua.coc.soTien != null ? formatVnd(ketQua.coc.soTien) : ketQua.coc.ghiChu}</span>
-              </div>
-            )}
+            <div className="banggia-coc-luoi">
+              {ketQua.coc && (
+                <div className="banggia-the-coc">
+                  <span className="banggia-the-coc-nhan">Cọc giữ xe (hoàn lại khi trả)</span>
+                  <strong className="banggia-the-coc-gia">
+                    {ketQua.coc.soTien != null ? formatVnd(ketQua.coc.soTien) : ketQua.coc.ghiChu}
+                  </strong>
+                </div>
+              )}
 
-            <div className="banggia-rieng">
-              <span>Thế chấp</span>
-              <span>
-                {ketQua.theChap.batBuoc ? (ketQua.theChap.ghiChu ?? 'Có yêu cầu') : 'Không cần'}
-              </span>
+              <div className="banggia-the-coc">
+                <span className="banggia-the-coc-nhan">Thế chấp xe máy / CCCD</span>
+                <strong className="banggia-the-coc-gia">
+                  {ketQua.theChap.batBuoc ? (ketQua.theChap.ghiChu ?? 'Có yêu cầu') : 'Không cần'}
+                </strong>
+              </div>
             </div>
 
             {/* Luật 6 — dòng miễn trừ bắt buộc đi kèm bảng tính. */}
             <p className="t-small banggia-mienTru">
-              <Info size={14} strokeWidth={1.8} />
-              {ketQua.disclaimer}
+              <Info size={15} strokeWidth={1.8} className="banggia-mientru-icon" />
+              <span>{ketQua.disclaimer}</span>
             </p>
 
             <button
               type="button"
-              className="btn btn-zalo btn-block"
+              className="btn btn-zalo btn-block banggia-btn-zalo"
               onClick={guiBaoGia}
               disabled={dangGui}
             >
@@ -202,9 +230,10 @@ export default function BangTinhTongTien({ tin, userId, conHienThi }) {
                 {loiGui}
               </p>
             )}
-          </>
+          </div>
         )}
       </div>
     </Khoi>
   )
 }
+

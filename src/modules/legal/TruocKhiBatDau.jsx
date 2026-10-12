@@ -146,7 +146,7 @@ export default function TruocKhiBatDau() {
             ...o,
             padding: '10px 12px',
             backgroundColor: 'var(--m-card-hover, rgba(0,0,0,0.03))',
-            borderRadius: 'var(--r-md, 8px)',
+            borderRadius: 'var(--r-box)',
             border: '1px solid var(--m-border)',
             fontWeight: 600,
             cursor: 'pointer',

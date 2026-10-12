@@ -241,48 +241,290 @@
 }
 
 /* ─── Bảng tính tổng tiền (NGHIEN-CUU-XE-DIEN.md mục 4) ─── */
-.banggia { display: flex; flex-direction: column; gap: var(--sp-4); }
-
-.banggia-nhap {
-  display: grid; gap: var(--sp-3);
-  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-  padding: var(--sp-4); background: var(--m-bg); border-radius: var(--r-md);
+.banggia { 
+  display: flex; 
+  flex-direction: column; 
+  gap: var(--sp-4); 
 }
-.banggia-checkbox {
-  display: flex; align-items: center; gap: var(--sp-2);
-  font-size: 14px; font-weight: 600; color: var(--m-dark);
-  align-self: end; padding-bottom: 2px;
+
+.banggia-khung-nhap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+  padding: var(--sp-3);
+  background: var(--m-bg);
+  border-radius: var(--r-box);
+  border: 1px solid var(--m-border);
+}
+
+.banggia-hang-phu {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+  align-items: stretch;
+}
+
+.banggia-field-km {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.banggia-input-km-wrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.banggia-input-km {
+  width: 100%;
+  padding-right: 44px;
+}
+
+.banggia-km-donvi {
+  position: absolute;
+  right: 12px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--m-mid);
+  pointer-events: none;
+}
+
+.banggia-the-giaoxe {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: 8px var(--sp-3);
+  background: var(--m-surface);
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-box);
+  cursor: pointer;
+  transition: all var(--t-fast);
+  user-select: none;
+  min-height: 42px;
+  align-self: end;
+  width: 100%;
+}
+
+.banggia-the-giaoxe:hover {
+  border-color: var(--m-green);
+}
+
+.banggia-the-giaoxe.active {
+  background: var(--m-green-light);
+  border-color: var(--m-green);
+}
+
+.banggia-giaoxe-check {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--m-green);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.banggia-giaoxe-noidung {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.banggia-giaoxe-tieude {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--m-dark);
+}
+
+.banggia-giaoxe-phu {
+  font-size: 11px;
+  color: var(--m-mid);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.banggia-the-giaoxe.active .banggia-giaoxe-phu {
+  color: var(--m-green);
+  font-weight: 600;
 }
 
 .banggia-trong {
-  display: flex; align-items: center; gap: var(--sp-2);
+  display: flex; 
+  align-items: center; 
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  background: var(--m-bg);
+  border-radius: var(--r-box);
+  color: var(--m-mid);
 }
 
-.banggia-dong { display: flex; flex-direction: column; gap: var(--sp-3); }
+.banggia-chitiet {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-3);
+}
+
+.banggia-dong { 
+  display: flex; 
+  flex-direction: column; 
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--m-surface);
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-box);
+}
+
+.banggia-khoan-muc {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding-bottom: var(--sp-2);
+  border-bottom: 1px dashed var(--m-border);
+}
+
+.banggia-khoan-muc:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
 .banggia-dong-dau {
-  display: flex; justify-content: space-between; gap: var(--sp-3);
-  font-size: 15px; font-weight: 600; color: var(--m-dark);
-}
-.banggia-ghichu { display: block; color: var(--m-amber); }
-
-.banggia-tong {
-  display: flex; justify-content: space-between; align-items: center;
-  padding-top: var(--sp-3); border-top: 1px solid var(--m-border);
-  font-size: 15px; font-weight: 700;
+  display: flex; 
+  justify-content: space-between; 
+  align-items: baseline;
+  gap: var(--sp-3);
+  font-size: 14.5px; 
+  font-weight: 600; 
+  color: var(--m-dark);
 }
 
-.banggia-rieng {
-  display: flex; justify-content: space-between; gap: var(--sp-3);
-  font-size: 14px; color: var(--m-mid);
+.banggia-dong-dau dd {
+  font-weight: 700;
+  color: var(--m-dark);
+}
+
+.banggia-mota {
+  color: var(--m-mid);
+  font-size: 12.5px;
+}
+
+.banggia-ghichu { 
+  display: block; 
+  color: var(--m-amber); 
+  font-size: 12px;
+}
+
+.banggia-tong-box {
+  display: flex; 
+  justify-content: space-between; 
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--m-green-light);
+  border: 1px solid var(--m-green);
+  border-radius: var(--r-box);
+}
+
+.banggia-tong-chu-khoi {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.banggia-tong-chu {
+  font-size: 13px;
+  font-weight: 800;
+  color: var(--m-green);
+  letter-spacing: 0.5px;
+}
+
+.banggia-tong-phu {
+  font-size: 11px;
+  color: var(--m-mid);
+}
+
+.banggia-tong-tien {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--m-green);
+}
+
+.banggia-coc-luoi {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sp-3);
+}
+
+.banggia-the-coc {
+  display: flex; 
+  flex-direction: column;
+  gap: 4px;
+  padding: var(--sp-3);
+  background: var(--m-bg);
+  border-radius: var(--r-box);
+  border: 1px solid var(--m-border);
+}
+
+.banggia-the-coc-nhan {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--m-mid);
+}
+
+.banggia-the-coc-gia {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--m-dark);
 }
 
 .banggia-mienTru {
-  display: flex; align-items: flex-start; gap: var(--sp-2);
-  padding: var(--sp-3); background: var(--m-bg); border-radius: var(--r-md);
-  line-height: 1.6;
+  display: flex; 
+  align-items: flex-start; 
+  gap: var(--sp-2);
+  padding: var(--sp-3); 
+  background: var(--m-bg); 
+  border-radius: var(--r-box);
+  line-height: 1.5;
+  color: var(--m-mid);
 }
 
-.banggia-dachep { color: var(--m-green-ok); text-align: center; }
+.banggia-mientru-icon {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--m-mid);
+}
+
+.banggia-btn-zalo {
+  height: 46px;
+  font-size: 15px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--sp-2);
+}
+
+.banggia-dachep { 
+  color: var(--m-green-ok); 
+  text-align: center; 
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .banggia-hang-phu {
+    grid-template-columns: 1fr;
+  }
+  .banggia-the-giaoxe {
+    align-self: stretch;
+  }
+  .banggia-coc-luoi {
+    grid-template-columns: 1fr;
+  }
+}
 
 /* ─── Điện thoại ─── */
 @media (max-width: 900px) {
