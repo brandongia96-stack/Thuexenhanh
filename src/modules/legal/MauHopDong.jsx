@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom'
-import { Printer } from 'lucide-react'
+import { Printer, Download } from 'lucide-react'
 import LegalLayout, { Muc } from './LegalLayout'
 import { VAN_BAN } from './phienBan'
 
@@ -22,7 +22,7 @@ export default function MauHopDong() {
     <LegalLayout
       title="Mẫu hợp đồng và biên bản bàn giao"
       van={VAN_BAN.template}
-      moTa="Hai mẫu để hai bên điền khi thuê xe tự lái. Bấm “In trang này” để in hoặc lưu thành tệp PDF."
+      moTa="Hai mẫu để hai bên điền khi thuê xe tự lái. Tải file Word (.docx) để chỉnh sửa hoặc bấm in/lưu PDF."
     >
       <div className="disclaimer">
         <b>Mẫu tham khảo, các bên tự chịu trách nhiệm về nội dung thoả thuận.</b> Thuê Xe Nhanh không là
@@ -30,10 +30,18 @@ export default function MauHopDong() {
         cho đúng thoả thuận thực tế, và hỏi người có chuyên môn pháp lý nếu giá trị lớn.
       </div>
 
-      <div>
-        <button className="btn btn-primary" onClick={() => window.print()}>
+      <div className="row" style={{ gap: 'var(--sp-3)', flexWrap: 'wrap' }}>
+        <a
+          href="/mau-hop-dong-thue-xe.docx"
+          download="Hop-dong-thue-xe-va-bien-ban-ban-giao.docx"
+          className="btn btn-primary"
+        >
+          <Download size={18} strokeWidth={1.8} />
+          Tải file Word (.docx)
+        </a>
+        <button className="btn btn-ghost" onClick={() => window.print()}>
           <Printer size={18} strokeWidth={1.8} />
-          In trang này
+          In trang này (PDF)
         </button>
       </div>
 

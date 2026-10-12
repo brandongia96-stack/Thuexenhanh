@@ -5,10 +5,36 @@
 /* Thiếu quyền vị trí cho "Gần bạn nhất" — nhẹ, không phải ô lỗi đỏ. */
 .tk-canhbao-vitri { color: var(--m-subtle); }
 .tk-timkiem { flex: 1 1 320px; min-width: 0; }
-.tk-xep { width: auto; min-width: 170px; }
+.tk-timkiem .otk {
+  height: 44px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--m-border);
+  box-shadow: none;
+}
+.tk-timkiem .otk-tim {
+  border-radius: var(--r-sm);
+  width: 36px;
+  height: 36px;
+}
+.tk-xep {
+  width: auto;
+  min-width: 170px;
+  height: 44px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--m-border);
+  box-shadow: none;
+}
 
 /* Nút đổi lưới ↔ danh sách: chỉ từ 768px, dưới đó luôn là 1 cột. */
-.tk-doixem { display: none; width: 44px; padding: 0; }
+.tk-doixem {
+  display: none;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-md);
+  border: 1px solid var(--m-border);
+  box-shadow: none;
+  padding: 0;
+}
 @media (min-width: 768px) { .tk-doixem { display: inline-flex; } }
 
 .tk-luoi { display: grid; grid-template-columns: 280px minmax(0, 1fr); gap: var(--sp-6); align-items: start; }

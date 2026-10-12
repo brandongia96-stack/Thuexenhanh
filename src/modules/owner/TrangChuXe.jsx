@@ -1,4 +1,4 @@
-﻿// owner/TrangChuXe — màn "Xe của tôi" (route /chu-xe).
+// owner/TrangChuXe — màn "Xe của tôi" (route /chu-xe).
 //
 // Ghép các mảnh của luồng 03: danh sách xe + trạng thái + hạn còn lại, số liệu
 // 30 ngày từng xe, tổng của chủ xe. Màn CHỈ ĐỌC. Việc duy nhất liên quan tới tiền
@@ -265,12 +265,13 @@ export default function TrangChuXe() {
           <h3 className="t-h3" style={{ color: 'var(--m-blue)' }}>Biểu mẫu hỗ trợ kinh doanh</h3>
           <p className="t-small" style={{ marginTop: 4 }}>Tải ngay bộ Mẫu hợp đồng thuê xe & Biên bản bàn giao chuẩn pháp lý (File Word).</p>
         </div>
-        <button 
-          className="btn btn-primary" 
-          onClick={() => alert('Mẫu hợp đồng đang được đội pháp chế chuẩn bị. Sẽ sớm có mặt!')}
+        <a 
+          href="/mau-hop-dong-thue-xe.docx" 
+          download="Hop-dong-thue-xe-va-bien-ban-ban-giao.docx"
+          className="btn btn-primary"
         >
-          <Download size={16} /> Tải miễn phí
-        </button>
+          <Download size={16} /> Tải file Word (.docx)
+        </a>
       </div>
 
       <div className="cx-tab" role="tablist" aria-label="Lọc theo trạng thái">
