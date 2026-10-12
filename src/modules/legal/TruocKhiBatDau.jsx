@@ -4,6 +4,7 @@ import { ShieldCheck } from 'lucide-react'
 import { useAuth } from '../auth/AuthProvider'
 import { docDongY, dongYHopLe, ghiDongY } from './dongY'
 import { VAN_BAN, THAY_DOI } from './phienBan'
+import { guiEmailChaoMung } from '../notify/emailChaoMung'
 
 // Trên các trang này KHÔNG chặn: người dùng phải đọc được văn bản trước khi tick.
 const TRANG_DOC = ['/dieu-khoan', '/quy-che', '/bao-mat', '/hoan-token', '/khieu-nai',
@@ -41,6 +42,14 @@ export default function TruocKhiBatDau() {
     return () => { huy = true }
   }, [userId])
 
+  useEffect(() => {
+    if (typeof localStorage !== 'undefined' && localStorage.getItem('txn_dong_y_tat_ca') === 'true') {
+      setTickDieuKhoan(true)
+      setTickBaoMat(true)
+      setTick18(true)
+    }
+  }, [])
+
   if (!userId || !tt || TRANG_DOC.includes(pathname)) return null
 
   const canDieuKhoan = !dongYHopLe(tt, 'terms') || !dongYHopLe(tt, 'operation')
@@ -61,6 +70,14 @@ export default function TruocKhiBatDau() {
   const duDieuKien =
     (!canDieuKhoan || tickDieuKhoan) && (!canBaoMat || tickBaoMat) && (!can18 || tick18)
 
+  const dongYTatCaBatBuoc = (!canDieuKhoan || tickDieuKhoan) && (!canBaoMat || tickBaoMat) && (!can18 || tick18)
+
+  function toggleTatCaBatBuoc(checked) {
+    if (canDieuKhoan) setTickDieuKhoan(checked)
+    if (canBaoMat) setTickBaoMat(checked)
+    if (can18) setTick18(checked)
+  }
+
   async function tiepTuc() {
     if (!duDieuKien || dangLuu) return
     setDangLuu(true)
@@ -77,6 +94,13 @@ export default function TruocKhiBatDau() {
       if (hoiKhuyenMai) muc.push({ document: 'marketing', granted: tickKhuyenMai })
       await ghiDongY(userId, muc)
       setTt(await docDongY(userId))
+      if (typeof localStorage !== 'undefined') {
+        localStorage.removeItem('txn_dong_y_tat_ca')
+      }
+      // Gửi email chào mừng tự động về tài khoản
+      guiEmailChaoMung(user).catch((err) => {
+        if (import.meta.env.DEV) console.warn('[welcome-email]', err)
+      })
     } catch (e) {
       setLoi(e?.message || 'Chưa lưu được. Bạn thử lại giúp chúng tôi.')
     } finally {
@@ -103,7 +127,7 @@ export default function TruocKhiBatDau() {
           <h2 id="tkbd-tieu-de" className="t-h2" style={{ margin: 0 }}>Trước khi bắt đầu</h2>
         </div>
         <p className="t-small">
-          Vui lòng đọc và xác nhận từng mục. Chúng tôi không tick sẵn thay bạn.
+          Vui lòng đọc và xác nhận từng mục bên dưới:
         </p>
 
         {thayDoi.length > 0 && (
@@ -114,6 +138,29 @@ export default function TruocKhiBatDau() {
             </ul>
           </div>
         )}
+
+        {/* Ô ĐỒNG Ý TẤT CẢ CÁC MỤC BẮT BUỘC */}
+        <label
+          className="row t-small"
+          style={{
+            ...o,
+            padding: '10px 12px',
+            backgroundColor: 'var(--m-card-hover, rgba(0,0,0,0.03))',
+            borderRadius: 'var(--r-md, 8px)',
+            border: '1px solid var(--m-border)',
+            fontWeight: 600,
+            cursor: 'pointer',
+            userSelect: 'none',
+          }}
+        >
+          <input
+            type="checkbox"
+            checked={dongYTatCaBatBuoc}
+            style={{ marginTop: 3, cursor: 'pointer', width: 16, height: 16 }}
+            onChange={(e) => toggleTatCaBatBuoc(e.target.checked)}
+          />
+          <span>Đồng ý tất cả các điều khoản bắt buộc</span>
+        </label>
 
         {canDieuKhoan && (
           <label className="row t-small" style={o}>

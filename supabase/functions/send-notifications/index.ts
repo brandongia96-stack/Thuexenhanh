@@ -19,6 +19,7 @@
 
 import { admin } from '../_shared/db.ts'
 import { json, loi, CORS } from '../_shared/http.ts'
+import { htmlEmailChaoMung } from '../_shared/emailChaoMung.ts'
 
 const CRON_SECRET = Deno.env.get('CRON_SECRET')
 const RESEND_KEY = Deno.env.get('RESEND_API_KEY')
@@ -40,6 +41,12 @@ async function guiEmail(d: Dong): Promise<'da_gui' | 'bo_qua' | 'chua_cau_hinh'>
   if (!RESEND_KEY) return 'chua_cau_hinh'
   if (!d.email) return 'bo_qua'
   const url = d.link ? ORIGIN + d.link : ''
+  const htmlContent = d.type === 'chao_mung'
+    ? htmlEmailChaoMung({ email: d.email, origin: ORIGIN || 'https://thuexenhanh.vn' })
+    : `<p>${esc(d.body ?? '')}</p>` +
+        (url ? `<p><a href="${esc(url)}">Mở Thuexenhanh</a></p>` : '') +
+        `<p style="color:#8a8f9a;font-size:12px">Thuexenhanh chỉ kết nối chủ xe và khách, không đứng giữa giao dịch.</p>`
+
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: { Authorization: `Bearer ${RESEND_KEY}`, 'Content-Type': 'application/json' },
@@ -47,9 +54,7 @@ async function guiEmail(d: Dong): Promise<'da_gui' | 'bo_qua' | 'chua_cau_hinh'>
       from: MAIL_FROM,
       to: [d.email],
       subject: d.title,
-      html: `<p>${esc(d.body ?? '')}</p>` +
-        (url ? `<p><a href="${esc(url)}">Mở Thuexenhanh</a></p>` : '') +
-        `<p style="color:#8a8f9a;font-size:12px">Thuexenhanh chỉ kết nối chủ xe và khách, không đứng giữa giao dịch.</p>`,
+      html: htmlContent,
     }),
   })
   if (!res.ok) throw new Error(`resend ${res.status}: ${(await res.text()).slice(0, 200)}`)

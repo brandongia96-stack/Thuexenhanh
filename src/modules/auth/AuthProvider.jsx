@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useState, useCallback, useRef } f
 import { getSupabase, trySupabase } from '../../lib/supabase'
 import { HAS_BACKEND } from '../../lib/config'
 import { ROLE } from './rbac'
+import { guiEmailChaoMung } from '../notify/emailChaoMung'
 
 const AuthContext = createContext(null)
 
@@ -57,6 +58,9 @@ export function AuthProvider({ children }) {
         if (huy.current) return
         setSession(s ?? null)
         await loadProfile(s?.user?.id)
+        if (s?.user) {
+          guiEmailChaoMung(s.user).catch(() => {})
+        }
       })
       unsub = () => sub?.subscription?.unsubscribe()
     })()

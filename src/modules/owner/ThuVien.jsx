@@ -3,8 +3,9 @@ import { Link } from 'react-router-dom'
 import {
   FileText, Download, ShieldCheck, ExternalLink, Printer,
   AlertTriangle, Zap, CheckCircle2, BookOpen, Car,
-  FileCheck, HelpCircle, PhoneCall, Scale
+  FileCheck, HelpCircle, PhoneCall, Scale, Phone
 } from 'lucide-react'
+import DanhBaCuuHoSection from './DanhBaCuuHoSection'
 import './ThuVien.css'
 
 export default function ThuVien() {
@@ -21,8 +22,8 @@ export default function ThuVien() {
           Kho Biểu Mẫu &amp; Tài Liệu Cho Chủ Xe
         </h1>
         <p className="t-body" style={{ color: 'var(--m-mid)', maxWidth: 720 }}>
-          Tổng hợp đầy đủ hợp đồng mẫu chuẩn pháp lý, biên bản bàn giao xe 2 chiều, quy trình phòng ngừa rủi ro
-          và các cổng thông tin tra cứu phạt nguội, bằng lái phục vụ hoạt động cho thuê xe tự lái an toàn, hiệu quả.
+          Tổng hợp đầy đủ hợp đồng mẫu chuẩn pháp lý, biên bản bàn giao xe 2 chiều, danh bạ cứu hộ giao thông 24/7 toàn quốc,
+          quy trình phòng ngừa rủi ro và các cổng thông tin tra cứu phạt nguội, bằng lái phục vụ chủ xe.
         </p>
       </section>
 
@@ -30,6 +31,7 @@ export default function ThuVien() {
       <div className="tv-filter" role="tablist" aria-label="Lọc danh mục tài liệu">
         {[
           { key: 'tat-ca', label: 'Tất cả tài liệu' },
+          { key: 'cuu-ho', label: '🚨 Cứu hộ toàn quốc 24/7' },
           { key: 'bieu-mau', label: 'Biểu mẫu & Hợp đồng' },
           { key: 'quy-trinh', label: 'Quy trình an toàn' },
           { key: 'xu-ly', label: 'Phạt nguội & Tranh chấp' },
@@ -171,6 +173,13 @@ export default function ThuVien() {
             </div>
           </div>
         </section>
+      )}
+
+      {/* ═══════════════════════════════════════════════════════════════
+          DANH BẠ CỨU HỘ TOÀN QUỐC 24/7 (Bộ lọc thông minh theo vị trí / tìm tay)
+      ═══════════════════════════════════════════════════════════════ */}
+      {(tab === 'tat-ca' || tab === 'cuu-ho') && (
+        <DanhBaCuuHoSection />
       )}
 
       {/* ═══════════════════════════════════════════════════════════════

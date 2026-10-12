@@ -1,0 +1,277 @@
+.dbch-congcu-card {
+  background: var(--m-surface);
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-xl);
+  padding: var(--sp-5);
+  margin-bottom: var(--sp-5);
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  box-shadow: var(--shadow-sm);
+}
+
+.dbch-timkiem-row {
+  display: flex;
+  gap: var(--sp-3);
+  flex-wrap: wrap;
+}
+
+.dbch-tim-o {
+  flex: 1 1 300px;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  height: 44px;
+  background: var(--m-bg);
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-md);
+  padding: 0 var(--sp-3);
+  transition: all var(--t-fast);
+}
+
+.dbch-tim-o:focus-within {
+  border-color: var(--m-green);
+  background: var(--m-surface);
+  box-shadow: 0 0 0 3px var(--m-green-light);
+}
+
+.dbch-tim-icon {
+  color: var(--m-subtle);
+  flex-shrink: 0;
+}
+
+.dbch-input-tim {
+  flex: 1;
+  min-width: 0;
+  border: none;
+  background: transparent;
+  outline: none;
+  font-size: 14px;
+  color: var(--m-dark);
+}
+
+.dbch-xoa-tim {
+  background: none;
+  border: none;
+  color: var(--m-subtle);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+.dbch-select-vung {
+  width: auto;
+  min-width: 200px;
+  height: 44px;
+  background: var(--m-bg);
+  border-radius: var(--r-md);
+}
+
+.dbch-dichvu-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  align-items: center;
+}
+
+.dbch-chip {
+  height: 32px;
+  padding: 0 var(--sp-3);
+  border-radius: var(--r-full);
+  background: var(--m-surface);
+  border: 1px solid var(--m-border);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--m-mid);
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.dbch-chip:hover {
+  background: var(--m-bg);
+  color: var(--m-dark);
+}
+
+.dbch-chip.active {
+  background: var(--m-green-light);
+  border-color: var(--m-green-border);
+  color: var(--m-green-hover);
+  font-weight: 600;
+}
+
+.dbch-vitri-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: var(--sp-3);
+  border-top: 1px solid var(--m-border);
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+}
+
+.dbch-toggle-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.dbch-ketqua-dem {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  color: var(--m-mid);
+  margin-bottom: var(--sp-4);
+  padding: 0 var(--sp-1);
+}
+
+.dbch-xoa-het {
+  background: none;
+  border: none;
+  color: var(--m-red);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* ─── Grid thẻ cứu hộ ─── */
+.dbch-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--sp-4);
+}
+
+.dbch-card {
+  background: var(--m-surface);
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-xl);
+  padding: var(--sp-5);
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: var(--sp-4);
+  transition: transform var(--t-fast), box-shadow var(--t-fast), border-color var(--t-fast);
+}
+
+.dbch-card:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+  border-color: var(--m-green-border);
+}
+
+.dbch-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--sp-2);
+  gap: var(--sp-2);
+}
+
+.dbch-badge-vung {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: var(--m-bg);
+  color: var(--m-mid);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--r-full);
+}
+
+.dbch-badge-km {
+  display: inline-flex;
+  align-items: center;
+  background: var(--m-green-light);
+  color: var(--m-green);
+  font-size: 12px;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: var(--r-full);
+  margin-left: 6px;
+}
+
+.dbch-badge-247 {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: #fef2f2;
+  color: var(--m-red);
+  font-size: 11px;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: var(--r-sm);
+}
+
+.dbch-ten {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--m-dark);
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+
+.dbch-dichvu-text {
+  font-size: 13.5px;
+  color: var(--m-mid);
+  line-height: 1.5;
+  margin-bottom: 6px;
+}
+
+.dbch-ghichu {
+  font-size: 12px;
+  color: var(--m-subtle);
+  font-style: italic;
+  line-height: 1.4;
+}
+
+.dbch-card-bot {
+  border-top: 1px solid var(--m-border);
+  padding-top: var(--sp-3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+}
+
+.dbch-sdt-label {
+  font-size: 11px;
+  color: var(--m-subtle);
+}
+
+.dbch-sdt-val {
+  font-size: 17px;
+  font-weight: 800;
+  color: var(--m-dark);
+  letter-spacing: 0.02em;
+}
+
+.dbch-nut-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.dbch-nut-goi {
+  background: var(--m-green);
+  color: #fff;
+  font-weight: 600;
+  padding: 0 var(--sp-4);
+  gap: 6px;
+}
+
+@media (max-width: 640px) {
+  .dbch-timkiem-row {
+    flex-direction: column;
+  }
+  .dbch-select-vung {
+    width: 100%;
+  }
+  .dbch-grid {
+    grid-template-columns: 1fr;
+  }
+}
