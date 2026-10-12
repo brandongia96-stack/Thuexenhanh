@@ -49,6 +49,7 @@ const TrangDangTin = lazy(() => import('./modules/listing/TrangDangTin'))
 // Luồng 03 — bảng điều khiển chủ xe: danh sách xe + số liệu 30 ngày.
 const TrangChuXe = lazy(() => import('./modules/owner/TrangChuXe'))
 const LichXeTong = lazy(() => import('./modules/owner/LichXeTong'))
+const ThuVien = lazy(() => import('./modules/owner/ThuVien'))
 
 
 /**
@@ -134,6 +135,7 @@ export default function App() {
               <Route path="/gioi-thieu" element={<GioiThieu />} />
               <Route path="/tro-giup" element={<HoiDap />} />
               <Route path="/lien-he" element={<LienHe />} />
+              <Route path="/thu-vien" element={<ThuVien />} />
 
               <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>

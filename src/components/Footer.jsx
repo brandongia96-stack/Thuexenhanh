@@ -39,6 +39,7 @@ export default function Footer() {
           <Link to="/chu-xe/dang-tin">Đăng tin cho thuê</Link>
           <Link to="/chu-xe">Xe của tôi</Link>
           <Link to="/chu-xe/vi">Ví token</Link>
+          <Link to="/thu-vien">Thư viện</Link>
         </div>
 
         <div className="footer-col">
