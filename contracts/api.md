@@ -406,6 +406,27 @@ và không ai ngồi đọc. Mất dòng log là mất manh mối để trả ti
 | `rpc('yeu_cau_xoa_tai_khoan')` / `rpc('huy_yeu_cau_xoa_tai_khoan')` | chờ 7 ngày rồi cron ẩn danh hoá thật (xoá tên/email/SĐT, gỡ Google, ẩn tin). Ví còn token → chuyển admin xử lý hoàn token trước. Trạng thái đọc ở `account_deletion_requests` |
 | `admin-ops` `evidence_urls` | mỗi lần xem bằng chứng tự ghi `admin_actions` (`view_evidence`) |
 
+## 3f. Sắp xếp "Xe gần bạn nhất" (0024, 12/10/2026)
+
+```js
+// Trả MỌI cột của listing_card + distance_km (km, 1 số lẻ). Gắn tiếp bộ lọc,
+// sắp xếp, keyset y như đọc view listing_card. `select` PHẢI có `id`
+// (thiếu là PostgREST báo "column record.id does not exist" khi order theo id).
+sb.rpc('listing_card_gan', { p_lat, p_lng })
+  .select('id,...,distance_km')
+  .in('status', ['dang_hien_thi', 'sap_het_han']).gt('expires_at', now)
+  .order('distance_km', { ascending: true }).order('id', { ascending: true })
+  // keyset: or(distance_km.gt.X, and(distance_km.eq.X, id.gt.ID))
+```
+
+- Vị trí xe = toạ độ tin (làm tròn ~1 km) → trung tâm quận → trung tâm tỉnh
+  (`provinces.lat/lng`, `districts.lat/lng`). Khoảng cách là **gần đúng** —
+  giao diện ghi "khoảng … km", không ghi như số chính xác.
+- Toạ độ người dùng lấy từ trình duyệt, CHỈ gửi lên làm tham số hàm, server
+  không lưu.
+- ⚠️ Thêm cột vào `listing_card` → phải thêm vào hàm `listing_card_gan` (cùng thứ tự).
+- `listing_card.search_tsv` đã có lại (chỉ để lọc `textSearch`, đừng select).
+
 ## 4. Mã lỗi chung
 
 | Mã | Nghĩa |
