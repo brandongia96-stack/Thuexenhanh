@@ -459,6 +459,19 @@ sb.rpc('listing_card_tim', { p_lat, p_lng, p_tu: '2026-10-21', p_den: '2026-10-2
   "Còn trống"/"Đặt được".
 - Lỗi `column record.X does not exist` = đang order theo cột X mà không có trong `select`.
 
+## 3i. Cộng đồng tìm xe (0029, 17/10/2026) — KHÔNG gói Pro
+
+| Thứ | Cách dùng |
+|---|---|
+| `customer_requests` | Khách insert (`customer_id = uid`). Server tự: `status='cho_duyet'`, tên gọi + ảnh từ hồ sơ (bỏ qua client gửi), che SĐT trong `content/custom_note/address_text`, `expires_at` = hết ngày `end_date`. Tối đa 3 tin đang mở/khách, tối đa 60 ngày. Đọc: CHỈ chính khách + kiểm duyệt. Khách chỉ được đổi `status → 'da_tim_thay'` hoặc xoá mềm |
+| view `customer_request_feed` | Bảng tin công khai: tin `da_duyet`/`da_tim_thay` còn hạn, `customer_phone_masked` (090 ••• •567). KHÔNG có SĐT thật |
+| `rpc('customer_requests_gan', { p_lat, p_lng })` | feed xếp gần → xa |
+| `rpc('xem_lien_he_tim_xe', { p_request_id })` | `{ ok, phone, zalo, name }` hoặc `{ ok:false, error, message }`: `chua_dang_nhap`, `chua_co_xe` (phải có tin xe đang hiển thị), `khach_khong_chia_se`, `tin_dong`, `vuot_gioi_han` (20 khách/24h). Miễn phí |
+| `customer_request_offers` | Chủ xe (có tin hiển thị) chào MỘT lần/tin, `listing_id` phải là xe của mình đang hiển thị; tin nhắn tự che SĐT. Ai cũng đọc. Tên/ảnh chủ xe lấy từ `owner_public` |
+| `rpc('notify_nearby_owners_on_request', { p_request_id })` | CHỈ kiểm duyệt/admin, gọi sau khi duyệt; báo trong app tối đa 200 chủ xe cùng tỉnh, mỗi tin MỘT lần |
+
+**Không có, đừng thêm:** gói Pro, trả token để xem số khách, email ưu tiên trả phí.
+
 ## 4. Mã lỗi chung
 
 | Mã | Nghĩa |

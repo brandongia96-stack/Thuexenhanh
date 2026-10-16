@@ -2,7 +2,7 @@ import { useState, useEffect, useCallback } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { 
   Users, Plus, Search, MapPin, Sparkles, Filter, 
-  Car, Shield, CheckCircle2, ChevronRight, Zap, RefreshCw
+  Car, Shield, CheckCircle2, Zap, RefreshCw
 } from 'lucide-react'
 import { useAuth } from '../auth/AuthProvider'
 import { useViTri } from '../../context/ViTriContext'
@@ -103,7 +103,7 @@ export default function TrangCongDong() {
           Cộng đồng Tìm Xe Tự Lái
         </h1>
         <p className="congdong-hero-sub">
-          Khách thuê đăng bài 5 tiêu chí nhanh gọn — Hàng ngàn chủ xe lân cận chủ động liên hệ & báo giá tốt nhất.
+          Khách thuê đăng bài 5 tiêu chí nhanh gọn — Chủ xe trong khu vực có xe phù hợp sẽ chủ động liên hệ và báo giá.
         </p>
 
         <div className="congdong-hero-actions">
@@ -127,17 +127,14 @@ export default function TrangCongDong() {
             </div>
             <div>
               <div className="pro-banner-title">
-                Đặc quyền Gói Pro: Nhận Email tức thì khi có khách tìm xe gần bạn
+                Chủ xe xem liên hệ khách miễn phí
               </div>
               <p className="pro-banner-sub">
-                Chớp cơ hội đón khách sớm nhất khu vực. Đăng ký tiện lợi bằng Token trong ví của bạn.
+                Có xe đang hiển thị là xem được số khách đã đồng ý chia sẻ (tối đa 20 khách / 24 giờ).
+                Khách mới đăng trong tỉnh của anh/chị sẽ có thông báo trong app.
               </p>
             </div>
           </div>
-          <Link to="/chu-xe/vi" className="btn btn-sm btn-pro-action">
-            Nâng cấp Gói Pro
-            <ChevronRight size={14} />
-          </Link>
         </div>
       )}
 

@@ -1,5 +1,7 @@
 // modules/requests/requestsApi.js
-// API giao tiếp với Supabase cho Bảng tin Cộng đồng tìm xe & Gói Pro.
+// API giao tiếp với Supabase cho Bảng tin Cộng đồng tìm xe.
+// KHÔNG có gói Pro (anh duyệt 17/10): chủ xe đang có tin hiển thị xem liên hệ
+// khách MIỄN PHÍ, server giới hạn 20 tin/24h — xem migration 0029.
 
 import { getSupabase } from '../../lib/supabase'
 
@@ -77,7 +79,16 @@ export async function layTinCuaToi(userId) {
       .order('created_at', { ascending: false })
 
     if (error) throw error
-    return { data: data || [], error: null }
+    // Tên + ảnh chủ xe: đọc view owner_public (bảng users bị RLS chặn, và
+    // TUYỆT ĐỐI không kéo SĐT chủ xe ra đây).
+    const ids = [...new Set((data || []).map((o) => o.owner_id))]
+    let chu = {}
+    if (ids.length) {
+      const { data: op } = await sb.from('owner_public')
+        .select('id,ten_hien_thi,avatar_url,da_xac_minh').in('id', ids)
+      chu = Object.fromEntries((op || []).map((o) => [o.id, o]))
+    }
+    return { data: (data || []).map((o) => ({ ...o, chu_xe: chu[o.owner_id] ?? null })), error: null }
   } catch (err) {
     return { data: [], error: err.message }
   }
@@ -201,7 +212,6 @@ export async function layDanhSachChaoXe(requestId) {
         offer_price,
         message,
         owner_id,
-        users:owner_id (full_name, avatar_url, phone),
         listing:listing_id (id, brand_text, model_text, price_per_day, year)
       `)
       .eq('request_id', requestId)
@@ -248,23 +258,3 @@ export async function adminXuLyTinTimXe(requestId, dongY, lyDo = null) {
   }
 }
 
-/**
- * Mua / Gia hạn Gói Pro bằng Token
- */
-export async function muaGoiPro({ userId, soThang = 1, costToken = 30 }) {
-  try {
-    const sb = await getSupabase()
-    const idemKey = `pro_${userId}_${Date.now()}`
-    const { data, error } = await sb.rpc('mua_goi_pro', {
-      p_user_id: userId,
-      p_so_thang: soThang,
-      p_cost_token: costToken,
-      p_idem_key: idemKey
-    })
-
-    if (error) throw error
-    return data
-  } catch (err) {
-    return { ok: false, error: err.message }
-  }
-}

@@ -126,3 +126,5 @@ Luồng 12 phải ghi việc hiển thị ảnh + tên gọi này vào Chính s�
 3. **Không hiện tên/MST/địa chỉ công ty trên web tới khi có GPKD** (dự kiến 24/12/2026).
 4. Repo GitHub chuyển **Private**; không viết lại lịch sử (ảnh CCCD lọt là ảnh báo chí
    đã che một phần; Private đủ chặn truy cập công khai).
+
+5. **Cộng đồng tìm xe: làm lại KHÔNG gói Pro** (anh duyệt cùng ngày). Chủ xe đang có tin hiển thị xem liên hệ khách miễn phí, giới hạn 20 khách/24h, khách phải đồng ý chia sẻ.
