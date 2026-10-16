@@ -6,7 +6,7 @@
 //   3. Chủ xe không tự đặt được tích xanh. Không có ô nào cho việc đó.
 
 import { useState } from 'react'
-import { AlertCircle, AlertTriangle, CheckCircle2, HelpCircle, Info, Loader2, Save, Send } from 'lucide-react'
+import { AlertCircle, AlertTriangle, CheckCircle2, Copy, HelpCircle, Info, Loader2, Save, Send } from 'lucide-react'
 import { AMENITIES } from '../../../data/amenities'
 import { TOKENS_PER_MONTH } from '../../../lib/config'
 import { vndForMonths } from '../../../lib/pricing'
@@ -19,7 +19,7 @@ import ModalSoSanhGoi from './ModalSoSanhGoi'
 import TruongNhap from './TruongNhap'
 import './FormDangTin.css'
 
-export default function FormDangTin({ dieuKhien, onXong }) {
+export default function FormDangTin({ dieuKhien, onXong, onNhanBan }) {
   const {
     goi, doiGoi,
     form, doiTruong, doiTienNghi, chonTatCaTienNghi,
@@ -29,7 +29,7 @@ export default function FormDangTin({ dieuKhien, onXong }) {
     dangTai, dangLuu, tienDoAnh,
     loiTruong, loiChung, giaDuoiSan,
     dongYSo, doiDongYSo, dongYAnh, doiDongYAnh,
-    luuNhap, luuVaGuiDuyet,
+    luuNhap, luuVaGuiDuyet, nhanBan,
   } = dieuKhien
 
   const [moSoSanh, setMoSoSanh] = useState(false)
@@ -58,16 +58,34 @@ export default function FormDangTin({ dieuKhien, onXong }) {
     if (id) onXong?.(id, 'duyet')
   }
 
+  // Tạo tin mới từ tin đang xem — ảnh, biển số, lịch bận là của riêng xe này
+  // nên không copy, chủ xe cần thêm lại. Hỏi lại vì sẽ mất ảnh/lịch đang hiện
+  // trên form nếu đổi ý giữa đường.
+  function nhanNhanBan() {
+    const dongY = window.confirm(
+      'Tạo tin mới từ dữ liệu của tin này? Ảnh, biển số và lịch xe bận sẽ KHÔNG được sao chép, cần thêm lại.',
+    )
+    if (!dongY) return
+    nhanBan()
+    onNhanBan?.()
+  }
+
   return (
     <form className="fdt" onSubmit={(e) => e.preventDefault()}>
       {/* ─── Trạng thái tin: chỉ hiện khi đang sửa tin đã có ─── */}
       {tin && (
         <div className="card card-pad fdt-trang-thai">
-          <div className="row" style={{ flexWrap: 'wrap' }}>
-            <span className={`badge badge-${nhan.tone}`}>{nhan.label}</span>
-            {/* price_anomaly: server gắn cờ khi giá dưới ngưỡng thường gặp — không chặn,
-                chỉ để kiểm duyệt viên xem tay (0023, PL-33). */}
-            {tin.price_anomaly && <span className="badge badge-warn">Cần duyệt giá</span>}
+          <div className="row" style={{ flexWrap: 'wrap', justifyContent: 'space-between', width: '100%' }}>
+            <div className="row" style={{ flexWrap: 'wrap' }}>
+              <span className={`badge badge-${nhan.tone}`}>{nhan.label}</span>
+              {/* price_anomaly: server gắn cờ khi giá dưới ngưỡng thường gặp — không chặn,
+                  chỉ để kiểm duyệt viên xem tay (0023, PL-33). */}
+              {tin.price_anomaly && <span className="badge badge-warn">Cần duyệt giá</span>}
+            </div>
+            <button type="button" className="btn btn-ghost btn-sm" onClick={nhanNhanBan} disabled={dangChay}>
+              <Copy size={15} strokeWidth={1.8} />
+              Nhân bản thành tin mới
+            </button>
           </div>
           {trangThai === STATUS.TU_CHOI && tin.reject_reason && (
             <p className="t-small fdt-ly-do">

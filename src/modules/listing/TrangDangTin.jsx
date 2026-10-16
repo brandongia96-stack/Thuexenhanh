@@ -198,6 +198,11 @@ export default function TrangDangTin() {
           if (viec === 'duyet') navigate('/chu-xe', { replace: true })
           else if (!id) navigate(`/chu-xe/tin/${listingId}`, { replace: true })
         }}
+        onNhanBan={() => {
+          // Chỉ đổi URL để khớp trạng thái "đăng mới" — dữ liệu đã copy sẵn
+          // trong form ở trên rồi, không nạp lại từ CSDL.
+          if (id) navigate('/chu-xe/dang-tin', { replace: true })
+        }}
       />
     </div>
   )

@@ -282,6 +282,24 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '', daX
     }
   }
 
+  // Nhân bản: tạo tin MỚI copy dữ liệu chữ từ tin đang sửa — cho chủ xe có
+  // nhiều xe giống nhau (cùng hãng/dòng/giá/tiện nghi) đăng nhanh, không phải
+  // gõ lại từ đầu. CHỈ copy phần chữ: biển số, ảnh, lịch bận là của riêng từng
+  // xe vật lý nên xoá trắng; hai ô đồng ý cũng phải tick lại cho tin mới.
+  const nhanBan = useCallback(() => {
+    if (!tin) return
+    idRef.current = null
+    setTin(null)
+    setForm((truoc) => ({ ...truoc, plate: '' }))
+    setAnh([])
+    setAnhDaXoa([])
+    setNgayChan([])
+    setDongYSo(false)
+    setDongYAnh(false)
+    setLoiTruong({})
+    setLoiChung(null)
+  }, [tin])
+
   const trangThai = tin?.status ?? STATUS.NHAP
 
   return {
@@ -296,7 +314,7 @@ export function useFormDangTin({ listingId = null, ownerId, sdtMacDinh = '', daX
     loiTruong, loiChung,
     sanNgay, giaDuoiSan,
     dongYSo, doiDongYSo, dongYAnh, doiDongYAnh,
-    luuNhap, luuVaGuiDuyet,
+    luuNhap, luuVaGuiDuyet, nhanBan,
     // Sau khi trả phí ở HopTraPhi: đọc lại status/expires_at mà SERVER vừa ghi.
     taiLaiTin: () => (idRef.current ? napTin(idRef.current, { chiTaiLaiAnh: true }) : null),
   }
