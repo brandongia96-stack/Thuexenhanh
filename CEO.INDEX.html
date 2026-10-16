@@ -1,0 +1,1049 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CEO.INDEX — Thuexenhanh Command Center</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --dark: #0f172a;
+      --mid: #475569;
+      --subtle: #94a3b8;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --green: #10b981;
+      --green-light: #ecfdf5;
+      --amber: #f59e0b;
+      --amber-light: #fffbeb;
+      --red: #ef4444;
+      --red-light: #fef2f2;
+      --r-box: 12px;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--dark);
+      line-height: 1.5;
+      padding-bottom: 60px;
+    }
+
+    /* Header */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+    .header-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .ceo-badge {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #38bdf8;
+      font-weight: 800;
+      font-size: 13px;
+      padding: 6px 12px;
+      border-radius: var(--r-box);
+      letter-spacing: 1px;
+      border: 1px solid rgba(56, 189, 248, 0.3);
+    }
+    .brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--dark);
+    }
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--subtle);
+    }
+
+    .server-status-pills {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 5px 12px;
+      border-radius: 9999px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid transparent;
+    }
+    .status-pill.online {
+      background: var(--green-light);
+      color: #065f46;
+      border-color: #a7f3d0;
+    }
+    .status-pill.offline {
+      background: var(--red-light);
+      color: #991b1b;
+      border-color: #fecaca;
+    }
+    .status-pill.warning {
+      background: var(--amber-light);
+      color: #92400e;
+      border-color: #fde68a;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .dot.green { background: var(--green); }
+    .dot.red { background: var(--red); }
+    .dot.amber { background: var(--amber); }
+
+    /* Main Navigation Tabs */
+    .main-nav {
+      background: #0f172a;
+      border-bottom: 1px solid #1e293b;
+    }
+    .nav-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      gap: 6px;
+    }
+    .nav-tab-btn {
+      padding: 14px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #94a3b8;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+    }
+    .nav-tab-btn:hover { color: #f8fafc; }
+    .nav-tab-btn.active {
+      color: #38bdf8;
+      border-bottom-color: #38bdf8;
+      background: rgba(56, 189, 248, 0.08);
+    }
+
+    /* Container */
+    .container {
+      max-width: 1440px;
+      margin: 24px auto;
+      padding: 0 24px;
+    }
+
+    .tab-content { display: none; }
+    .tab-content.active { display: block; }
+
+    /* Common Card */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-box);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 24px;
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Form Elements */
+    .form-group { margin-bottom: 16px; }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--mid);
+      margin-bottom: 6px;
+    }
+    input[type="text"], select, textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--r-box);
+      font-size: 14px;
+      color: var(--dark);
+      background: #fafafa;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    input[type="text"]:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      background: white;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: var(--r-box);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+    }
+    .btn-primary { background: var(--primary); color: white; }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-secondary { background: #f1f5f9; color: var(--mid); border-color: #cbd5e1; }
+    .btn-secondary:hover { background: #e2e8f0; color: var(--dark); }
+    .btn-success { background: var(--green); color: white; }
+    .btn-success:hover { background: #059669; }
+    .btn-dark { background: #0f172a; color: white; }
+    .btn-dark:hover { background: #1e293b; }
+    .btn-block { width: 100%; }
+    .btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    /* Alert Boxes */
+    .alert-box {
+      padding: 16px 20px;
+      border-radius: var(--r-box);
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      border: 1px solid;
+    }
+    .alert-box.warning {
+      background: #fffbeb;
+      border-color: #fde68a;
+      color: #92400e;
+    }
+    .alert-box.info {
+      background: #eff6ff;
+      border-color: #bfdbfe;
+      color: #1e40af;
+    }
+
+    /* 2-Column Grid */
+    .two-col-grid {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 1024px) {
+      .two-col-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Table Styles */
+    .table-container {
+      overflow-x: auto;
+      margin: 16px 0;
+      background: white;
+      border-radius: var(--r-box);
+      border: 1px solid var(--border);
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+    }
+    th, td {
+      padding: 10px 12px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+    th {
+      background: #f8fafc;
+      font-weight: 700;
+      color: #334155;
+      white-space: nowrap;
+    }
+    tr:hover td { background: #f8fafc; }
+
+    /* Dropzone Upload */
+    .dropzone {
+      border: 2px dashed #94a3b8;
+      border-radius: var(--r-box);
+      padding: 36px 20px;
+      text-align: center;
+      background-color: #f8fafc;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+    }
+
+    /* Scorecard for SEO */
+    .scorecard {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: white;
+      border-radius: var(--r-box);
+      padding: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+    }
+    .score-circle {
+      width: 75px;
+      height: 75px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 4px solid var(--green);
+      flex-shrink: 0;
+    }
+
+    /* Preview Typography */
+    .preview-body {
+      background: white;
+      padding: 28px;
+      border-radius: var(--r-box);
+      border: 1px solid var(--border);
+      font-size: 15px;
+      line-height: 1.7;
+    }
+    .preview-body h1 { font-size: 26px; font-weight: 800; margin-bottom: 16px; }
+    .preview-body h2 { font-size: 20px; font-weight: 700; margin: 24px 0 12px; border-bottom: 2px solid #e2e8f0; padding-bottom: 6px; }
+    .preview-body h3 { font-size: 17px; font-weight: 600; margin: 18px 0 8px; }
+    .preview-body p { margin-bottom: 14px; }
+
+    .seo-callout {
+      padding: 14px 18px;
+      border-radius: var(--r-box);
+      margin: 16px 0;
+      border-left: 5px solid;
+    }
+    .seo-callout.note { background: #eff6ff; border-color: #3b82f6; color: #1e40af; }
+    .seo-callout.warning { background: #fffbeb; border-color: #f59e0b; color: #92400e; }
+
+    /* Badges */
+    .badge {
+      display: inline-block;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 9999px;
+      font-weight: 600;
+    }
+
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Hub Quick Cards */
+    .hub-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+    .hub-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--r-box);
+      padding: 20px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <div class="header-inner">
+      <div class="logo-area">
+        <span class="ceo-badge">CEO.INDEX</span>
+        <div>
+          <div class="brand-title">Thuexenhanh — Executive Command Center</div>
+          <div class="brand-subtitle">Cổng Điều Hành Tổng: SEO Top 3 Content AI • Quét CCCD Xuất Excel (Offline) • Hệ Thống</div>
+        </div>
+      </div>
+      <div class="server-status-pills">
+        <div id="seoStatusPill" class="status-pill warning">
+          <span class="dot amber"></span>
+          <span id="seoStatusTxt">SEO Tool :4646 (Kiểm tra...)</span>
+        </div>
+        <div id="cccdStatusPill" class="status-pill warning">
+          <span class="dot amber"></span>
+          <span id="cccdStatusTxt">CCCD Server :8000 (Kiểm tra...)</span>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Navigation Tabs -->
+  <nav class="main-nav">
+    <div class="nav-inner">
+      <button class="nav-tab-btn active" onclick="switchMainTab('tab-seo')">✍️ Tool Viết Bài SEO Top 3 (Anti-AI)</button>
+      <button class="nav-tab-btn" onclick="switchMainTab('tab-cccd')">🪪 Tool Quét CCCD Xuất Excel (100% Offline)</button>
+      <button class="nav-tab-btn" onclick="switchMainTab('tab-hub')">🚀 Trung Tâm Điều Hành CEO & Phím Tắt</button>
+    </div>
+  </nav>
+
+  <main class="container">
+
+    <!-- ========================================== -->
+    <!-- MODULE 1: TOOL VIẾT BÀI SEO TOP 3          -->
+    <!-- ========================================== -->
+    <section id="tab-seo" class="tab-content active">
+      <div class="two-col-grid">
+        
+        <!-- Left Column: Form -->
+        <div class="card">
+          <div class="card-title">📝 Thiết Lập Bài Viết Chuẩn SEO Top 3</div>
+
+          <div class="form-group">
+            <label>Từ khóa mục tiêu (Primary Keyword) *</label>
+            <input type="text" id="seoKeyword" value="kinh nghiệm thuê xe tự lái tránh bị đền tiền oan" placeholder="Nhập từ khóa...">
+          </div>
+
+          <div class="form-group">
+            <label>Ý định tìm kiếm (Search Intent)</label>
+            <select id="seoIntent">
+              <option value="Informational / How-to" selected>Cẩm nang & Kinh nghiệm thực tế (Tránh đền tiền)</option>
+              <option value="Commercial / Pricing">Bảng giá & So sánh dòng xe (Commercial)</option>
+              <option value="Transactional / Direct">Thủ tục thuê xe & Đặt xe trực tiếp</option>
+              <option value="Business / For Owners">Dành cho chủ xe (Kiếm tiền, hợp đồng)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Ghi chú riêng / Yêu cầu bổ sung</label>
+            <textarea id="seoNotes" rows="2" placeholder="Ví dụ: Nhấn mạnh quay video 360 độ lúc nhận xe, quy định cấm giữ CCCD gốc theo NĐ 282..."></textarea>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button class="btn btn-secondary" style="flex: 1;" onclick="runSeoOutline()">📑 1. Dàn Ý</button>
+            <button class="btn btn-primary" id="btnRunSeoArticle" style="flex: 1.4;" onclick="runSeoArticle()">🚀 2. Viết Bài Đầy Đủ</button>
+          </div>
+
+          <!-- Shortcuts to keyword bank -->
+          <div style="margin-top: 24px;">
+            <label style="font-weight: 700; color: var(--dark);">🎯 Từ khóa gợi ý dễ lên Top 3 trong 30 - 60 ngày:</label>
+            <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 8px;">
+              <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left; font-size: 12px; padding: 6px 10px;" onclick="pickSeoKw('thủ tục thuê xe tự lái không cần hộ khẩu 2026')">
+                📌 thủ tục thuê xe tự lái không cần hộ khẩu 2026 (30-45 ngày)
+              </button>
+              <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left; font-size: 12px; padding: 6px 10px;" onclick="pickSeoKw('nghị định 282 thuê xe tự lái có được giữ cccd gốc không')">
+                📌 nghị định 282 thuê xe tự lái có được giữ cccd gốc không (15-30 ngày)
+              </button>
+              <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left; font-size: 12px; padding: 6px 10px;" onclick="pickSeoKw('bảng giá thuê xe tự lái 4 chỗ 7 chỗ mới nhất 2026')">
+                📌 bảng giá thuê xe tự lái 4 chỗ 7 chỗ mới nhất 2026
+              </button>
+              <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left; font-size: 12px; padding: 6px 10px;" onclick="pickSeoKw('thuê xe xpander tự lái giá bao nhiêu 1 ngày')">
+                📌 thuê xe xpander tự lái giá bao nhiêu 1 ngày (30-45 ngày)
+              </button>
+              <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left; font-size: 12px; padding: 6px 10px;" onclick="pickSeoKw('cho thuê xe tự lái có lời không kiếm được bao nhiêu 1 tháng')">
+                📌 cho thuê xe tự lái có lời không kiếm được bao nhiêu 1 tháng
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right Column: SEO Result -->
+        <div>
+          <!-- Scorecard -->
+          <div class="scorecard">
+            <div class="score-circle">
+              <div style="font-size: 24px; font-weight: 800; color: var(--green);" id="scoreVal">94</div>
+              <div style="font-size: 10px; opacity: 0.7;">/ 100đ</div>
+            </div>
+            <div style="flex: 1;">
+              <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; margin-bottom: 4px;">CHUẨN TOP 1 - 3 GOOGLE</span>
+              <div style="font-weight: 700; font-size: 15px;" id="scoreHeading">Vượt qua mọi bộ lọc AI • E-E-A-T Chuẩn</div>
+              <div style="display: flex; gap: 14px; font-size: 12px; opacity: 0.9; margin-top: 4px;">
+                <span>📝 Độ dài: <strong id="scoreWords">1.950</strong> từ</span>
+                <span>🔑 Mật độ: <strong id="scoreDensity">1.4%</strong></span>
+                <span>🛡️ Anti-AI: <strong id="scoreHuman">100% Thực chiến</strong></span>
+              </div>
+            </div>
+            <div>
+              <button class="btn btn-success" onclick="saveSeoArticle()">💾 Lưu Bài Viết</button>
+            </div>
+          </div>
+
+          <!-- Preview box -->
+          <div class="card" style="padding: 16px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
+              <div style="display: flex; gap: 8px;">
+                <button class="btn btn-secondary active" style="padding: 4px 12px; font-size: 12px;" onclick="switchSeoView('view-web')">👁️ Web View</button>
+                <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 12px;" onclick="switchSeoView('view-md')">📝 Markdown</button>
+                <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 12px;" onclick="switchSeoView('view-schema')">🏷️ Schema JSON-LD</button>
+              </div>
+              <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 12px;" onclick="copySeoText()">📋 Copy</button>
+            </div>
+
+            <div id="view-web" class="preview-body" style="max-height: 650px; overflow-y: auto;">
+              <div id="seoPreviewContent">
+                <p style="text-align: center; color: var(--subtle); padding: 50px 0;">Bấm nút <strong>"🚀 2. Viết Bài Đầy Đủ"</strong> để bắt đầu sinh nội dung.</p>
+              </div>
+            </div>
+
+            <div id="view-md" style="display: none;">
+              <textarea id="seoMdRaw" rows="22" style="width: 100%; font-family: monospace; font-size: 13px; background: #0f172a; color: #f8fafc; padding: 16px; border-radius: 8px;"></textarea>
+            </div>
+
+            <div id="view-schema" style="display: none;">
+              <textarea id="seoSchemaRaw" rows="22" style="width: 100%; font-family: monospace; font-size: 13px; background: #0f172a; color: #f8fafc; padding: 16px; border-radius: 8px;"></textarea>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- MODULE 2: TOOL QUÉT CCCD XUẤT EXCEL         -->
+    <!-- ========================================== -->
+    <section id="tab-cccd" class="tab-content">
+      
+      <!-- Warning if CCCD Server is offline -->
+      <div id="cccdOfflineAlert" class="alert-box warning" style="display: none;">
+        <div>⚠️</div>
+        <div style="flex: 1;">
+          <strong>Máy chủ quét CCCD (127.0.0.1:8000) chưa được bật!</strong>
+          <p style="font-size: 13px; margin-top: 4px;">
+            Để quét CCCD nội bộ an toàn (100% offline), hãy chạy file: <code>tools\cccd-scanner\Chay_Giao_Dien_Index.bat</code>
+            hoặc mở terminal gõ: <code>python tools/cccd-scanner/server.py</code>.
+          </p>
+        </div>
+        <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;" onclick="checkCccdHealth()">🔄 Thử Kết Nối Lại</button>
+      </div>
+
+      <div class="two-col-grid">
+        
+        <!-- Left: Upload & Config -->
+        <div class="card">
+          <div class="card-title">🪪 Tải Ảnh CCCD Hoặc Quét Cả Thư Mục</div>
+
+          <!-- Tabs: Files vs Folder -->
+          <div style="display: flex; gap: 8px; margin-bottom: 16px;">
+            <button id="cccdModeBtn1" class="btn btn-primary" style="flex: 1;" onclick="switchCccdMode(1)">Tải Ảnh Lên</button>
+            <button id="cccdModeBtn2" class="btn btn-secondary" style="flex: 1;" onclick="switchCccdMode(2)">Quét Thư Mục Máy</button>
+          </div>
+
+          <!-- Mode 1: File Upload -->
+          <div id="cccdMode1">
+            <div class="dropzone" id="cccdDropzone" onclick="document.getElementById('cccdFileInput').click()">
+              <div style="font-size: 36px; margin-bottom: 8px;">📷</div>
+              <h3 style="font-size: 15px; font-weight: 700;">Kéo & Thả ảnh thẻ CCCD vào đây</h3>
+              <p style="font-size: 12px; color: var(--subtle); margin-top: 4px;">Hỗ trợ JPG, PNG, WEBP (Quét ảnh chụp 1 mặt hoặc 2 mặt)</p>
+              <input type="file" id="cccdFileInput" multiple accept="image/*" style="display: none;" onchange="handleCccdFileSelect(event)">
+            </div>
+            <div id="cccdSelectedFilesText" style="font-size: 13px; color: var(--mid); margin-top: 10px;"></div>
+          </div>
+
+          <!-- Mode 2: Folder Scan -->
+          <div id="cccdMode2" style="display: none;">
+            <div class="form-group">
+              <label>Đường dẫn thư mục ảnh trên máy tính:</label>
+              <input type="text" id="cccdFolderPathInput" placeholder="Ví dụ: C:\Users\Gia\Pictures\CCCD_Khach">
+              <div style="font-size: 12px; color: var(--subtle); margin-top: 4px;">Để trống để quét thư mục mặc định: <code>tools/cccd-scanner/anh_cccd_dau_vao</code></div>
+            </div>
+          </div>
+
+          <!-- Options -->
+          <div style="margin: 16px 0;">
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 13px; cursor: pointer;">
+              <input type="checkbox" id="cccdDedupCheck" checked style="width: auto;">
+              <span>Tự động lọc trùng (chỉ giữ 1 bản ghi duy nhất cho mỗi số CCCD)</span>
+            </label>
+          </div>
+
+          <button id="btnRunCccdScan" class="btn btn-primary btn-block" onclick="runCccdScan()">
+            ⚡ Bắt Đầu Quét Dữ Liệu CCCD
+          </button>
+
+          <!-- Legal alert -->
+          <div style="margin-top: 20px; padding: 12px; background: #ecfdf5; border: 1px solid #a7f3d0; border-radius: var(--r-box); font-size: 12px; color: #065f46;">
+            <strong>🛡️ Tuân thủ pháp lý & Nghị định 282/2025:</strong>
+            <p style="margin-top: 4px;">Công cụ quét trực tiếp từ ảnh chụp đối chiếu, KHÔNG giữ bản gốc thẻ CCCD của khách. Toàn bộ thông tin được xử lý trong RAM máy tính của anh, không gửi lên internet.</p>
+          </div>
+        </div>
+
+        <!-- Right: Results Table & Export -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+            <div>
+              <div class="card-title" style="margin-bottom: 2px;">📊 Kết Quả Quét CCCD (<span id="cccdResultCount">0</span> bản ghi)</div>
+              <div style="font-size: 12px; color: var(--subtle);" id="cccdElapsedTxt">Thời gian quét: 0s</div>
+            </div>
+            <div style="display: flex; gap: 8px;">
+              <button class="btn btn-success" id="btnExportExcel" onclick="exportCccdExcel()" disabled>
+                📥 Xuất File Excel (.xlsx)
+              </button>
+              <button class="btn btn-secondary" onclick="openCccdFolder()">
+                📂 Mở Thư Mục Kết Quả
+              </button>
+            </div>
+          </div>
+
+          <!-- Table -->
+          <div class="table-container" style="max-height: 520px; overflow-y: auto;">
+            <table id="cccdTable">
+              <thead>
+                <tr>
+                  <th>STT</th>
+                  <th>Số CCCD</th>
+                  <th>Họ và Tên</th>
+                  <th>Ngày Sinh</th>
+                  <th>Giới Tính</th>
+                  <th>Nơi Thường Trú</th>
+                  <th>Ngày Cấp</th>
+                  <th>Phương Thức</th>
+                  <th>Tên File</th>
+                </tr>
+              </thead>
+              <tbody id="cccdTableBody">
+                <tr>
+                  <td colspan="9" style="text-align: center; color: var(--subtle); padding: 40px 0;">
+                    Chưa có dữ liệu. Vui lòng chọn ảnh hoặc thư mục để quét.
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ========================================== -->
+    <!-- MODULE 3: TRUNG TÂM CHỈ HUY CEO            -->
+    <!-- ========================================== -->
+    <section id="tab-hub" class="tab-content">
+      <div class="card" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white;">
+        <h2 style="font-size: 22px; font-weight: 800; color: #38bdf8; margin-bottom: 8px;">🚀 Bảng Chỉ Huy & Phím Tắt Hệ Thống Thuexenhanh</h2>
+        <p style="color: #94a3b8; font-size: 14px;">Quản lý toàn bộ hệ sinh thái: Web app, CSDL Supabase, Công cụ SEO, Công cụ thẩm định CCCD, và Triển khai Cloudflare.</p>
+      </div>
+
+      <div class="hub-grid">
+        
+        <!-- Quick Card 1: Main App -->
+        <div class="hub-card">
+          <div>
+            <div style="font-size: 24px; margin-bottom: 8px;">🌐</div>
+            <h3 style="font-size: 17px; font-weight: 700; color: var(--dark); margin-bottom: 6px;">Web Chính Thuexenhanh</h3>
+            <p style="font-size: 13px; color: var(--mid); margin-bottom: 14px;">Trang web nền tảng cho thuê xe tự lái (React 19 + Vite + CSS Thuần).</p>
+            <div style="font-size: 12px; color: var(--subtle);">
+              • Local Dev: <code>http://127.0.0.1:5173</code><br/>
+              • Production: <code>https://thuexenhanh.pages.dev</code>
+            </div>
+          </div>
+          <div style="margin-top: 16px;">
+            <a href="https://thuexenhanh.pages.dev" target="_blank" class="btn btn-secondary btn-block">Mở Web Production</a>
+          </div>
+        </div>
+
+        <!-- Quick Card 2: Deploy UI -->
+        <div class="hub-card">
+          <div>
+            <div style="font-size: 24px; margin-bottom: 8px;">🚀</div>
+            <h3 style="font-size: 17px; font-weight: 700; color: var(--dark); margin-bottom: 6px;">Deploy UI (Cổng 4545)</h3>
+            <p style="font-size: 13px; color: var(--mid); margin-bottom: 14px;">Bảng điều khiển quét mã, chặn lỗi bảo mật, và đẩy code lên nhánh main.</p>
+            <div style="font-size: 12px; color: var(--subtle);">
+              • Chạy: <code>node tools/deploy-ui/server.mjs</code><br/>
+              • Địa chỉ: <code>http://127.0.0.1:4545</code>
+            </div>
+          </div>
+          <div style="margin-top: 16px;">
+            <a href="http://127.0.0.1:4545" target="_blank" class="btn btn-secondary btn-block">Mở Deploy UI</a>
+          </div>
+        </div>
+
+        <!-- Quick Card 3: SEO Writer -->
+        <div class="hub-card">
+          <div>
+            <div style="font-size: 24px; margin-bottom: 8px;">✍️</div>
+            <h3 style="font-size: 17px; font-weight: 700; color: var(--dark); margin-bottom: 6px;">SEO Content AI (Cổng 4646)</h3>
+            <p style="font-size: 13px; color: var(--mid); margin-bottom: 14px;">Máy chủ viết bài chuẩn SEO Top 3 Google, chống văn phong AI, tự sinh Schema.</p>
+            <div style="font-size: 12px; color: var(--subtle);">
+              • Chạy: <code>tools/seo-writer/start.cmd</code><br/>
+              • Thư mục xuất bài: <code>tools/seo-writer/output/</code>
+            </div>
+          </div>
+          <div style="margin-top: 16px;">
+            <button class="btn btn-primary btn-block" onclick="switchMainTab('tab-seo')">Chuyển Sang Tab SEO</button>
+          </div>
+        </div>
+
+        <!-- Quick Card 4: CCCD Scanner -->
+        <div class="hub-card">
+          <div>
+            <div style="font-size: 24px; margin-bottom: 8px;">🪪</div>
+            <h3 style="font-size: 17px; font-weight: 700; color: var(--dark); margin-bottom: 6px;">Quét CCCD Offline (Cổng 8000)</h3>
+            <p style="font-size: 13px; color: var(--mid); margin-bottom: 14px;">Trích xuất thông tin thẻ CCCD gắn chip ra file Excel siêu tốc, 100% an toàn.</p>
+            <div style="font-size: 12px; color: var(--subtle);">
+              • Chạy: <code>tools/cccd-scanner/Chay_Giao_Dien_Index.bat</code><br/>
+              • Thư mục kết quả: <code>tools/cccd-scanner/ket_qua_xuat_excel/</code>
+            </div>
+          </div>
+          <div style="margin-top: 16px;">
+            <button class="btn btn-primary btn-block" onclick="switchMainTab('tab-cccd')">Chuyển Sang Tab CCCD</button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Legal Summary -->
+      <div class="card" style="margin-top: 24px;">
+        <div class="card-title">⚖️ Tóm Tắt Quy Định Pháp Lý & Vận Hành Bắt Buộc (CEO Chốt)</div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; font-size: 13px;">
+          <div style="background: #fafafa; padding: 14px; border-radius: 8px; border: 1px solid var(--border);">
+            <strong style="color: var(--primary);">1. Mô Hình Kinh Doanh:</strong>
+            <p style="margin-top: 4px; color: var(--mid);">Rao vặt trực tiếp (classifieds). Không ăn hoa hồng môi giới. Doanh thu duy nhất: phí hiển thị 10 token/xe/tháng (40.000đ). Chủ xe giữ trọn tiền thuê.</p>
+          </div>
+          <div style="background: #fafafa; padding: 14px; border-radius: 8px; border: 1px solid var(--border);">
+            <strong style="color: var(--primary);">2. Nghị Định 282/2025 & CCCD:</strong>
+            <p style="margin-top: 4px; color: var(--mid);">CẤM TUYỆT ĐỐI giữ CCCD gắn chip gốc của khách thuê. Chỉ chụp hình đối chiếu hoặc quét VNeID. Tài sản cọc: xe máy chính chủ hoặc cọc tiền 15-20 triệu.</p>
+          </div>
+          <div style="background: #fafafa; padding: 14px; border-radius: 8px; border: 1px solid var(--border);">
+            <strong style="color: var(--primary);">3. Đối Soát Phạt Nguội:</strong>
+            <p style="margin-top: 4px; color: var(--mid);">Giữ lại 2-3 triệu trong 15-20 ngày sau khi trả xe để tra cứu csgt.vn. Hết hạn không có lỗi phạt nguội thì chuyển khoản hoàn lại 100%.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script>
+    // State
+    const SEO_API_BASE = 'http://127.0.0.1:4646';
+    const CCCD_API_BASE = 'http://127.0.0.1:8000';
+
+    let currentSeoData = null;
+    let cccdSelectedFiles = [];
+    let cccdScannedResults = [];
+
+    document.addEventListener('DOMContentLoaded', () => {
+      checkSeoHealth();
+      checkCccdHealth();
+      // Tự động kiểm tra định kỳ mỗi 5s
+      setInterval(() => {
+        checkSeoHealth();
+        checkCccdHealth();
+      }, 5000);
+    });
+
+    // 1. Chuyển Tab Chính
+    function switchMainTab(tabId) {
+      document.querySelectorAll('.nav-tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+      event.currentTarget.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 2. Health Checks
+    async function checkSeoHealth() {
+      const pill = document.getElementById('seoStatusPill');
+      const txt = document.getElementById('seoStatusTxt');
+      try {
+        const res = await fetch(`${SEO_API_BASE}/api/status`, { signal: AbortSignal.timeout(2000) });
+        if (res.ok) {
+          pill.className = 'status-pill online';
+          pill.innerHTML = '<span class="dot green"></span><span>SEO Tool :4646 (Sẵn Sàng)</span>';
+        } else {
+          throw new Error();
+        }
+      } catch {
+        pill.className = 'status-pill warning';
+        pill.innerHTML = '<span class="dot amber"></span><span>SEO Tool :4646 (Offline Template)</span>';
+      }
+    }
+
+    async function checkCccdHealth() {
+      const pill = document.getElementById('cccdStatusPill');
+      const alert = document.getElementById('cccdOfflineAlert');
+      try {
+        const res = await fetch(`${CCCD_API_BASE}/api/health`, { signal: AbortSignal.timeout(2000) });
+        if (res.ok) {
+          pill.className = 'status-pill online';
+          pill.innerHTML = '<span class="dot green"></span><span>CCCD Server :8000 (Sẵn Sàng)</span>';
+          alert.style.display = 'none';
+        } else {
+          throw new Error();
+        }
+      } catch {
+        pill.className = 'status-pill offline';
+        pill.innerHTML = '<span class="dot red"></span><span>CCCD Server :8000 (Chưa Bật)</span>';
+        alert.style.display = 'flex';
+      }
+    }
+
+    // ========================================================
+    // LOGIC SEO CONTENT GENERATOR
+    // ========================================================
+    function pickSeoKw(kw) {
+      document.getElementById('seoKeyword').value = kw;
+    }
+
+    async function runSeoArticle() {
+      const keyword = document.getElementById('seoKeyword').value.trim();
+      const customNotes = document.getElementById('seoNotes').value.trim();
+      if (!keyword) return alert('Vui lòng nhập từ khóa chính.');
+
+      const btn = document.getElementById('btnRunSeoArticle');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<div class="spinner"></div> Đang viết chuyên sâu...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch(`${SEO_API_BASE}/api/generate-article`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ keyword, customNotes })
+        });
+        const data = await res.json();
+        if (data.success) {
+          currentSeoData = data;
+          document.getElementById('seoPreviewContent').innerHTML = data.contentHtml;
+          document.getElementById('seoMdRaw').value = data.contentMarkdown;
+          
+          const fullSchema = [data.schemas.articleSchema];
+          if (data.schemas.faqSchema) fullSchema.push(data.schemas.faqSchema);
+          document.getElementById('seoSchemaRaw').value = JSON.stringify(fullSchema, null, 2);
+
+          const audit = data.auditResult;
+          document.getElementById('scoreVal').textContent = audit.totalScore;
+          document.getElementById('scoreWords').textContent = audit.wordCount;
+          document.getElementById('scoreDensity').textContent = audit.density + '%';
+          document.getElementById('scoreHuman').textContent = audit.slopMatches.length === 0 ? '100% Thực chiến' : `Có ${audit.slopMatches.length} từ AI`;
+        } else {
+          alert('Lỗi: ' + data.error);
+        }
+      } catch (e) {
+        alert('Không thể kết nối SEO Server :4646. Hãy chắc chắn server.mjs đang chạy.');
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    function switchSeoView(viewId) {
+      document.getElementById('view-web').style.display = 'none';
+      document.getElementById('view-md').style.display = 'none';
+      document.getElementById('view-schema').style.display = 'none';
+      document.getElementById(viewId).style.display = 'block';
+    }
+
+    function copySeoText() {
+      const text = document.getElementById('seoMdRaw').value;
+      if (!text) return alert('Chưa có nội dung để sao chép.');
+      navigator.clipboard.writeText(text).then(() => alert('Đã sao chép Markdown vào bộ nhớ tạm!'));
+    }
+
+    async function saveSeoArticle() {
+      if (!currentSeoData) return alert('Chưa có bài viết nào để lưu.');
+      const keyword = document.getElementById('seoKeyword').value.trim();
+      try {
+        const res = await fetch(`${SEO_API_BASE}/api/save-article`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: currentSeoData.title,
+            metaDescription: currentSeoData.metaDescription,
+            targetKeyword: keyword,
+            contentMarkdown: currentSeoData.contentMarkdown,
+            contentHtml: currentSeoData.contentHtml,
+            schemas: currentSeoData.schemas,
+            auditResult: currentSeoData.auditResult
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert(`Đã lưu bài viết vào: ${data.savedPath}`);
+        } else {
+          alert('Lỗi: ' + data.error);
+        }
+      } catch (e) {
+        alert('Lỗi kết nối: ' + e.message);
+      }
+    }
+
+    // ========================================================
+    // LOGIC CCCD SCANNER
+    // ========================================================
+    let cccdMode = 1;
+
+    function switchCccdMode(mode) {
+      cccdMode = mode;
+      document.getElementById('cccdModeBtn1').className = mode === 1 ? 'btn btn-primary' : 'btn btn-secondary';
+      document.getElementById('cccdModeBtn2').className = mode === 2 ? 'btn btn-primary' : 'btn btn-secondary';
+      document.getElementById('cccdMode1').style.display = mode === 1 ? 'block' : 'none';
+      document.getElementById('cccdMode2').style.display = mode === 2 ? 'block' : 'none';
+    }
+
+    function handleCccdFileSelect(e) {
+      cccdSelectedFiles = Array.from(e.target.files);
+      const text = document.getElementById('cccdSelectedFilesText');
+      if (cccdSelectedFiles.length > 0) {
+        text.innerHTML = `Đã chọn <strong>${cccdSelectedFiles.length} file ảnh</strong>: ${cccdSelectedFiles.map(f => f.name).slice(0, 3).join(', ')}${cccdSelectedFiles.length > 3 ? '...' : ''}`;
+      } else {
+        text.innerHTML = '';
+      }
+    }
+
+    async function runCccdScan() {
+      const dedup = document.getElementById('cccdDedupCheck').checked;
+      const btn = document.getElementById('btnRunCccdScan');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<div class="spinner"></div> Đang quét thẻ CCCD...';
+      btn.disabled = true;
+
+      try {
+        if (cccdMode === 1) {
+          // Scan uploaded files
+          if (cccdSelectedFiles.length === 0) {
+            alert('Vui lòng chọn ít nhất 1 file ảnh CCCD.');
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            return;
+          }
+
+          const formData = new FormData();
+          formData.append('remove_duplicates', dedup);
+          cccdSelectedFiles.forEach(file => {
+            formData.append('files', file);
+          });
+
+          const res = await fetch(`${CCCD_API_BASE}/api/scan-files`, {
+            method: 'POST',
+            body: formData
+          });
+          const data = await res.json();
+          renderCccdResults(data);
+        } else {
+          // Scan folder
+          const folderPath = document.getElementById('cccdFolderPathInput').value.trim();
+          const res = await fetch(`${CCCD_API_BASE}/api/scan-folder`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ folder_path: folderPath, remove_duplicates: dedup })
+          });
+          const data = await res.json();
+          renderCccdResults(data);
+        }
+      } catch (e) {
+        alert('Lỗi kết nối CCCD Server :8000: ' + e.message);
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    function renderCccdResults(res) {
+      if (!res.success) {
+        alert('Quét thất bại: ' + (res.message || 'Lỗi không xác định'));
+        return;
+      }
+
+      cccdScannedResults = res.data || [];
+      document.getElementById('cccdResultCount').textContent = cccdScannedResults.length;
+      document.getElementById('cccdElapsedTxt').textContent = `Thời gian quét: ${res.elapsed_seconds || 0}s (${res.success_count || 0} thẻ nhận diện thành công)`;
+      document.getElementById('btnExportExcel').disabled = cccdScannedResults.length === 0;
+
+      const tbody = document.getElementById('cccdTableBody');
+      tbody.innerHTML = '';
+
+      if (cccdScannedResults.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; color: var(--subtle); padding: 40px 0;">Không tìm thấy thông tin CCCD nào.</td></tr>';
+        return;
+      }
+
+      cccdScannedResults.forEach((row, i) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${i + 1}</td>
+          <td><strong style="color: var(--primary);">${row.so_cccd || '-'}</strong></td>
+          <td><strong>${row.ho_va_ten || '-'}</strong></td>
+          <td>${row.ngay_sinh || '-'}</td>
+          <td>${row.gioi_tinh || '-'}</td>
+          <td style="max-width: 250px;">${row.noi_thuong_tru || '-'}</td>
+          <td>${row.ngay_cap || '-'}</td>
+          <td><span class="badge" style="background: ${row.so_cccd ? '#ecfdf5' : '#fef2f2'}; color: ${row.so_cccd ? '#047857' : '#b91c1c'};">${row.phuong_thuc || 'Lỗi'}</span></td>
+          <td><small>${row.file_name || '-'}</small></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+
+    async function exportCccdExcel() {
+      if (cccdScannedResults.length === 0) return alert('Chưa có dữ liệu để xuất Excel.');
+      try {
+        const res = await fetch(`${CCCD_API_BASE}/api/export-excel`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ data: cccdScannedResults })
+        });
+        if (!res.ok) throw new Error('Lỗi xuất file');
+
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Danh_Sach_CCCD_${new Date().toISOString().slice(0, 10)}.xlsx`;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      } catch (e) {
+        alert('Lỗi xuất file Excel: ' + e.message);
+      }
+    }
+
+    async function openCccdFolder() {
+      try {
+        const res = await fetch(`${CCCD_API_BASE}/api/open-output-folder`, { method: 'POST' });
+        const data = await res.json();
+        if (!data.success) alert('Không thể mở thư mục: ' + data.error);
+      } catch (e) {
+        alert('Lỗi kết nối CCCD Server: ' + e.message);
+      }
+    }
+  </script>
+</body>
+</html>

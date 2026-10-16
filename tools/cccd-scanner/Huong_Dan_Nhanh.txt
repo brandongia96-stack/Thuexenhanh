@@ -1,0 +1,47 @@
+========================================================================
+   TOOL QUET CAN CUOC CONG DAN (CCCD) -> XUAT FILE EXCEL (GIAO DIEN INDEX)
+   100% Khong can API - Khong ton phi - Chay Offline - Bao mat tuyet doi
+========================================================================
+
+CHAO ANH! MOI THU DA DUOC THIET KE THEO DUNG YEU CAU CUA ANH:
+
+------------------------------------------------------------------------
+1. KHOI DONG GIAO DIEN INDEX (1-CLICK):
+------------------------------------------------------------------------
+- Click dup chuot vao file:
+  --> "Chay_Giao_Dien_Index.bat"
+- Trinh duyet web se tu dong mo len tai dia chi:
+  http://127.0.0.1:8000
+- 100% OFFLINE: Chi chay tren may tinh cua anh (127.0.0.1), khong gui
+  bat ky thong tin nao ra ngoai mang Internet, bao mat tuyet doi.
+
+------------------------------------------------------------------------
+2. GIAO DIEN CHIA LAM 2 PHAN RO RANG:
+------------------------------------------------------------------------
+[PHAN 1] 1. QUET RIENG LE (TUNG ANH / NHIEU ANH):
+- Keo tha hoac chon 1 hoac nhieu anh CCCD vao khung tai anh.
+- Xem danh sach anh preview truoc khi quet.
+- Bam nut "BAT DAU QUET CCCD".
+- Xem thong ke, sua truc tiep thong tin tren bang neu can.
+- Bam nut "XUAT FILE EXCEL (.XLSX)" de tai ve may.
+
+[PHAN 2] 2. QUET THEO FOLDER (QUET TOAN BO THU MUC):
+- Cach A: Nhap duong dan thu muc anh tren may (co nut chon nhanh thu muc mau).
+- Cach B: Bam nut "Chon Thu Muc Tu May Tinh..." de chon ca folder qua trinh duyet.
+- Bam nut "QUET THU MUC NAY".
+- He thong tu dong quet toan bo anh trong folder, tu dong tao va luu file
+  Excel vao thu muc ket qua tren may, dong thoi cho phep tai truc tiep ve.
+
+------------------------------------------------------------------------
+3. THONG TIN XUAT EXCEL:
+------------------------------------------------------------------------
+- STT, Ten File Anh
+- So CCCD (12 so - luon dinh dang Text khong mat so 0 dau)
+- Ho va Ten (In hoa tieng Viet co dau)
+- Ngay Sinh (DD/MM/YYYY)
+- Gioi Tinh (Nam / Nu)
+- So CMND Cu (neu co)
+- Noi Thuong Tru (Dia chi day du)
+- Ngay Cap
+- Phuong Thuc Quet (QR Code 100% / OCR)
+- Trang Thai

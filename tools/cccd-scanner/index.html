@@ -1,0 +1,1328 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tool Quét CCCD Xuất Excel (100% Offline - Bảo Mật Tuyệt Đối)</title>
+  <style>
+    /* CSS Thuần 100% - Không kết nối mạng, chạy độc lập */
+    :root {
+      --primary: #1e40af;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --success: #059669;
+      --success-light: #ecfdf5;
+      --warning: #d97706;
+      --danger: #dc2626;
+      --danger-light: #fef2f2;
+      --bg: #f8fafc;
+      --card-bg: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 10px;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      padding-bottom: 50px;
+    }
+
+    /* Header */
+    header {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #1e40af, #3b82f6);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .brand-text h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #0f172a;
+    }
+
+    .brand-text p {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+    }
+
+    .security-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 14px;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .badge-online {
+      background-color: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+    }
+
+    .badge-offline {
+      background-color: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    .security-badge svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1300px;
+      margin: 24px auto;
+      padding: 0 20px;
+    }
+
+    /* Banner cảnh báo khi chưa bật server */
+    .server-warning-box {
+      background: #fff1f2;
+      border: 2px solid #f43f5e;
+      border-radius: 10px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      color: #9f1239;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .server-warning-box h3 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .server-warning-box p {
+      font-size: 0.9rem;
+      line-height: 1.6;
+    }
+
+    .server-warning-box code {
+      background: #ffe4e6;
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-weight: bold;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 8px;
+      border-bottom: 2px solid var(--border);
+      margin-bottom: 24px;
+    }
+
+    .tab-btn {
+      padding: 12px 24px;
+      font-size: 1rem;
+      font-weight: 600;
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: var(--text-muted);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      margin-bottom: -2px;
+    }
+
+    .tab-btn:hover {
+      color: var(--primary);
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background-color: rgba(30, 64, 175, 0.04);
+      border-radius: 8px 8px 0 0;
+    }
+
+    .tab-btn svg {
+      width: 20px;
+      height: 20px;
+      fill: currentColor;
+    }
+
+    /* Cards */
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 24px;
+      margin-bottom: 24px;
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #1e293b;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .card-subtitle {
+      font-size: 0.9rem;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+    }
+
+    /* Dropzone Upload */
+    .dropzone {
+      border: 2px dashed #94a3b8;
+      border-radius: var(--radius);
+      padding: 36px 20px;
+      text-align: center;
+      background-color: #f8fafc;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .dropzone:hover, .dropzone.dragover {
+      border-color: var(--primary);
+      background-color: var(--primary-light);
+    }
+
+    .dropzone-icon {
+      width: 52px;
+      height: 52px;
+      margin: 0 auto 12px;
+      color: #64748b;
+    }
+
+    .dropzone h3 {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 4px;
+    }
+
+    .dropzone p {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* Previews */
+    .preview-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 16px;
+      max-height: 220px;
+      overflow-y: auto;
+      padding: 8px;
+      background: #f1f5f9;
+      border-radius: 8px;
+    }
+
+    .preview-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      font-size: 0.85rem;
+    }
+
+    .preview-thumb {
+      width: 32px;
+      height: 32px;
+      object-fit: cover;
+      border-radius: 4px;
+    }
+
+    .btn-remove {
+      color: var(--danger);
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+      font-weight: bold;
+      padding: 0 4px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 20px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-decoration: none;
+    }
+
+    .btn-primary {
+      background-color: var(--primary);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .btn-success {
+      background-color: var(--success);
+      color: white;
+    }
+
+    .btn-success:hover {
+      background-color: #047857;
+    }
+
+    .btn-outline {
+      background: white;
+      border: 1px solid var(--border);
+      color: #334155;
+    }
+
+    .btn-outline:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .actions-bar {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      margin-top: 18px;
+      flex-wrap: wrap;
+    }
+
+    /* Progress bar */
+    .progress-container {
+      margin-top: 16px;
+      display: none;
+    }
+
+    .progress-bar {
+      height: 10px;
+      background: #e2e8f0;
+      border-radius: 9999px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #2563eb, #3b82f6);
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+    .progress-text {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-top: 6px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    /* Metric Stats */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    }
+
+    .stat-label {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .stat-value {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #0f172a;
+      margin-top: 4px;
+    }
+
+    .stat-sub {
+      font-size: 0.8rem;
+      color: var(--success);
+      font-weight: 600;
+      margin-top: 2px;
+    }
+
+    /* Data Table */
+    .table-container {
+      overflow-x: auto;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: white;
+      margin-top: 16px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.88rem;
+      text-align: left;
+    }
+
+    th {
+      background-color: #1e3a8a;
+      color: white;
+      padding: 12px 14px;
+      font-weight: 600;
+      white-space: nowrap;
+      border-right: 1px solid rgba(255,255,255,0.15);
+    }
+
+    td {
+      padding: 10px 14px;
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      vertical-align: middle;
+    }
+
+    tr:nth-child(even) td {
+      background-color: #f8fafc;
+    }
+
+    tr:hover td {
+      background-color: #eff6ff;
+    }
+
+    .editable-cell {
+      cursor: pointer;
+      outline: none;
+      transition: background 0.2s;
+    }
+
+    .editable-cell:focus {
+      background: #fef08a !important;
+      border-radius: 4px;
+      box-shadow: inset 0 0 0 2px #ca8a04;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+
+    .badge-qr {
+      background-color: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+    }
+
+    .badge-ocr {
+      background-color: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+    }
+
+    .badge-fail {
+      background-color: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+
+    /* Folder Input Box */
+    .input-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 12px;
+      margin-bottom: 16px;
+    }
+
+    .input-text {
+      flex: 1;
+      padding: 10px 14px;
+      font-size: 0.95rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      outline: none;
+    }
+
+    .input-text:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .folder-quick-links {
+      display: flex;
+      gap: 8px;
+      margin-top: 8px;
+      font-size: 0.85rem;
+    }
+
+    .quick-tag {
+      background: #e2e8f0;
+      padding: 4px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      color: #334155;
+      transition: all 0.2s;
+    }
+
+    .quick-tag:hover {
+      background: #cbd5e1;
+      color: #0f172a;
+    }
+
+    /* Modal / Alert */
+    .alert-banner {
+      padding: 12px 16px;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      font-size: 0.9rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .alert-success {
+      background-color: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #065f46;
+    }
+
+    /* Spinner */
+    .spinner {
+      border: 3px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top: 3px solid white;
+      width: 16px;
+      height: 16px;
+      animation: spin 0.8s linear infinite;
+      display: inline-block;
+    }
+
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER BẢO MẬT -->
+  <header>
+    <div class="brand">
+      <div class="brand-icon">💳</div>
+      <div class="brand-text">
+        <h1>TOOL QUÉT CĂN CƯỚC CÔNG DÂN & XUẤT EXCEL</h1>
+        <p>Phiên bản chuyên nghiệp • Trích xuất tự động QR Code & OCR Tiếng Việt</p>
+      </div>
+    </div>
+    <div style="display: flex; align-items: center; gap: 12px;">
+      <div class="security-badge badge-offline" id="serverStatusBadge">
+        <svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+        <span id="serverStatusText">ĐANG KIỂM TRA MÁY CHỦ...</span>
+      </div>
+      <button class="btn btn-outline" onclick="openOutputFolder()" style="font-size: 0.85rem; padding: 6px 12px;">
+        📁 Mở Thư Mục Excel
+      </button>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <!-- CẢNH BÁO KHI SERVER CHƯA BẬT -->
+    <div class="server-warning-box" id="serverOfflineWarning">
+      <h3>⚠️ Chưa kết nối được với Máy Chủ Cục Bộ (http://127.0.0.1:8000)</h3>
+      <p>
+        Để quét CCCD, anh vui lòng click đúp vào file <code>Chay_Giao_Dien_Index.bat</code> trong thư mục phần mềm để khởi động máy chủ.<br>
+        <i>* Lưu ý: Không tắt cửa sổ màu đen của phần mềm trong khi sử dụng.</i>
+      </p>
+    </div>
+
+    <!-- TABS ĐIỀU HƯỚNG: 1 LÀ QUÉT RIÊNG LẺ, 2 LÀ QUÉT FOLDER -->
+    <div class="tabs">
+      <button class="tab-btn active" id="tabBtn1" onclick="switchTab(1)">
+        <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+        1. QUÉT RIÊNG LẺ (TỪNG ẢNH / NHIỀU ẢNH)
+      </button>
+      <button class="tab-btn" id="tabBtn2" onclick="switchTab(2)">
+        <svg viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>
+        2. QUÉT THEO FOLDER (QUÉT TOÀN BỘ THƯ MỤC)
+      </button>
+    </div>
+
+    <!-- ========================================== -->
+    <!-- PHẦN 1: QUÉT RIÊNG LẺ                      -->
+    <!-- ========================================== -->
+    <div id="sectionTab1">
+      <div class="card">
+        <div class="card-title">
+          <span>📤 Tải Lên Ảnh CCCD Cần Quét</span>
+        </div>
+        <div class="card-subtitle">
+          Kéo thả hoặc chọn một hoặc nhiều ảnh CCCD mặt trước. Thông tin được xử lý an toàn ngay trên RAM máy tính của bạn.
+        </div>
+
+        <div class="dropzone" id="dropzoneFiles" onclick="document.getElementById('fileInput').click()">
+          <svg class="dropzone-icon" viewBox="0 0 24 24" fill="currentColor">
+            <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+          </svg>
+          <h3>Bấm để chọn ảnh hoặc Kéo thả ảnh CCCD vào đây</h3>
+          <p>Hỗ trợ định dạng: JPG, PNG, JPEG, WEBP (Có thể chọn cùng lúc hàng chục ảnh)</p>
+          <input type="file" id="fileInput" accept="image/*" multiple style="display: none;" onchange="handleFilesSelected(this.files)">
+        </div>
+
+        <!-- Preview danh sách ảnh -->
+        <div id="previewContainer" style="display: none;">
+          <div style="margin-top: 14px; font-size: 0.9rem; font-weight: 600; color: #334155;">
+            Danh sách ảnh đã chọn (<span id="previewCount">0</span> ảnh):
+          </div>
+          <div class="preview-list" id="previewList"></div>
+        </div>
+
+        <!-- Thanh tiến trình quét -->
+        <div class="progress-container" id="progressContainerFiles">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFillFiles"></div>
+          </div>
+          <div class="progress-text">
+            <span id="progressStatusFiles">Đang chuẩn bị quét...</span>
+            <span id="progressPctFiles">0%</span>
+          </div>
+        </div>
+
+        <!-- Các nút thao tác -->
+        <div class="actions-bar">
+          <button class="btn btn-primary" id="btnScanFiles" onclick="startScanFiles()">
+            <span>🚀 Bắt Đầu Quét CCCD</span>
+          </button>
+          <button class="btn btn-outline" onclick="clearFiles()">
+            <span>🗑️ Xóa Danh Sách Ảnh</span>
+          </button>
+          <label style="margin-left: auto; display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: #475569; cursor: pointer;">
+            <input type="checkbox" id="chkDeduplicateFiles" checked>
+            <span>Tự động lọc trùng số CCCD</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- KẾT QUẢ QUÉT RIÊNG LẺ -->
+      <div id="resultsBlockFiles" style="display: none;">
+        <!-- Thống kê -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Tổng Số CCCD</div>
+            <div class="stat-value" id="statTotalFiles">0</div>
+            <div class="stat-sub">Ảnh đã quét</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Thành Công</div>
+            <div class="stat-value" id="statSuccessFiles" style="color: var(--success);">0</div>
+            <div class="stat-sub" id="statSuccessPctFiles">100% tỷ lệ đọc</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Quét Qua Mã QR</div>
+            <div class="stat-value" id="statQrFiles" style="color: var(--primary);">0</div>
+            <div class="stat-sub">Chính xác 100% (CCCD chip)</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Thời Gian Quét</div>
+            <div class="stat-value" id="statTimeFiles">0s</div>
+            <div class="stat-sub">Tốc độ ~0.05s / ảnh</div>
+          </div>
+        </div>
+
+        <!-- Bảng Dữ Liệu -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <div class="card-title">📋 Bảng Dữ Liệu Thông Tin CCCD</div>
+              <div class="card-subtitle" style="margin-bottom: 0;">
+                💡 <i>Bạn có thể click trực tiếp vào bất kỳ ô nào trong bảng để sửa đổi nội dung trước khi xuất Excel.</i>
+              </div>
+            </div>
+            <button class="btn btn-success" onclick="downloadExcel('files')">
+              <svg style="width: 18px; height: 18px; fill: currentColor;" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+              <span>📥 Xuất File Excel (.xlsx)</span>
+            </button>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 50px; text-align: center;">STT</th>
+                  <th>Tên File</th>
+                  <th style="width: 140px; text-align: center;">Số CCCD</th>
+                  <th style="width: 180px;">Họ và Tên</th>
+                  <th style="width: 110px; text-align: center;">Ngày Sinh</th>
+                  <th style="width: 90px; text-align: center;">Giới Tính</th>
+                  <th style="width: 120px; text-align: center;">Số CMND Cũ</th>
+                  <th>Nơi Thường Trú</th>
+                  <th style="width: 110px; text-align: center;">Ngày Cấp</th>
+                  <th style="width: 140px; text-align: center;">Phương Thức</th>
+                  <th style="width: 110px; text-align: center;">Trạng Thái</th>
+                </tr>
+              </thead>
+              <tbody id="tableBodyFiles"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ========================================== -->
+    <!-- PHẦN 2: QUÉT THEO FOLDER                   -->
+    <!-- ========================================== -->
+    <div id="sectionTab2" style="display: none;">
+      <div class="card">
+        <div class="card-title">
+          <span>📁 Quét Toàn Bộ Ảnh Trong Thư Mục (Folder)</span>
+        </div>
+        <div class="card-subtitle">
+          Chỉ định một thư mục chứa ảnh CCCD trên máy tính. Hệ thống sẽ tự động tìm kiếm toàn bộ ảnh và trích xuất đồng loạt ra file Excel.
+        </div>
+
+        <!-- 2 Lựa chọn chọn folder -->
+        <div style="background: #f1f5f9; padding: 18px; border-radius: 8px; margin-bottom: 20px;">
+          <label style="font-weight: 600; font-size: 0.95rem; color: #1e293b;">
+            Cách A: Nhập đường dẫn thư mục trên máy tính của bạn:
+          </label>
+          <div class="input-group">
+            <input type="text" class="input-text" id="txtFolderPath" placeholder="Ví dụ: C:\Users\Gia\Desktop\Anh_CCCD_Khach_Hang">
+            <button class="btn btn-primary" id="btnScanFolder" onclick="startScanFolder()">
+              <span>⚡ Quét Thư Mục Này</span>
+            </button>
+          </div>
+          <div class="folder-quick-links">
+            <span style="color: var(--text-muted);">Gợi ý thư mục mặc định:</span>
+            <span class="quick-tag" onclick="useDefaultFolder()">👉 Thư mục dự án: anh_cccd_dau_vao</span>
+          </div>
+        </div>
+
+        <div style="text-align: center; margin: 15px 0; color: #94a3b8; font-weight: 600; font-size: 0.85rem;">
+          ─── HOẶC ───
+        </div>
+
+        <div style="background: #eff6ff; padding: 18px; border-radius: 8px; border: 1px dashed #93c5fd;">
+          <div style="font-weight: 600; font-size: 0.95rem; color: #1e40af; margin-bottom: 6px;">
+            Cách B: Bấm chọn thư mục trực tiếp từ hộp thoại máy tính:
+          </div>
+          <p style="font-size: 0.85rem; color: #3b82f6; margin-bottom: 12px;">
+            Trình duyệt sẽ tự động duyệt toàn bộ các file ảnh có trong thư mục đã chọn để quét.
+          </p>
+          <input type="file" id="folderInputBrowser" webkitdirectory directory multiple style="display: none;" onchange="handleFolderSelected(this.files)">
+          <button class="btn btn-outline" onclick="document.getElementById('folderInputBrowser').click()" style="background: white; border-color: #93c5fd; color: #1e40af;">
+            <svg style="width: 18px; height: 18px; fill: currentColor;" viewBox="0 0 24 24"><path d="M20 6h-8l-2-2H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V8c0-1.1-.9-2-2-2zm0 12H4V8h16v10z"/></svg>
+            <span>Chọn Thư Mục Từ Máy Tính...</span>
+          </button>
+          <span id="folderBrowserCount" style="margin-left: 12px; font-size: 0.85rem; color: #475569; font-weight: 600;"></span>
+        </div>
+
+        <!-- Thanh tiến trình quét Folder -->
+        <div class="progress-container" id="progressContainerFolder">
+          <div class="progress-bar">
+            <div class="progress-fill" id="progressFillFolder"></div>
+          </div>
+          <div class="progress-text">
+            <span id="progressStatusFolder">Đang đọc dữ liệu thư mục...</span>
+            <span id="progressPctFolder">0%</span>
+          </div>
+        </div>
+
+        <div style="margin-top: 16px; display: flex; align-items: center; justify-content: space-between;">
+          <label style="display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: #475569; cursor: pointer;">
+            <input type="checkbox" id="chkDeduplicateFolder" checked>
+            <span>Tự động lọc trùng số CCCD trong thư mục</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- KẾT QUẢ QUÉT FOLDER -->
+      <div id="resultsBlockFolder" style="display: none;">
+        <!-- Thông báo lưu file thành công -->
+        <div class="alert-banner alert-success" id="folderSuccessAlert">
+          <svg style="width: 20px; height: 20px; fill: currentColor; flex-shrink: 0;" viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+          <div>
+            <b>Đã xuất và lưu tự động file Excel trên máy tính:</b><br>
+            <span id="savedExcelPathText" style="font-family: monospace; font-size: 0.85rem;"></span>
+          </div>
+          <button class="btn btn-outline" onclick="openOutputFolder()" style="margin-left: auto; padding: 4px 10px; font-size: 0.8rem; background: white;">
+            Mở Thư Mục
+          </button>
+        </div>
+
+        <!-- Thống kê Folder -->
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-label">Tổng File Trong Folder</div>
+            <div class="stat-value" id="statTotalFolder">0</div>
+            <div class="stat-sub">Ảnh CCCD</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Quét Thành Công</div>
+            <div class="stat-value" id="statSuccessFolder" style="color: var(--success);">0</div>
+            <div class="stat-sub" id="statSuccessPctFolder">100% tỷ lệ</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Mã QR Đạt Chuẩn</div>
+            <div class="stat-value" id="statQrFolder" style="color: var(--primary);">0</div>
+            <div class="stat-sub">Chính xác 100%</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-label">Tổng Thời Gian</div>
+            <div class="stat-value" id="statTimeFolder">0s</div>
+            <div class="stat-sub">Hoàn tất xử lý</div>
+          </div>
+        </div>
+
+        <!-- Bảng Dữ Liệu Folder -->
+        <div class="card">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 10px;">
+            <div>
+              <div class="card-title">📋 Danh Sách CCCD Trong Thư Mục</div>
+              <div class="card-subtitle" style="margin-bottom: 0;">
+                Bảng thông tin tổng hợp của toàn bộ thư mục. Có thể chỉnh sửa trực tiếp.
+              </div>
+            </div>
+            <button class="btn btn-success" onclick="downloadExcel('folder')">
+              <svg style="width: 18px; height: 18px; fill: currentColor;" viewBox="0 0 24 24"><path d="M19 9h-4V3H9v6H5l7 7 7-7zM5 18v2h14v-2H5z"/></svg>
+              <span>📥 Tải File Excel Này Về Máy</span>
+            </button>
+          </div>
+
+          <div class="table-container">
+            <table>
+              <thead>
+                <tr>
+                  <th style="width: 50px; text-align: center;">STT</th>
+                  <th>Tên File</th>
+                  <th style="width: 140px; text-align: center;">Số CCCD</th>
+                  <th style="width: 180px;">Họ và Tên</th>
+                  <th style="width: 110px; text-align: center;">Ngày Sinh</th>
+                  <th style="width: 90px; text-align: center;">Giới Tính</th>
+                  <th style="width: 120px; text-align: center;">Số CMND Cũ</th>
+                  <th>Nơi Thường Trú</th>
+                  <th style="width: 110px; text-align: center;">Ngày Cấp</th>
+                  <th style="width: 140px; text-align: center;">Phương Thức</th>
+                  <th style="width: 110px; text-align: center;">Trạng Thái</th>
+                </tr>
+              </thead>
+              <tbody id="tableBodyFolder"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- JAVASCRIPT THUẦN 100% - KHÔNG DÙNG THƯ VIỆN BÊN NGOÀI -->
+  <script>
+    // Tự động xác định địa chỉ API (hoạt động tốt cả khi mở file:/// lẫn http://)
+    const API_BASE = (window.location.protocol === 'file:' || !window.location.origin.includes(':8000'))
+      ? 'http://127.0.0.1:8000'
+      : '';
+
+    let isServerOnline = false;
+    let selectedFiles = [];
+    let scannedDataFiles = [];
+    let scannedDataFolder = [];
+    let defaultFolderPath = "";
+
+    // 1. Chuyển Tab (Tab 1: Quét Riêng Lẻ, Tab 2: Quét Folder)
+    function switchTab(tabIndex) {
+      document.getElementById('tabBtn1').classList.toggle('active', tabIndex === 1);
+      document.getElementById('tabBtn2').classList.toggle('active', tabIndex === 2);
+      document.getElementById('sectionTab1').style.display = tabIndex === 1 ? 'block' : 'none';
+      document.getElementById('sectionTab2').style.display = tabIndex === 2 ? 'block' : 'none';
+    }
+
+    // 2. Kiểm tra sức khoẻ máy chủ cục bộ (Health Check)
+    async function checkServerHealth() {
+      const badge = document.getElementById('serverStatusBadge');
+      const badgeText = document.getElementById('serverStatusText');
+      const warningBox = document.getElementById('serverOfflineWarning');
+
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+        const res = await fetch(`${API_BASE}/api/health`, { signal: controller.signal });
+        clearTimeout(timeoutId);
+
+        if (res.ok) {
+          isServerOnline = true;
+          badge.className = 'security-badge badge-online';
+          badgeText.textContent = '🟢 MÁY CHỦ SẴN SÀNG (127.0.0.1)';
+          warningBox.style.display = 'none';
+
+          // Tải thêm thông tin thư mục mặc định nếu chưa có
+          if (!defaultFolderPath) {
+            loadDefaultFolderInfo();
+          }
+          return;
+        }
+      } catch (err) {
+        // Server chưa bật
+      }
+
+      isServerOnline = false;
+      badge.className = 'security-badge badge-offline';
+      badgeText.textContent = '🔴 CHƯA BẬT MÁY CHỦ (Bấm file .bat)';
+      warningBox.style.display = 'block';
+    }
+
+    async function loadDefaultFolderInfo() {
+      try {
+        const res = await fetch(`${API_BASE}/api/default-folder-info`);
+        if (res.ok) {
+          const data = await res.json();
+          defaultFolderPath = data.folder_path;
+          document.getElementById('txtFolderPath').placeholder = defaultFolderPath;
+        }
+      } catch (err) {}
+    }
+
+    // Kiểm tra định kỳ mỗi 3 giây
+    window.addEventListener('DOMContentLoaded', () => {
+      checkServerHealth();
+      setInterval(checkServerHealth, 3000);
+    });
+
+    function useDefaultFolder() {
+      if (defaultFolderPath) {
+        document.getElementById('txtFolderPath').value = defaultFolderPath;
+      }
+    }
+
+    // 3. Kéo thả file ở Tab 1
+    const dropzone = document.getElementById('dropzoneFiles');
+    ['dragenter', 'dragover'].forEach(eventName => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropzone.classList.add('dragover');
+      }, false);
+    });
+    ['dragleave', 'drop'].forEach(eventName => {
+      dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+      }, false);
+    });
+    dropzone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      if (dt.files && dt.files.length > 0) {
+        handleFilesSelected(dt.files);
+      }
+    });
+
+    function handleFilesSelected(fileList) {
+      for (let i = 0; i < fileList.length; i++) {
+        const file = fileList[i];
+        if (file.type.startsWith('image/')) {
+          if (!selectedFiles.some(f => f.name === file.name && f.size === file.size)) {
+            selectedFiles.push(file);
+          }
+        }
+      }
+      renderPreviews();
+    }
+
+    function renderPreviews() {
+      const previewContainer = document.getElementById('previewContainer');
+      const previewList = document.getElementById('previewList');
+      const previewCount = document.getElementById('previewCount');
+
+      if (selectedFiles.length === 0) {
+        previewContainer.style.display = 'none';
+        return;
+      }
+
+      previewContainer.style.display = 'block';
+      previewCount.textContent = selectedFiles.length;
+      previewList.innerHTML = '';
+
+      selectedFiles.forEach((file, index) => {
+        const item = document.createElement('div');
+        item.className = 'preview-item';
+
+        const img = document.createElement('img');
+        img.className = 'preview-thumb';
+        img.src = URL.createObjectURL(file);
+
+        const nameSpan = document.createElement('span');
+        nameSpan.textContent = file.name.length > 25 ? file.name.substring(0, 22) + '...' : file.name;
+
+        const removeBtn = document.createElement('button');
+        removeBtn.className = 'btn-remove';
+        removeBtn.innerHTML = '&times;';
+        removeBtn.title = 'Xoá ảnh này';
+        removeBtn.onclick = (e) => {
+          e.stopPropagation();
+          selectedFiles.splice(index, 1);
+          renderPreviews();
+        };
+
+        item.appendChild(img);
+        item.appendChild(nameSpan);
+        item.appendChild(removeBtn);
+        previewList.appendChild(item);
+      });
+    }
+
+    function clearFiles() {
+      selectedFiles = [];
+      scannedDataFiles = [];
+      renderPreviews();
+      document.getElementById('resultsBlockFiles').style.display = 'none';
+      document.getElementById('fileInput').value = '';
+    }
+
+    // 4. Bắt đầu quét riêng lẻ (Tab 1)
+    async function startScanFiles() {
+      if (selectedFiles.length === 0) {
+        alert('Vui lòng chọn hoặc kéo thả ít nhất 1 ảnh CCCD.');
+        return;
+      }
+
+      if (!isServerOnline) {
+        alert('⚠️ CHƯA KẾT NỐI ĐƯỢC MÁY CHỦ NỘI BỘ!\n\nAnh vui lòng click đúp vào file "Chay_Giao_Dien_Index.bat" trong thư mục phần mềm và giữ cửa sổ màu đen mở để khởi động máy chủ.');
+        return;
+      }
+
+      const btn = document.getElementById('btnScanFiles');
+      const progressContainer = document.getElementById('progressContainerFiles');
+      const progressFill = document.getElementById('progressFillFiles');
+      const progressStatus = document.getElementById('progressStatusFiles');
+      const progressPct = document.getElementById('progressPctFiles');
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Đang quét...';
+      progressContainer.style.display = 'block';
+      progressFill.style.width = '30%';
+      progressPct.textContent = '30%';
+      progressStatus.textContent = `Đang gửi ${selectedFiles.length} ảnh đến bộ giải mã...`;
+
+      const formData = new FormData();
+      selectedFiles.forEach(file => {
+        formData.append('files', file);
+      });
+      formData.append('remove_duplicates', document.getElementById('chkDeduplicateFiles').checked);
+
+      try {
+        progressFill.style.width = '60%';
+        progressPct.textContent = '60%';
+        progressStatus.textContent = 'Đang giải mã mã QR và nhận diện thông tin...';
+
+        const res = await fetch(`${API_BASE}/api/scan-files`, {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.detail || 'Lỗi khi quét ảnh.');
+        }
+
+        const data = await res.json();
+        progressFill.style.width = '100%';
+        progressPct.textContent = '100%';
+        progressStatus.textContent = `Quét hoàn tất trong ${data.elapsed_seconds} giây!`;
+
+        scannedDataFiles = data.data;
+        renderResultsTable(scannedDataFiles, 'tableBodyFiles');
+        renderStats(data, 'Files');
+
+        document.getElementById('resultsBlockFiles').style.display = 'block';
+
+      } catch (err) {
+        if (err.message && err.message.includes('fetch')) {
+          alert('⚠️ Không thể kết nối với máy chủ nội bộ (Failed to fetch)!\n\nVui lòng kiểm tra file "Chay_Giao_Dien_Index.bat" đã được mở chưa (không tắt cửa sổ màu đen của phần mềm).');
+        } else {
+          alert('Lỗi: ' + err.message);
+        }
+        progressStatus.textContent = 'Đã xảy ra lỗi.';
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>🚀 Bắt Đầu Quét CCCD</span>';
+      }
+    }
+
+    // 5. Bắt đầu quét Folder (Tab 2)
+    async function startScanFolder() {
+      if (!isServerOnline) {
+        alert('⚠️ CHƯA KẾT NỐI ĐƯỢC MÁY CHỦ NỘI BỘ!\n\nAnh vui lòng click đúp vào file "Chay_Giao_Dien_Index.bat" trong thư mục phần mềm để khởi động máy chủ.');
+        return;
+      }
+
+      const folderPath = document.getElementById('txtFolderPath').value.trim();
+      const btn = document.getElementById('btnScanFolder');
+      const progressContainer = document.getElementById('progressContainerFolder');
+      const progressFill = document.getElementById('progressFillFolder');
+      const progressStatus = document.getElementById('progressStatusFolder');
+      const progressPct = document.getElementById('progressPctFolder');
+
+      btn.disabled = true;
+      btn.innerHTML = '<span class="spinner"></span> Đang quét folder...';
+      progressContainer.style.display = 'block';
+      progressFill.style.width = '40%';
+      progressPct.textContent = '40%';
+      progressStatus.textContent = 'Đang tìm kiếm toàn bộ ảnh trong thư mục...';
+
+      try {
+        const res = await fetch(`${API_BASE}/api/scan-folder`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            folder_path: folderPath || null,
+            remove_duplicates: document.getElementById('chkDeduplicateFolder').checked
+          })
+        });
+
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          throw new Error(errData.detail || 'Lỗi quét thư mục.');
+        }
+
+        const data = await res.json();
+        progressFill.style.width = '100%';
+        progressPct.textContent = '100%';
+        progressStatus.textContent = `Hoàn thành quét ${data.total} ảnh trong ${data.elapsed_seconds} giây!`;
+
+        scannedDataFolder = data.data;
+        renderResultsTable(scannedDataFolder, 'tableBodyFolder');
+        renderStats(data, 'Folder');
+
+        if (data.saved_excel_path) {
+          document.getElementById('savedExcelPathText').textContent = data.saved_excel_path;
+          document.getElementById('folderSuccessAlert').style.display = 'flex';
+        }
+
+        document.getElementById('resultsBlockFolder').style.display = 'block';
+
+      } catch (err) {
+        if (err.message && err.message.includes('fetch')) {
+          alert('⚠️ Không thể kết nối với máy chủ nội bộ (Failed to fetch)!\n\nVui lòng kiểm tra file "Chay_Giao_Dien_Index.bat" đã được mở chưa.');
+        } else {
+          alert('Lỗi: ' + err.message);
+        }
+        progressStatus.textContent = 'Có lỗi xảy ra.';
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<span>⚡ Quét Thư Mục Này</span>';
+      }
+    }
+
+    // Xử lý khi chọn folder bằng Browser input (Cách B)
+    function handleFolderSelected(files) {
+      if (!files || files.length === 0) return;
+      selectedFiles = [];
+      for (let i = 0; i < files.length; i++) {
+        if (files[i].type.startsWith('image/')) {
+          selectedFiles.push(files[i]);
+        }
+      }
+      document.getElementById('folderBrowserCount').textContent = `Đã chọn ${selectedFiles.length} ảnh trong thư mục. Đang chuyển sang Quét...`;
+      switchTab(1);
+      renderPreviews();
+      startScanFiles();
+    }
+
+    // 6. Hiển thị bảng kết quả
+    function renderResultsTable(items, tbodyId) {
+      const tbody = document.getElementById(tbodyId);
+      tbody.innerHTML = '';
+
+      if (!items || items.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="11" style="text-align: center; color: var(--text-muted); padding: 20px;">Không có dữ liệu</td></tr>';
+        return;
+      }
+
+      items.forEach((item, idx) => {
+        const tr = document.createElement('tr');
+
+        let badgeClass = 'badge-ocr';
+        let badgeText = item.phuong_thuc || 'OCR';
+        if (badgeText.includes('QR')) {
+          badgeClass = 'badge-qr';
+          badgeText = 'QR (100%)';
+        } else if (badgeText.includes('Lỗi') || !item.so_cccd) {
+          badgeClass = 'badge-fail';
+        }
+
+        tr.innerHTML = `
+          <td style="text-align: center; font-weight: bold; color: var(--text-muted);">${idx + 1}</td>
+          <td style="font-weight: 500;">${escapeHtml(item.file_name || '')}</td>
+          <td class="editable-cell" contenteditable="true" data-field="so_cccd" data-idx="${idx}" style="text-align: center; font-weight: bold; font-family: monospace; color: #1e3a8a;">${escapeHtml(item.so_cccd || '')}</td>
+          <td class="editable-cell" contenteditable="true" data-field="ho_va_ten" data-idx="${idx}" style="font-weight: 600;">${escapeHtml(item.ho_va_ten || '')}</td>
+          <td class="editable-cell" contenteditable="true" data-field="ngay_sinh" data-idx="${idx}" style="text-align: center;">${escapeHtml(item.ngay_sinh || '')}</td>
+          <td class="editable-cell" contenteditable="true" data-field="gioi_tinh" data-idx="${idx}" style="text-align: center;">${escapeHtml(item.gioi_tinh || '')}</td>
+          <td class="editable-cell" contenteditable="true" data-field="so_cmnd_cu" data-idx="${idx}" style="text-align: center;">${escapeHtml(item.so_cmnd_cu || '')}</td>
+          <td class="editable-cell" contenteditable="true" data-field="noi_thuong_tru" data-idx="${idx}">${escapeHtml(item.noi_thuong_tru || '')}</td>
+          <td class="editable-cell" contenteditable="true" data-field="ngay_cap" data-idx="${idx}" style="text-align: center;">${escapeHtml(item.ngay_cap || '')}</td>
+          <td style="text-align: center;"><span class="badge ${badgeClass}">${escapeHtml(badgeText)}</span></td>
+          <td style="text-align: center; font-size: 0.8rem; color: #475569;">${escapeHtml(item.trang_thai || '')}</td>
+        `;
+
+        tr.querySelectorAll('.editable-cell').forEach(cell => {
+          cell.addEventListener('blur', (e) => {
+            const field = e.target.getAttribute('data-field');
+            const rowIdx = parseInt(e.target.getAttribute('data-idx'));
+            const newVal = e.target.innerText.trim();
+            if (tbodyId === 'tableBodyFiles') {
+              scannedDataFiles[rowIdx][field] = newVal;
+            } else {
+              scannedDataFolder[rowIdx][field] = newVal;
+            }
+          });
+        });
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    // 7. Hiển thị Thống Kê
+    function renderStats(data, suffix) {
+      const total = data.total || 0;
+      const success = data.success_count || 0;
+      const qrCount = (data.data || []).filter(r => (r.phuong_thuc || '').includes('QR')).length;
+      const pct = total > 0 ? Math.round((success / total) * 100) : 0;
+
+      document.getElementById(`statTotal${suffix}`).textContent = total;
+      document.getElementById(`statSuccess${suffix}`).textContent = `${success}/${total}`;
+      document.getElementById(`statSuccessPct${suffix}`).textContent = `${pct}% tỷ lệ đọc`;
+      document.getElementById(`statQr${suffix}`).textContent = qrCount;
+      document.getElementById(`statTime${suffix}`).textContent = `${data.elapsed_seconds || 0}s`;
+    }
+
+    // 8. Tải File Excel
+    async function downloadExcel(type) {
+      const dataToExport = type === 'files' ? scannedDataFiles : scannedDataFolder;
+      if (!dataToExport || dataToExport.length === 0) {
+        alert('Không có dữ liệu để xuất Excel.');
+        return;
+      }
+
+      const todayStr = new Date().toISOString().slice(0,10).replace(/-/g, '');
+      const filename = `Danh_Sach_CCCD_${type}_${todayStr}.xlsx`;
+
+      try {
+        const res = await fetch(`${API_BASE}/api/export-excel`, {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({
+            data: dataToExport,
+            filename: filename
+          })
+        });
+
+        if (!res.ok) throw new Error('Không thể tạo file Excel.');
+
+        const blob = await res.blob();
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        window.URL.revokeObjectURL(url);
+      } catch (err) {
+        alert('Lỗi xuất Excel: ' + err.message);
+      }
+    }
+
+    // 9. Mở Thư Mục Kết Quả trên máy
+    async function openOutputFolder() {
+      try {
+        await fetch(`${API_BASE}/api/open-output-folder`, {method: 'POST'});
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+  </script>
+</body>
+</html>
