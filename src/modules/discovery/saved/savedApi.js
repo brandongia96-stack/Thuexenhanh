@@ -55,10 +55,12 @@ export async function boLuu(userId, listingId) {
 
 // Cột của view `listing_card` mà thẻ xe cần. CẤM `select *`: view có
 // `search_tsv` (chỉ để lọc ở luồng 04), kéo về là cõng thêm KB vô ích.
+// owner_ten/owner_avatar: hồ sơ công khai chủ xe (contracts/api.md §3g) — TheXe.jsx
+// hiện avatar + liên kết /chu/:owner_id ở chân thẻ.
 const COT_THE =
   'id,status,brand_text,model_text,year,seats,transmission,fuel,price_per_day,' +
   'province_id,district_id,is_verified,published_at,expires_at,owner_id,' +
-  'cover_thumb,cover_blur,cover_width,cover_height'
+  'cover_thumb,cover_blur,cover_width,cover_height,owner_ten,owner_avatar'
 
 const TRANG = 20
 

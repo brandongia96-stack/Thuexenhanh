@@ -17,11 +17,14 @@ export const CO_TRANG = 20
 // ev_range_km/charge_policy/collateral_required: đúng 3 cột xe điện mà
 // listing_card có (NGHIEN-CUU-XE-DIEN.md mục 3) — dùng cho huy hiệu "Free sạc"
 // + quãng đường trên thẻ, và cho 3 bộ lọc dưới. Không thêm cột nào khác.
+// owner_ten/owner_avatar: hồ sơ công khai chủ xe (contracts/api.md §3g) — có
+// sẵn trên listing_card và listing_card_gan, dùng để hiện avatar + liên kết
+// /chu/:owner_id ở chân thẻ (TheXe.jsx).
 const COT_THE =
   'id,status,brand_text,model_text,year,seats,transmission,fuel,price_per_day,' +
   'province_id,district_id,is_verified,published_at,expires_at,owner_id,' +
   'ev_range_km,charge_policy,collateral_required,' +
-  'cover_thumb,cover_blur,cover_width,cover_height'
+  'cover_thumb,cover_blur,cover_width,cover_height,owner_ten,owner_avatar'
 
 // `sap_het_han` vẫn còn hiển thị (chủ xe đã trả phí tới hết hạn).
 const TRANG_THAI_HIEN = ['dang_hien_thi', 'sap_het_han']

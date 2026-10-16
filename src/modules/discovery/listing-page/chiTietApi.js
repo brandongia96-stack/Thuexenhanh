@@ -15,6 +15,11 @@ import { HAS_BACKEND } from '../../../lib/config'
 // vào gói của trang xem xe — vỡ ngân sách JS (HIEU-NANG.md mục 3).
 // `lifecycle.js` là logic thuần, không có tác dụng phụ.
 import { trangThaiThuc, dangHienThi } from '../../listing/lifecycle'
+// Hồ sơ công khai chủ xe (contracts/api.md mục 3g) — `listings` không có sẵn
+// owner_ten/owner_avatar như view `listing_card` (hai cột đó chỉ tồn tại ở
+// view, không phải cột thật trên bảng), nên đọc riêng một lần sau khi biết
+// `owner_id`. Hàm này tự nuốt lỗi mạng, không bao giờ làm hỏng trang xe.
+import { docChuXeCongKhai } from '../chu-xe/chuXeApi'
 
 // Cột của bảng `listings` mà trang chi tiết thực sự dùng. Không có cột nào
 // khác được thêm vào đây nếu giao diện không hiển thị nó.
@@ -87,7 +92,11 @@ export async function docTinChiTiet(id, { boQuaBoNho = false } = {}) {
     return null
   }
 
-  const tin = chuanHoa(data)
+  // Phải biết owner_id (nằm trong `data`) trước mới đọc được hồ sơ chủ xe
+  // nên hai truy vấn không chạy song song được — một vòng mạng nhỏ, một hàng.
+  const chuXe = await docChuXeCongKhai(data.owner_id)
+
+  const tin = chuanHoa(data, chuXe)
   boNho.set(id, { tin, luc: Date.now() })
   return tin
 }
@@ -103,7 +112,7 @@ export function napTruocTin(id) {
   docTinChiTiet(id).catch(() => {})
 }
 
-function chuanHoa(d) {
+function chuanHoa(d, chuXe) {
   const anh = (d.listing_images ?? [])
     .filter((a) => !a.deleted_at)
     .sort((a, b) => (b.is_cover === true) - (a.is_cover === true) || a.sort_order - b.sort_order)
@@ -120,6 +129,8 @@ function chuanHoa(d) {
       .sort((a, b) => a.date_from.localeCompare(b.date_from)),
     tenTinh: d.provinces?.name ?? null,
     tenQuan: d.districts?.name ?? null,
+    // null = không đọc được (mạng lỗi) — KhoiChuXe tự ẩn cả khối khi null.
+    chuXe,
     // Trạng thái THẬT tại thời điểm nhìn: cột `status` do cron cập nhật, giữa
     // hai lần cron một tin `dang_hien_thi` có thể đã quá hạn rồi. Không được
     // để trang nói dối khách là tin còn sống.

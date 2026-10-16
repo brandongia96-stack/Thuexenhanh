@@ -14,6 +14,7 @@ import {
   KhoiThongSo, KhoiTienNghi, KhoiGia, KhoiMoTa, KhoiLichBan, BanDo, KhoiDanhGia, KhoiQuyDinhPin
 } from './KhoiThongTin'
 import BangTinhTongTien from './BangTinhTongTien'
+import KhoiChuXe from '../chu-xe/KhoiChuXe'
 import HopLienHe from '../contact/HopLienHe'
 import NutLuu from '../saved/NutLuu'
 import { ghiXemTin } from '../ghiSuKien'
@@ -136,6 +137,14 @@ export default function TrangXe() {
             )}
           </header>
 
+          {/* Bản mobile của khối Chủ xe — xem .chuxe-trongnoi/.chuxe-trongdock
+              trong TrangXe.css cho lý do tại sao có hai bản. */}
+          {tin.chuXe && (
+            <div className="chuxe-trongnoi">
+              <KhoiChuXe chuXe={tin.chuXe} to={`/chu/${tin.chuXe.id}`} />
+            </div>
+          )}
+
           <KhoiThongSo tin={tin} />
           <KhoiTienNghi codes={tin.amenity_codes} />
           <KhoiGia tin={tin} />
@@ -148,6 +157,13 @@ export default function TrangXe() {
         </div>
 
         <aside className="trangxe-phai">
+          {/* Bản desktop/tablet — xem .chuxe-trongnoi/.chuxe-trongdock trong
+              TrangXe.css. Ẩn cả khối nếu không đọc được hồ sơ chủ xe (mạng
+              lỗi, KhoiChuXe tự lo). */}
+          <div className="chuxe-trongdock">
+            <KhoiChuXe chuXe={tin.chuXe} to={tin.chuXe ? `/chu/${tin.chuXe.id}` : undefined} />
+          </div>
+
           <div className="hop-lienhe card card-pad">
             <div className="hop-gia">
               <span className="t-price">{formatVnd(tin.price_per_day)}</span>

@@ -43,9 +43,18 @@
 }
 .trangxe-trai { display: flex; flex-direction: column; gap: var(--sp-5); min-width: 0; }
 
-.trangxe-phai { position: sticky; top: calc(var(--h-header) + var(--sp-4)); }
+.trangxe-phai {
+  position: sticky; top: calc(var(--h-header) + var(--sp-4));
+  display: flex; flex-direction: column; gap: var(--sp-3);
+}
 
 .trangxe-dau { display: flex; flex-direction: column; gap: var(--sp-2); }
+
+/* Khối Chủ xe render ở HAI chỗ trong JSX, CSS chọn đúng một theo breakpoint
+   (xem lý do ở khối @media bên dưới) — mặc định (desktop/tablet): trong dock
+   bên phải, ngay trên hộp liên hệ; bản trong luồng nội dung chính bị ẩn. */
+.chuxe-trongnoi { display: none; }
+.chuxe-trongdock { display: block; }
 .trangxe-nhan { flex-wrap: wrap; gap: var(--sp-2); }
 
 /* ─── Thông báo tin hết hạn / không còn hiển thị ─── */
@@ -536,6 +545,12 @@
     margin: 0 calc(var(--sp-3) * -1) calc(var(--sp-4) * -1);
     z-index: calc(var(--z-header) - 1);
   }
+  /* Khối Chủ xe KHÔNG vào dock đáy trên di động — dock vốn chỉ vừa đủ chỗ
+     cho giá + nút bấm; nhồi thêm khối chủ xe làm dock chiếm hơn nửa màn
+     hình, che mất ảnh xe. Hai khối .chuxe-trongnoi/.chuxe-trongdock bên
+     dưới đổi chỗ cho nhau theo breakpoint — xem TrangXe.jsx. */
+  .chuxe-trongnoi { display: block; margin-bottom: var(--sp-4); }
+  .chuxe-trongdock { display: none; }
   .hop-lienhe {
     border-radius: var(--r-lg) var(--r-lg) 0 0;
     box-shadow: var(--shadow-lg);

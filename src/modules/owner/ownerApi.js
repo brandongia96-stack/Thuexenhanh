@@ -15,10 +15,14 @@ export const TRANG = 20
 
 // Cột thẻ xe cần. `listing_card` đã bỏ sẵn mô tả / thông số / số điện thoại,
 // nhưng vẫn liệt kê tay để lỡ view có nở thêm cột thì danh sách không nặng lên.
+// owner_id/owner_ten/owner_avatar: TheXe.jsx hiện avatar + liên kết /chu/:owner_id
+// ở chân thẻ (contracts/api.md §3g) — thêm owner_id vì màn này trước đó chưa cần
+// (danh sách đã lọc theo .eq('owner_id', ownerId) nên không ảnh hưởng kết quả).
 const COT_THE =
   'id,status,brand_text,model_text,year,seats,transmission,fuel,price_per_day,' +
   'province_id,district_id,is_verified,published_at,expires_at,' +
-  'cover_thumb,cover_blur,cover_width,cover_height,report_count'
+  'cover_thumb,cover_blur,cover_width,cover_height,report_count,' +
+  'owner_id,owner_ten,owner_avatar'
 
 // Nhóm lọc ở màn "Xe của tôi". Lọc theo cột `status` trong CSDL (server cập nhật
 // theo cron) — lọc ở server vì phân trang keyset không lọc lại phía client được.

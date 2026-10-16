@@ -35,6 +35,8 @@ const TrangDuLieu = lazy(() => import('./modules/legal/TrangDuLieu'))
 // Luồng 05 — trang xem xe và xe đã lưu. Tách gói riêng: khách vào trang chủ
 // không phải tải slider ảnh, hộp liên hệ hay 13 icon tiện nghi.
 const TrangXe = lazy(() => import('./modules/discovery/listing-page/TrangXe'))
+// Hồ sơ công khai chủ xe (contracts/api.md mục 3g) — cùng luồng 05.
+const TrangChuCongKhai = lazy(() => import('./modules/discovery/chu-xe/TrangChuCongKhai'))
 const TrangTimKiem = lazy(() => import('./modules/discovery/search/TrangTimKiem'))
 // Luồng 14 — trang SEO theo dòng xe × tỉnh (NGHIEN-CUU-XE-DIEN.md mục 2 đợt 2 #6).
 const TrangDongXe = lazy(() => import('./modules/shell/seo-xe/TrangDongXe'))
@@ -80,6 +82,7 @@ export default function App() {
               <Route path="/thue-xe/:dongXe/:tinh" element={<TrangDongXe />} />
               <Route path="/cuu-ho" element={<TrangCuuHo />} />
               <Route path="/xe/:id" element={<TrangXe />} />
+              <Route path="/chu/:id" element={<TrangChuCongKhai />} />
               {/* Xe đã lưu thuộc luồng 05 (module discovery/saved), không phải 04. */}
               <Route path="/da-luu" element={<TrangDaLuu />} />
 

@@ -116,9 +116,12 @@ function TheXe({ the, bangDiaGioi, uuTien = false }) {
         )}
 
         <div className="thexe-chan">
-          <div className="thexe-gia">
-            <strong>{formatVndShort(the.price_per_day)}</strong>
-            <span>/ ngày</span>
+          <div className="thexe-chu">
+            <AvatarChuXe ownerId={the.owner_id} ten={the.owner_ten} avatar={the.owner_avatar} />
+            <div className="thexe-gia">
+              <strong>{formatVndShort(the.price_per_day)}</strong>
+              <span>/ ngày</span>
+            </div>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
             <VerifiedBadge verified={the.is_verified} />
@@ -138,6 +141,32 @@ function TheXe({ the, bangDiaGioi, uuTien = false }) {
         )}
       </div>
     </article>
+  )
+}
+
+/**
+ * Avatar tròn của chủ xe, bấm vào → hồ sơ công khai `/chu/:owner_id`
+ * (contracts/api.md §3g). LIÊN KẾT RIÊNG, nằm cạnh (không lồng trong) link phủ
+ * ảnh/link tên của thẻ — HTML cấm thẻ <a> lồng nhau.
+ * Chưa có ảnh (`owner_avatar` null) → chữ cái đầu của `owner_ten` trên nền
+ * --m-green-light, không dùng ảnh mẫu (CLAUDE.md 1.2).
+ */
+function AvatarChuXe({ ownerId, ten, avatar }) {
+  if (!ownerId) return null // không có id thì không có chỗ để đi
+  const chuDau = ten?.trim()?.[0]?.toUpperCase() ?? '?'
+  return (
+    <Link
+      to={`/chu/${ownerId}`}
+      className="thexe-avatar"
+      aria-label={`Xem các xe của ${ten || 'chủ xe'}`}
+      title={ten || undefined}
+    >
+      {avatar ? (
+        <img src={avatar} alt="" width={32} height={32} loading="lazy" decoding="async" />
+      ) : (
+        <span aria-hidden="true">{chuDau}</span>
+      )}
+    </Link>
   )
 }
 
