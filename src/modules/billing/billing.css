@@ -131,3 +131,19 @@
 
 .quay { animation: vi-quay 1s linear infinite; }
 @keyframes vi-quay { to { transform: rotate(360deg) } }
+
+/* ─── Bản xem thử giao diện nạp token ───
+   Phải NHÌN RA NGAY là bản thử. Viền gạch + nền hổ phách là cố ý: đợt rà soát
+   03/10 phải gỡ một loạt số liệu giả vì chúng trông y như thật. */
+.hop-demo {
+  background: var(--m-amber-bg);
+  color: var(--m-amber);
+  border: 1px dashed var(--m-amber);
+  border-radius: var(--r-box);
+  padding: var(--sp-3);
+  font-size: 13px;
+  line-height: 1.5;
+}
+.qr-demo { display: flex; flex-direction: column; align-items: center; gap: var(--sp-2); }
+.qr-demo .qr-anh { box-shadow: inset 0 0 0 1px var(--m-border); }
+.qr-demo-nhan { font-size: 12px; color: var(--m-subtle); }

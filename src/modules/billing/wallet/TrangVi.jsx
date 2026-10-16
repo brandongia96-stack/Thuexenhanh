@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useState } from 'react'
-import { Wallet, ReceiptText, Plus } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import { Wallet, ReceiptText, Plus, Eye } from 'lucide-react'
 import { useAuth } from '../../auth/AuthProvider'
 import EmptyState from '../../../components/EmptyState'
 import Badge from '../../../components/Badge'
@@ -135,9 +136,16 @@ export default function TrangVi() {
           không làm gì. Nút hứa hẹn thứ app chưa làm được là thứ bị cấm
           (CLAUDE.md mục 1.2). */}
       {!FLAGS.nap_tien_that && (
-        <div className="hop-nhac">
-          Nạp token chưa mở. Em bật ngay khi trang <b>Chính sách hoàn token</b> được
-          công bố — thu tiền trước khi nói rõ điều kiện hoàn là không sòng phẳng.
+        <div className="hop-nhac stack" style={{ gap: 'var(--sp-3)' }}>
+          <span>
+            Nạp token chưa mở — đang chờ tài khoản ngân hàng nhận tiền. Trong thời
+            gian này token được cấp thủ công, anh <Link to="/lien-he">nhắn cho bên em</Link>.
+          </span>
+          {/* Nút này KHÔNG hứa nạp được tiền — nó nói rõ là xem thử bố cục.
+              Toàn bộ hộp mở ra đều đeo nhãn và không gọi backend. */}
+          <button type="button" className="btn btn-ghost btn-sm" onClick={() => setMoNap(true)}>
+            <Eye size={16} strokeWidth={1.8} /> Xem thử giao diện nạp token
+          </button>
         </div>
       )}
 
@@ -177,7 +185,9 @@ export default function TrangVi() {
       </p>
 
       {moNap && (
-        <HopNapToken onDong={() => setMoNap(false)} onXong={tai} />
+        /* Nạp tiền thật chưa mở -> hộp chạy ở chế độ xem thử: không gọi mạng,
+           không cộng token, mọi màn đeo nhãn "bản xem thử". */
+        <HopNapToken demo={!FLAGS.nap_tien_that} onDong={() => setMoNap(false)} onXong={tai} />
       )}
     </div>
   )
