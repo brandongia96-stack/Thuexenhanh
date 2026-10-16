@@ -427,6 +427,16 @@ sb.rpc('listing_card_gan', { p_lat, p_lng })
 - ⚠️ Thêm cột vào `listing_card` → phải thêm vào hàm `listing_card_gan` (cùng thứ tự).
 - `listing_card.search_tsv` đã có lại (chỉ để lọc `textSearch`, đừng select).
 
+## 3g. Hồ sơ công khai chủ xe (0025, 16/10/2026)
+
+| Thứ | Cách dùng |
+|---|---|
+| `listing_card.owner_ten`, `owner_avatar` | có sẵn trên MỌI thẻ xe (và trong `listing_card_gan`) — không cần request thêm. `owner_avatar` null → hiện chữ cái đầu của `owner_ten` |
+| view `owner_public` | `id, ten_hien_thi, avatar_url, da_xac_minh, tham_gia_tu, so_xe_dang_cho_thue`. CHỈ có người đang có ≥ 1 tin hiển thị. Trang chủ xe: `from('owner_public').select(...).eq('id', id).maybeSingle()` — null = không có/không còn xe → trang "Chủ xe này hiện không có xe cho thuê" |
+| xe của một chủ | `from('listing_card').select(COT).eq('owner_id', id)` + điều kiện hiển thị như trang tìm kiếm, keyset như cũ |
+
+**Cấm** đọc bảng `users` để lấy tên/ảnh người khác (RLS chặn, trả rỗng). **Cấm** hiện họ tên đầy đủ, email, SĐT, CCCD trên trang công khai — chỉ `ten_hien_thi`.
+
 ## 4. Mã lỗi chung
 
 | Mã | Nghĩa |
