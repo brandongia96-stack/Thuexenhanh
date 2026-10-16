@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import LegalLayout, { Muc, KhoiPhapNhan, KhoiLienHe } from './LegalLayout'
+import { PHAP_NHAN, EMAIL_HO_TRO } from './phienBan'
 
 export default function LienHe() {
   return (
@@ -25,6 +26,9 @@ export default function LienHe() {
           </li>
           <li className="t-body">
             <strong>Sự cố xe trên đường:</strong> Tra cứu nhanh số điện thoại trạm cứu hộ gần nhất tại <Link to="/cuu-ho">Danh bạ cứu hộ 24/7</Link>.
+          </li>
+          <li className="t-body">
+            <strong>Chủ xe có nhiều xe / đội xe:</strong> Cần hỗ trợ đăng tải hàng loạt theo danh sách hoặc tư vấn quản lý nhiều xe, liên hệ trực tiếp qua số hotline/Zalo {PHAP_NHAN.dienThoai} hoặc gửi email tới {EMAIL_HO_TRO}.
           </li>
           <li className="t-body">
             <strong>Thắc mắc về cách sử dụng:</strong> Xem phần giải đáp nhanh tại <Link to="/tro-giup">Câu hỏi thường gặp (FAQ)</Link>.

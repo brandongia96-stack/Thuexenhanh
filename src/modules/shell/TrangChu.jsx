@@ -260,6 +260,9 @@ function KhoiChuXe() {
         <Link to="/chu-xe/dang-tin" className="btn btn-lg">
           <MapPin size={18} strokeWidth={2} /> Đăng xe của bạn
         </Link>
+        <p className="t-small" style={{ marginTop: 'var(--sp-2)', color: 'var(--m-mid)' }}>
+          Bạn có nhiều xe? <Link to="/lien-he" style={{ color: 'var(--m-green)', fontWeight: 600 }}>Bấm liên hệ thêm</Link>
+        </p>
       </div>
       <p className="t-small">Giao dịch thuê xe do hai bên tự thoả thuận.</p>
     </section>

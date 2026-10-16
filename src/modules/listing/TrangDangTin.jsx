@@ -72,12 +72,17 @@ export default function TrangDangTin() {
   if (!daXacThucSdt) {
     return (
       <div className="page stack" style={{ maxWidth: 640, margin: '0 auto' }}>
-        <div className="row" style={{ marginBottom: 'var(--sp-4)' }}>
-          <button className="btn btn-ghost btn-sm" onClick={() => navigate(-1)}>
+        <div className="row" style={{ marginBottom: 'var(--sp-4)', alignItems: 'flex-start' }}>
+          <button className="btn btn-ghost btn-sm" onClick={() => navigate(-1)} style={{ marginTop: 'var(--sp-1)' }}>
             <ArrowLeft size={16} strokeWidth={1.8} />
             Quay lại
           </button>
-          <h1 className="t-h2" style={{ margin: 0 }}>Đăng xe cho thuê</h1>
+          <div>
+            <h1 className="t-h2" style={{ margin: 0 }}>Đăng xe cho thuê</h1>
+            <p className="t-small" style={{ margin: 'var(--sp-1) 0 0 0', color: 'var(--m-mid)' }}>
+              Bạn có nhiều xe? <Link to="/lien-he" style={{ color: 'var(--m-green)', fontWeight: 600 }}>Bấm liên hệ thêm</Link>
+            </p>
+          </div>
         </div>
 
         <div
@@ -175,12 +180,19 @@ export default function TrangDangTin() {
   // ĐÃ XÁC THỰC SỐ ĐIỆN THOẠI → MỞ FORM ĐĂNG TIN
   return (
     <div className="page stack">
-      <div className="row">
-        <button className="btn btn-ghost btn-sm" onClick={() => navigate(-1)}>
+      <div className="row" style={{ alignItems: 'flex-start' }}>
+        <button className="btn btn-ghost btn-sm" onClick={() => navigate(-1)} style={{ marginTop: 'var(--sp-1)' }}>
           <ArrowLeft size={16} strokeWidth={1.8} />
           Quay lại
         </button>
-        <h1 className="t-h1">{id ? 'Sửa tin đăng' : 'Đăng xe cho thuê'}</h1>
+        <div>
+          <h1 className="t-h1" style={{ margin: 0 }}>{id ? 'Sửa tin đăng' : 'Đăng xe cho thuê'}</h1>
+          {!id && (
+            <p className="t-small" style={{ margin: 'var(--sp-1) 0 0 0', color: 'var(--m-mid)' }}>
+              Bạn có nhiều xe? <Link to="/lien-he" style={{ color: 'var(--m-green)', fontWeight: 600 }}>Bấm liên hệ thêm</Link>
+            </p>
+          )}
+        </div>
       </div>
 
       {/* Trả phí / gia hạn: chỉ mở HopTraPhi của luồng 06, không tự trừ token. */}
