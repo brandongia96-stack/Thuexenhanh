@@ -424,108 +424,189 @@
   <main class="container">
 
     <!-- ========================================== -->
-    <!-- MODULE 1: TOOL VIẾT BÀI SEO TOP 3          -->
+    <!-- MODULE 1: AGENT 5 BƯỚC - AUTO SEO TOP 3    -->
     <!-- ========================================== -->
     <section id="tab-seo" class="tab-content active">
+      
+      <!-- Agent Hero Banner -->
+      <div class="card" style="background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; padding: 22px 26px; border: 1px solid #334155; margin-bottom: 20px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 14px;">
+          <div>
+            <span class="badge" style="background: rgba(56, 189, 248, 0.2); color: #38bdf8; font-weight: 700; font-size: 12px; margin-bottom: 6px; letter-spacing: 0.5px;">
+              🤖 1-CLICK AUTO AGENT • CHUYÊN GIA VẬN HÀNH 10 NĂM & GIÁM ĐỐC SEO TOP 1
+            </span>
+            <h2 style="font-size: 22px; font-weight: 800; color: #f8fafc; margin-bottom: 4px;">Quy Trình 5 Bước: 1 Click Chạy Auto — Ra Bài — Tự Đăng</h2>
+            <p style="font-size: 13px; color: #94a3b8;">
+              Tự động hóa 100%: Định vị Search Intent → Bơm dữ liệu thật (Giá sàn, NĐ 282, cọc phạt nguội) → Lọc AI Slop → Viết 2.000 từ chuẩn Top 3 → Tự động xuất bản lên website (<code style="color: #38bdf8; background: rgba(255,255,255,0.1); padding: 2px 6px; border-radius: 4px;">public/cam-nang/</code>).
+            </p>
+          </div>
+          <div style="display: flex; gap: 8px;">
+            <button class="btn btn-secondary" style="font-size: 12px; padding: 6px 14px;" onclick="document.getElementById('seoKeyword').value='kinh nghiệm thuê xe tự lái tránh đền tiền oan'">🎯 Nạp Từ Khóa Mẫu</button>
+          </div>
+        </div>
+      </div>
+
       <div class="two-col-grid">
         
-        <!-- Left Column: Form -->
-        <div class="card">
-          <div class="card-title">📝 Thiết Lập Bài Viết Chuẩn SEO Top 3</div>
+        <!-- Left Column: Agent Control & 5-Step Visualizer -->
+        <div>
+          <div class="card">
+            <div class="card-title">⚡ Bảng Điều Khiển Auto-Agent</div>
 
-          <div class="form-group">
-            <label>Từ khóa mục tiêu (Primary Keyword) *</label>
-            <input type="text" id="seoKeyword" value="kinh nghiệm thuê xe tự lái tránh bị đền tiền oan" placeholder="Nhập từ khóa...">
+            <div class="form-group">
+              <label>👉 TỪ KHÓA MỤC TIÊU (PRIMARY KEYWORD) *</label>
+              <input type="text" id="seoKeyword" value="kinh nghiệm thuê xe tự lái tránh đền tiền oan" placeholder="Ví dụ: kinh nghiệm thuê xe tự lái tránh đền tiền oan" style="font-weight: 700; font-size: 15px; color: var(--primary);">
+            </div>
+
+            <!-- Quick Keyword Chips -->
+            <div style="margin-bottom: 16px;">
+              <div style="font-size: 12px; font-weight: 600; color: var(--mid); margin-bottom: 6px;">Chọn nhanh từ khóa chiến lược Top 3:</div>
+              <div style="display: flex; flex-wrap: wrap; gap: 6px;">
+                <span class="badge" style="background: #e0f2fe; color: #0369a1; cursor: pointer;" onclick="pickSeoKw('kinh nghiệm thuê xe tự lái tránh đền tiền oan')">Kinh nghiệm tránh đền tiền oan</span>
+                <span class="badge" style="background: #f1f5f9; color: var(--dark); cursor: pointer;" onclick="pickSeoKw('nghị định 282 thuê xe tự lái có được giữ cccd gốc không')">NĐ 282 cấm giữ CCCD</span>
+                <span class="badge" style="background: #f1f5f9; color: var(--dark); cursor: pointer;" onclick="pickSeoKw('thủ tục thuê xe tự lái không cần hộ khẩu 2026')">Thủ tục không cần hộ khẩu</span>
+                <span class="badge" style="background: #f1f5f9; color: var(--dark); cursor: pointer;" onclick="pickSeoKw('bảng giá thuê xe tự lái 4 chỗ 7 chỗ mới nhất 2026')">Bảng giá xe 2026</span>
+                <span class="badge" style="background: #f1f5f9; color: var(--dark); cursor: pointer;" onclick="pickSeoKw('thuê xe xpander tự lái giá bao nhiêu 1 ngày')">Giá thuê Xpander</span>
+                <span class="badge" style="background: #f1f5f9; color: var(--dark); cursor: pointer;" onclick="pickSeoKw('cho thuê xe tự lái có lời không kiếm được bao nhiêu 1 tháng')">Cho thuê xe có lời không</span>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label>Ghi chú yêu cầu bổ sung (Tùy chọn):</label>
+              <textarea id="seoNotes" rows="2" placeholder="Ví dụ: Nhấn mạnh quay video 360 độ lúc nhận xe, quy định cấm giữ CCCD gốc theo NĐ 282/2025..."></textarea>
+            </div>
+
+            <!-- 1-Click Auto Run Button -->
+            <button id="btnAutoAgentRun" class="btn btn-primary btn-block" style="padding: 15px 20px; font-size: 15px; font-weight: 800; background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%); box-shadow: 0 4px 14px rgba(37,99,235,0.35); margin-top: 6px;" onclick="runAutoAgent5Steps()">
+              <span id="btnAutoAgentTxt">⚡ 1-CLICK AUTO AGENT: CHẠY AUTO 5 BƯỚC & TỰ ĐĂNG BÀI</span>
+            </button>
+            <div style="font-size: 11px; text-align: center; color: var(--subtle); margin-top: 6px;">
+              Tự động chạy đủ 5 bước, sinh bài viết 2.000 từ, tự đăng vào <code>public/cam-nang/</code>
+            </div>
           </div>
 
-          <div class="form-group">
-            <label>Ý định tìm kiếm (Search Intent)</label>
-            <select id="seoIntent">
-              <option value="Informational / How-to" selected>Cẩm nang & Kinh nghiệm thực tế (Tránh đền tiền)</option>
-              <option value="Commercial / Pricing">Bảng giá & So sánh dòng xe (Commercial)</option>
-              <option value="Transactional / Direct">Thủ tục thuê xe & Đặt xe trực tiếp</option>
-              <option value="Business / For Owners">Dành cho chủ xe (Kiếm tiền, hợp đồng)</option>
-            </select>
-          </div>
+          <!-- 5-Step Progress Visualizer -->
+          <div class="card" style="padding: 20px;">
+            <div class="card-title" style="margin-bottom: 12px; font-size: 14px;">
+              🔄 Tiến Trình 5 Bước Của Agent:
+            </div>
 
-          <div class="form-group">
-            <label>Ghi chú riêng / Yêu cầu bổ sung</label>
-            <textarea id="seoNotes" rows="2" placeholder="Ví dụ: Nhấn mạnh quay video 360 độ lúc nhận xe, quy định cấm giữ CCCD gốc theo NĐ 282..."></textarea>
-          </div>
+            <div id="agentStep1" class="audit-item" style="margin-bottom: 8px;">
+              <div class="audit-score-pill" style="color: var(--primary);">B1</div>
+              <div>
+                <div style="font-weight: 700; font-size: 13px;">ĐỊNH VỊ Ý ĐỊNH TÌM KIẾM (SEARCH INTENT)</div>
+                <div style="font-size: 12px; color: var(--mid);">Bóc tách nỗi đau: Sợ bị đền tiền vết xước cũ, sợ giam cọc phạt nguội. Giải quyết ngay trong 3 dòng đầu.</div>
+              </div>
+            </div>
 
-          <div style="display: flex; gap: 10px; margin-top: 20px;">
-            <button class="btn btn-secondary" style="flex: 1;" onclick="runSeoOutline()">📑 1. Dàn Ý</button>
-            <button class="btn btn-primary" id="btnRunSeoArticle" style="flex: 1.4;" onclick="runSeoArticle()">🚀 2. Viết Bài Đầy Đủ</button>
-          </div>
+            <div id="agentStep2" class="audit-item" style="margin-bottom: 8px;">
+              <div class="audit-score-pill" style="color: var(--primary);">B2</div>
+              <div>
+                <div style="font-weight: 700; font-size: 13px;">NẠP DỮ LIỆU ĐỘC QUYỀN (INFORMATION GAIN)</div>
+                <div style="font-size: 12px; color: var(--mid);">Bơm giá thật: Vios 700k-850k, Xpander 900k-1.1tr, Carnival 1.8-2.5tr; NĐ 282 cấm giữ CCCD; Cọc phạt nguội 15-20 ngày csgt.vn.</div>
+              </div>
+            </div>
 
-          <!-- Shortcuts to keyword bank -->
-          <div style="margin-top: 24px;">
-            <label style="font-weight: 700; color: var(--dark);">🎯 Từ khóa gợi ý dễ lên Top 3 trong 30 - 60 ngày:</label>
-            <div style="display: flex; flex-direction: column; gap: 6px; margin-top: 8px;">
-              <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left; font-size: 12px; padding: 6px 10px;" onclick="pickSeoKw('thủ tục thuê xe tự lái không cần hộ khẩu 2026')">
-                📌 thủ tục thuê xe tự lái không cần hộ khẩu 2026 (30-45 ngày)
-              </button>
-              <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left; font-size: 12px; padding: 6px 10px;" onclick="pickSeoKw('nghị định 282 thuê xe tự lái có được giữ cccd gốc không')">
-                📌 nghị định 282 thuê xe tự lái có được giữ cccd gốc không (15-30 ngày)
-              </button>
-              <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left; font-size: 12px; padding: 6px 10px;" onclick="pickSeoKw('bảng giá thuê xe tự lái 4 chỗ 7 chỗ mới nhất 2026')">
-                📌 bảng giá thuê xe tự lái 4 chỗ 7 chỗ mới nhất 2026
-              </button>
-              <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left; font-size: 12px; padding: 6px 10px;" onclick="pickSeoKw('thuê xe xpander tự lái giá bao nhiêu 1 ngày')">
-                📌 thuê xe xpander tự lái giá bao nhiêu 1 ngày (30-45 ngày)
-              </button>
-              <button class="btn btn-secondary" style="justify-content: flex-start; text-align: left; font-size: 12px; padding: 6px 10px;" onclick="pickSeoKw('cho thuê xe tự lái có lời không kiếm được bao nhiêu 1 tháng')">
-                📌 cho thuê xe tự lái có lời không kiếm được bao nhiêu 1 tháng
-              </button>
+            <div id="agentStep3" class="audit-item" style="margin-bottom: 8px;">
+              <div class="audit-score-pill" style="color: var(--primary);">B3</div>
+              <div>
+                <div style="font-weight: 700; font-size: 13px;">BỘ LỌC CHỐNG VĂN PHONG AI (ANTI-AI SLOP)</div>
+                <div style="font-size: 12px; color: var(--mid);">Chặn 60+ từ sáo rỗng. Ép giọng chuyên gia vận hành 10 năm kinh nghiệm thực chiến.</div>
+              </div>
+            </div>
+
+            <div id="agentStep4" class="audit-item" style="margin-bottom: 8px;">
+              <div class="audit-score-pill" style="color: var(--primary);">B4</div>
+              <div>
+                <div style="font-weight: 700; font-size: 13px;">DÀN DỰNG NỘI DUNG CHUYÊN SÂU (1.800 - 2.200 TỪ)</div>
+                <div style="font-size: 12px; color: var(--mid);">H1 kèm năm 2026, Hộp Tóm Tắt > [!NOTE], Bảng giá so sánh, Checklist 5 bước, 4 Link nội bộ, FAQ 4 câu.</div>
+              </div>
+            </div>
+
+            <div id="agentStep5" class="audit-item" style="margin-bottom: 0;">
+              <div class="audit-score-pill" style="color: var(--primary);">B5</div>
+              <div>
+                <div style="font-weight: 700; font-size: 13px;">ĐÓNG GÓI XUẤT BẢN & TỰ ĐĂNG BÀI LÊN WEB</div>
+                <div style="font-size: 12px; color: var(--mid);">Tự động tạo Meta Title, Description, Schema JSON-LD và ghi trực tiếp vào public/cam-nang/!</div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Right Column: SEO Result -->
+        <!-- Right Column: Results, Scorecard & Published Link -->
         <div>
+          <!-- Auto-Publish Success Alert (Hidden until finished) -->
+          <div id="agentPublishAlert" class="alert-box info" style="display: none; background: #ecfdf5; border-color: #86efac; color: #065f46; margin-bottom: 16px;">
+            <div style="font-size: 24px;">🎉</div>
+            <div style="flex: 1;">
+              <strong style="font-size: 15px;">ĐÃ TỰ ĐỘNG ĐĂNG BÀI THÀNH CÔNG LÊN WEBSITE!</strong>
+              <p style="font-size: 13px; margin: 4px 0 10px;">
+                Bài viết đã được tạo thành file HTML chuẩn SEO độc lập tại: <code id="agentPublishedFilePath" style="background: white; padding: 2px 6px; border-radius: 4px; font-weight: 700;">public/cam-nang/...</code>
+              </p>
+              <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                <a id="btnViewPublished" href="#" target="_blank" class="btn btn-success" style="padding: 6px 14px; font-size: 12px; text-decoration: none;">
+                  🌐 Mở Xem Bài Viết Đã Đăng
+                </a>
+                <button class="btn btn-secondary" style="padding: 6px 14px; font-size: 12px;" onclick="copySeoText()">
+                  📋 Copy Toàn Bộ Markdown
+                </button>
+                <button class="btn btn-secondary" style="padding: 6px 14px; font-size: 12px;" onclick="copySchemaJson()">
+                  🏷️ Copy Mã Schema JSON-LD
+                </button>
+              </div>
+            </div>
+          </div>
+
           <!-- Scorecard -->
           <div class="scorecard">
             <div class="score-circle">
-              <div style="font-size: 24px; font-weight: 800; color: var(--green);" id="scoreVal">94</div>
+              <div style="font-size: 24px; font-weight: 800; color: var(--green);" id="scoreVal">96</div>
               <div style="font-size: 10px; opacity: 0.7;">/ 100đ</div>
             </div>
             <div style="flex: 1;">
-              <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; margin-bottom: 4px;">CHUẨN TOP 1 - 3 GOOGLE</span>
-              <div style="font-weight: 700; font-size: 15px;" id="scoreHeading">Vượt qua mọi bộ lọc AI • E-E-A-T Chuẩn</div>
+              <span class="badge" style="background: rgba(16, 185, 129, 0.2); color: #34d399; margin-bottom: 4px;">ĐẠT CHUẨN TOP 1 - 3 GOOGLE</span>
+              <div style="font-weight: 700; font-size: 15px;" id="scoreHeading">Thông Tin Vượt Trội • Triệt Tiêu 100% Mùi AI</div>
               <div style="display: flex; gap: 14px; font-size: 12px; opacity: 0.9; margin-top: 4px;">
-                <span>📝 Độ dài: <strong id="scoreWords">1.950</strong> từ</span>
-                <span>🔑 Mật độ: <strong id="scoreDensity">1.4%</strong></span>
+                <span>📝 Độ dài: <strong id="scoreWords">2.080</strong> từ</span>
+                <span>🔑 Mật độ: <strong id="scoreDensity">1.5%</strong></span>
                 <span>🛡️ Anti-AI: <strong id="scoreHuman">100% Thực chiến</strong></span>
               </div>
             </div>
             <div>
-              <button class="btn btn-success" onclick="saveSeoArticle()">💾 Lưu Bài Viết</button>
+              <button class="btn btn-success" onclick="saveSeoArticle()">💾 Lưu Lại</button>
             </div>
           </div>
 
-          <!-- Preview box -->
+          <!-- Content Preview Tabs -->
           <div class="card" style="padding: 16px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px; border-bottom: 1px solid var(--border); padding-bottom: 8px;">
               <div style="display: flex; gap: 8px;">
                 <button class="btn btn-secondary active" style="padding: 4px 12px; font-size: 12px;" onclick="switchSeoView('view-web')">👁️ Web View</button>
                 <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 12px;" onclick="switchSeoView('view-md')">📝 Markdown</button>
-                <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 12px;" onclick="switchSeoView('view-schema')">🏷️ Schema JSON-LD</button>
+                <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 12px;" onclick="switchSeoView('view-schema')">🏷️ Meta & Schema</button>
               </div>
-              <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 12px;" onclick="copySeoText()">📋 Copy</button>
+              <button class="btn btn-secondary" style="padding: 4px 12px; font-size: 12px;" onclick="copySeoText()">📋 Sao Chép</button>
             </div>
 
+            <!-- Web View -->
             <div id="view-web" class="preview-body" style="max-height: 650px; overflow-y: auto;">
               <div id="seoPreviewContent">
-                <p style="text-align: center; color: var(--subtle); padding: 50px 0;">Bấm nút <strong>"🚀 2. Viết Bài Đầy Đủ"</strong> để bắt đầu sinh nội dung.</p>
+                <p style="text-align: center; color: var(--subtle); padding: 50px 0;">Bấm nút <strong>"⚡ 1-CLICK AUTO AGENT: CHẠY AUTO 5 BƯỚC & TỰ ĐĂNG BÀI"</strong> để tự động tạo và xuất bản bài viết.</p>
               </div>
             </div>
 
+            <!-- Markdown View -->
             <div id="view-md" style="display: none;">
               <textarea id="seoMdRaw" rows="22" style="width: 100%; font-family: monospace; font-size: 13px; background: #0f172a; color: #f8fafc; padding: 16px; border-radius: 8px;"></textarea>
             </div>
 
+            <!-- Schema View -->
             <div id="view-schema" style="display: none;">
-              <textarea id="seoSchemaRaw" rows="22" style="width: 100%; font-family: monospace; font-size: 13px; background: #0f172a; color: #f8fafc; padding: 16px; border-radius: 8px;"></textarea>
+              <div style="margin-bottom: 12px; padding: 10px; background: #f8fafc; border: 1px solid var(--border); border-radius: 8px; font-size: 13px;">
+                <p><strong>Title:</strong> <span id="metaTitleDisplay">Chưa có</span></p>
+                <p style="margin-top: 4px;"><strong>Meta Description:</strong> <span id="metaDescDisplay">Chưa có</span></p>
+              </div>
+              <textarea id="seoSchemaRaw" rows="18" style="width: 100%; font-family: monospace; font-size: 13px; background: #0f172a; color: #f8fafc; padding: 16px; border-radius: 8px;"></textarea>
             </div>
           </div>
         </div>
@@ -815,36 +896,88 @@
     }
 
     // ========================================================
-    // LOGIC SEO CONTENT GENERATOR
+    // LOGIC AUTO-AGENT 5 BƯỚC (1-CLICK CHẠY AUTO -> TỰ ĐĂNG)
     // ========================================================
     function pickSeoKw(kw) {
       document.getElementById('seoKeyword').value = kw;
     }
 
-    async function runSeoArticle() {
+    async function runAutoAgent5Steps() {
       const keyword = document.getElementById('seoKeyword').value.trim();
       const customNotes = document.getElementById('seoNotes').value.trim();
-      if (!keyword) return alert('Vui lòng nhập từ khóa chính.');
+      if (!keyword) return alert('Vui lòng nhập từ khóa mục tiêu.');
 
-      const btn = document.getElementById('btnRunSeoArticle');
-      const originalText = btn.innerHTML;
-      btn.innerHTML = '<div class="spinner"></div> Đang viết chuyên sâu...';
+      const btn = document.getElementById('btnAutoAgentRun');
+      const btnTxt = document.getElementById('btnAutoAgentTxt');
       btn.disabled = true;
 
+      const setStepStatus = (stepNum, active, done) => {
+        const el = document.getElementById(`agentStep${stepNum}`);
+        if (!el) return;
+        el.className = done ? 'audit-item pass' : (active ? 'audit-item warning' : 'audit-item');
+        const pill = el.querySelector('.audit-score-pill');
+        if (pill) {
+          pill.style.background = done ? '#dcfce7' : (active ? '#fef3c7' : 'white');
+          pill.style.color = done ? '#15803d' : (active ? '#b45309' : 'var(--primary)');
+          pill.textContent = done ? '✓' : `B${stepNum}`;
+        }
+      };
+
+      // Reset all steps to initial
+      [1, 2, 3, 4, 5].forEach(s => setStepStatus(s, false, false));
+      document.getElementById('agentPublishAlert').style.display = 'none';
+
       try {
-        const res = await fetch(`${SEO_API_BASE}/api/generate-article`, {
+        // Step 1 animation
+        setStepStatus(1, true, false);
+        btnTxt.innerHTML = '<span class="spinner"></span> B1: Bóc tách Search Intent & Nỗi đau...';
+        await new Promise(r => setTimeout(r, 450));
+        setStepStatus(1, false, true);
+
+        // Step 2 animation
+        setStepStatus(2, true, false);
+        btnTxt.innerHTML = '<span class="spinner"></span> B2: Bơm dữ liệu thật (Giá sàn, NĐ 282, Cọc phạt nguội)...';
+        await new Promise(r => setTimeout(r, 550));
+        setStepStatus(2, false, true);
+
+        // Step 3 animation
+        setStepStatus(3, true, false);
+        btnTxt.innerHTML = '<span class="spinner"></span> B3: Lọc 60+ từ AI Slop & Ép giọng chuyên gia 10 năm...';
+        await new Promise(r => setTimeout(r, 450));
+        setStepStatus(3, false, true);
+
+        // Step 4 animation
+        setStepStatus(4, true, false);
+        btnTxt.innerHTML = '<span class="spinner"></span> B4: Đang viết bài 2.000 từ + Bảng giá + Checklist + Schema...';
+
+        // Call backend API
+        const res = await fetch(`${SEO_API_BASE}/api/agent-auto-publish`, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ keyword, customNotes })
         });
         const data = await res.json();
+
         if (data.success) {
+          setStepStatus(4, false, true);
+
+          // Step 5 animation
+          setStepStatus(5, true, false);
+          btnTxt.innerHTML = '<span class="spinner"></span> B5: Đóng gói và tự động đăng bài lên web...';
+          await new Promise(r => setTimeout(r, 450));
+          setStepStatus(5, false, true);
+
+          // Update UI
           currentSeoData = data;
           document.getElementById('seoPreviewContent').innerHTML = data.contentHtml;
           document.getElementById('seoMdRaw').value = data.contentMarkdown;
           
+          document.getElementById('metaTitleDisplay').textContent = data.title;
+          document.getElementById('metaDescDisplay').textContent = data.metaDescription;
+
           const fullSchema = [data.schemas.articleSchema];
           if (data.schemas.faqSchema) fullSchema.push(data.schemas.faqSchema);
+          if (data.schemas.breadcrumbSchema) fullSchema.push(data.schemas.breadcrumbSchema);
           document.getElementById('seoSchemaRaw').value = JSON.stringify(fullSchema, null, 2);
 
           const audit = data.auditResult;
@@ -852,15 +985,35 @@
           document.getElementById('scoreWords').textContent = audit.wordCount;
           document.getElementById('scoreDensity').textContent = audit.density + '%';
           document.getElementById('scoreHuman').textContent = audit.slopMatches.length === 0 ? '100% Thực chiến' : `Có ${audit.slopMatches.length} từ AI`;
+
+          // Show Auto-Publish Alert
+          const alertBox = document.getElementById('agentPublishAlert');
+          alertBox.style.display = 'flex';
+          document.getElementById('agentPublishedFilePath').textContent = data.localPath;
+          const viewBtn = document.getElementById('btnViewPublished');
+          viewBtn.href = data.publishedUrl;
+
+          btnTxt.innerHTML = '⚡ CHẠY LẠI AUTO AGENT (ĐÃ ĐĂNG THÀNH CÔNG)';
         } else {
-          alert('Lỗi: ' + data.error);
+          alert('Lỗi Auto Agent: ' + data.error);
+          btnTxt.innerHTML = '⚡ 1-CLICK AUTO AGENT: CHẠY AUTO 5 BƯỚC & TỰ ĐĂNG BÀI';
         }
       } catch (e) {
-        alert('Không thể kết nối SEO Server :4646. Hãy chắc chắn server.mjs đang chạy.');
+        alert('Lỗi kết nối máy chủ SEO cổng 4646: ' + e.message + '\nHãy chắc chắn server.mjs đang chạy!');
+        btnTxt.innerHTML = '⚡ 1-CLICK AUTO AGENT: CHẠY AUTO 5 BƯỚC & TỰ ĐĂNG BÀI';
       } finally {
-        btn.innerHTML = originalText;
         btn.disabled = false;
       }
+    }
+
+    function copySchemaJson() {
+      const code = document.getElementById('seoSchemaRaw').value;
+      if (!code) return alert('Chưa có mã Schema để sao chép.');
+      navigator.clipboard.writeText(code).then(() => alert('Đã sao chép mã Schema JSON-LD vào bộ nhớ tạm!'));
+    }
+
+    async function runSeoArticle() {
+      return runAutoAgent5Steps();
     }
 
     function switchSeoView(viewId) {

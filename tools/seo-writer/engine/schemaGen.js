@@ -122,10 +122,12 @@ export function extractFaqsFromMarkdown(content) {
       continue;
     }
 
-    // Nếu gặp H2 khác thì kết thúc phần FAQ
-    if (inFaqSection && line.match(/^##\s+[^\#]/)) {
+    // Nếu gặp H2 khác hoặc dấu gạch ngang phân cách thì kết thúc phần FAQ
+    if (inFaqSection && (line.match(/^##\s+[^\#]/) || line === '---')) {
       if (currentQ && currentA.length > 0) {
-        faqs.push({ question: currentQ, answer: currentA.join(' ').trim() });
+        faqs.push({ question: currentQ, answer: currentA.join(' ').replace(/\s*---\s*$/, '').trim() });
+        currentQ = null;
+        currentA = [];
       }
       break;
     }
@@ -137,18 +139,18 @@ export function extractFaqsFromMarkdown(content) {
 
       if (h3Match || boldMatch) {
         if (currentQ && currentA.length > 0) {
-          faqs.push({ question: currentQ, answer: currentA.join(' ').trim() });
+          faqs.push({ question: currentQ, answer: currentA.join(' ').replace(/\s*---\s*$/, '').trim() });
           currentA = [];
         }
         currentQ = (h3Match ? h3Match[1] : boldMatch[1]).replace(/\*\*/g, '').trim();
-      } else if (currentQ && line.length > 0 && !line.startsWith('#')) {
+      } else if (currentQ && line.length > 0 && !line.startsWith('#') && line !== '---') {
         currentA.push(line.replace(/\[([^\]]+)\]\([^\)]+\)/g, '$1')); // Bỏ link markdown để text sạch
       }
     }
   }
 
   if (currentQ && currentA.length > 0) {
-    faqs.push({ question: currentQ, answer: currentA.join(' ').trim() });
+    faqs.push({ question: currentQ, answer: currentA.join(' ').replace(/\s*---\s*$/, '').trim() });
   }
 
   return faqs;
