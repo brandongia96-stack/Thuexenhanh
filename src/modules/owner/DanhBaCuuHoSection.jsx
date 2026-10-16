@@ -1,12 +1,21 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import {
   Phone, MapPin, Search, Copy, Check, Navigation,
   Clock, ShieldAlert, Sparkles, Filter, X
 } from 'lucide-react'
-import { DANH_BA_CUU_HO, LOAI_DICH_VU, DANH_SACH_VUNG } from '../../data/danhBaCuuHo'
+import { DANH_BA_CUU_HO, LOAI_DICH_VU } from '../../data/danhBaCuuHo'
 import { useViTri } from '../../context/ViTriContext'
 import { tinhKhoangCachKm, dinhDangKhoangCach } from '../../lib/toadoDiaGioi'
+import { trySupabase } from '../../lib/supabase'
+import { taiTenDiaGioi } from '../discovery/diaGioi'
+import { formatDate } from '../../lib/format'
+import BaoSoSaiCuuHo from '../../components/BaoSoSaiCuuHo'
 import './DanhBaCuuHoSection.css'
+
+// Cột danh bạ tư nhân (admin đã gọi thử) — liệt kê rõ, cấm select *
+// (HIEU-NANG.md mục 2.1). Nguồn DUY NHẤT cho số tư nhân — phần tĩnh ở
+// `data/danhBaCuuHo.js` chỉ còn 113/114/115 (rà soát 17/10, xem CHANGELOG).
+const COT_RESCUE = 'id,province_id,name,phone,service,note,updated_at'
 
 function boDau(str) {
   if (!str) return ''
@@ -24,6 +33,51 @@ export default function DanhBaCuuHoSection() {
   const [dichVuChon, setDichVuChon] = useState('tat-ca')
   const [uuTienViTri, setUuTienViTri] = useState(true)
   const [daChepId, setDaChepId] = useState(null)
+  const [dbItems, setDbItems] = useState([])
+
+  // Nạp số cứu hộ tư nhân admin đã nhập — lỗi mạng hoặc bảng rỗng thì coi
+  // như không có, không báo lỗi (graceful degradation, CLAUDE.md 1.3).
+  useEffect(() => {
+    let huy = false
+    ;(async () => {
+      const sb = await trySupabase()
+      if (!sb) return
+      const { data, error } = await sb
+        .from('rescue_contacts')
+        .select(COT_RESCUE)
+        .is('deleted_at', null)
+        .order('province_id')
+        .order('sort_order')
+      if (error || !data?.length || huy) return
+      const bang = await taiTenDiaGioi()
+      if (huy) return
+      setDbItems(data.map((r) => {
+        const tenTinh = bang.tinh?.[r.province_id] ?? null
+        return {
+          id: r.id,
+          ten: r.name,
+          sdt: r.phone,
+          sdtHienThi: r.phone,
+          tinh: tenTinh,
+          province_id: r.province_id,
+          vung: tenTinh,
+          dichVu: [],
+          dichVuText: r.service || '',
+          ghiChu: r.note || null,
+          lat: null,
+          lng: null,
+          truc247: null,
+          uuTien: false,
+          nguonDb: true,
+          capNhat: r.updated_at,
+        }
+      }))
+    })()
+    return () => { huy = true }
+  }, [])
+
+  // Danh bạ hiển thị = 113/114/115 (tĩnh) + số tư nhân từ CSDL.
+  const allItems = useMemo(() => [...DANH_BA_CUU_HO, ...dbItems], [dbItems])
 
   // Xử lý sao chép SĐT
   function chepSdt(id, sdt) {
@@ -39,19 +93,19 @@ export default function DanhBaCuuHoSection() {
   // Danh sách các tỉnh có trong danh bạ để làm dropdown
   const danhSachTinh = useMemo(() => {
     const setTinh = new Set()
-    DANH_BA_CUU_HO.forEach((item) => {
+    allItems.forEach((item) => {
       if (item.tinh && item.tinh !== 'Toàn quốc') {
         setTinh.add(item.tinh)
       }
     })
     return Array.from(setTinh).sort()
-  }, [])
+  }, [allItems])
 
   // Tính khoảng cách và lọc danh sách
   const danhSachLoc = useMemo(() => {
     const qKd = boDau(tuKhoa.trim())
 
-    let list = DANH_BA_CUU_HO.map((item) => {
+    let list = allItems.map((item) => {
       let km = null
       if (viTri?.lat && viTri?.lng && item.lat && item.lng) {
         km = tinhKhoangCachKm(viTri.lat, viTri.lng, item.lat, item.lng)
@@ -99,7 +153,7 @@ export default function DanhBaCuuHoSection() {
     }
 
     return list
-  }, [tuKhoa, vungChon, dichVuChon, uuTienViTri, viTri])
+  }, [allItems, tuKhoa, vungChon, dichVuChon, uuTienViTri, viTri])
 
   return (
     <section className="tv-section" id="danh-ba-cuu-ho">
@@ -142,14 +196,6 @@ export default function DanhBaCuuHoSection() {
             aria-label="Chọn khu vực hoặc tỉnh thành"
           >
             <option value="tat-ca">📍 Toàn quốc (Tất cả khu vực)</option>
-            <optgroup label="Tuyến đường đặc biệt">
-              <option value="Cao tốc">🛣️ Các tuyến Cao tốc</option>
-            </optgroup>
-            <optgroup label="Vùng miền">
-              {DANH_SACH_VUNG.filter((v) => v.key !== 'tat-ca' && v.key !== 'CaoToc').map((v) => (
-                <option key={v.key} value={v.key}>{v.label}</option>
-              ))}
-            </optgroup>
             <optgroup label="Tỉnh / Thành phố">
               {danhSachTinh.map((t) => (
                 <option key={t} value={t}>{t}</option>
@@ -284,8 +330,11 @@ export default function DanhBaCuuHoSection() {
                 </div>
 
                 <div className="dbch-nut-group">
+                  {/* KHÔNG dùng `lib/phone.js`: nó chỉ nhận số di động VN,
+                      còn danh bạ cứu hộ có cả tổng đài/hotline — hợp lệ bị
+                      `isValidPhone` từ chối thì mất nút Gọi. Chỉ lọc ký tự. */}
                   <a
-                    href={`tel:${item.sdt}`}
+                    href={`tel:${String(item.sdt).replace(/[^+\d]/g, '')}`}
                     className="btn btn-primary btn-sm dbch-nut-goi"
                   >
                     <Phone size={15} /> Gọi ngay
@@ -304,6 +353,17 @@ export default function DanhBaCuuHoSection() {
                     )}
                   </button>
                 </div>
+
+                {/* Chỉ số tư nhân từ CSDL mới cần "Cập nhật"/"Báo số sai" —
+                    113/114/115 là đầu số quốc gia cố định, không cần. */}
+                {item.nguonDb && (
+                  <div className="stack" style={{ gap: 'var(--sp-1)', marginTop: 'var(--sp-2)' }}>
+                    <p className="t-small" style={{ color: 'var(--m-subtle)' }}>
+                      Cập nhật: {formatDate(item.capNhat)}
+                    </p>
+                    <BaoSoSaiCuuHo contact={{ id: item.id, ten: item.ten, sdt: item.sdt }} />
+                  </div>
+                )}
               </div>
             </div>
           ))}
