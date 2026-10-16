@@ -51,7 +51,7 @@ export default function BaoMat() {
       <Muc n="3" title="Chúng tôi dùng dữ liệu để làm gì">
         <DanhSachNhan items={[
           ['Vận hành tài khoản', 'đăng nhập, phân biệt chủ xe với khách thuê, hiện đúng tin của bạn.'],
-          ['Hiển thị tin đăng', 'đưa tin của chủ xe tới khách thuê đang tìm xe trong khu vực.'],
+          ['Hiển thị tin đăng', 'đưa tin của chủ xe tới khách thuê đang tìm xe trong khu vực, kèm hồ sơ công khai của chủ xe nêu ở mục 5.'],
           ['Kết nối hai bên', 'cho khách xem số điện thoại của chủ xe để gọi trực tiếp.'],
           ['Xác minh', 'đối chiếu giấy tờ để xét huy hiệu xác minh (miễn phí, không bán).'],
           ['Chống gian lận', 'phát hiện tin trùng biển số, tài khoản spam, lượt xem bị thổi, lạm dụng việc lấy số điện thoại.'],
@@ -84,20 +84,44 @@ export default function BaoMat() {
         </p>
       </Muc>
 
-      <Muc n="5" title="Số điện thoại chủ xe là thông tin công khai">
+      <Muc n="5" title="Thông tin công khai của chủ xe">
         <p className="t-body">
-          Đây là điểm quan trọng nhất của trang này. Mục đích của nền tảng là để khách gọi được
-          cho chủ xe, vì vậy <b>số điện thoại bạn đăng trong tin sẽ hiện ra cho bất kỳ khách nào
-          bấm “Xem số điện thoại”</b> — kể cả người bạn không biết. Chúng tôi che một phần số cho
-          tới khi khách bấm, nhưng sau khi bấm thì khách thấy số đầy đủ và có thể lưu lại.
+          Mục đích của nền tảng là để khách tìm và liên hệ được chủ xe. Vì vậy khi bạn có{' '}
+          <b>ít nhất một tin đang hiển thị</b>, một phần thông tin của bạn được công khai cho mọi
+          người xem, kể cả người không đăng nhập.
         </p>
+
+        <p className="t-body"><b>Được công khai</b> — trên thẻ xe, trang xe và trang hồ sơ chủ xe (<code>/chu/…</code>):</p>
+        <DanhSach items={[
+          'Tên gọi: chữ cuối trong họ tên của bạn (ví dụ họ tên “Nguyễn Văn An” hiện là “An”).',
+          'Ảnh đại diện: lấy từ tài khoản Google của bạn. Nếu không có ảnh, hệ thống hiện chữ cái đầu của tên gọi.',
+          'Huy hiệu xác minh, nếu bạn đã được xét xác minh.',
+          'Tháng bạn tham gia nền tảng.',
+          'Số xe bạn đang cho thuê.',
+        ]} />
+
+        <p className="t-body"><b>Không được công khai:</b> họ tên đầy đủ, địa chỉ email, số căn cước công dân và mọi giấy tờ bạn gửi để xác minh.</p>
+
         <p className="t-body">
-          Hệ quả thực tế bạn nên biết trước: số của bạn có thể bị người khác dùng để gọi quảng
-          cáo hoặc gọi làm phiền. Chúng tôi hạn chế bằng cách đặt mức trần số lần lấy số trong
-          ngày cho mỗi người và chặn hành vi thu thập hàng loạt, nhưng <b>không thể bảo đảm điều
-          đó không bao giờ xảy ra</b>. Nếu bạn không muốn số của mình công khai thì đừng đăng tin —
-          bạn vẫn dùng được nền tảng với vai trò khách thuê.
+          <b>Số điện thoại</b> không hiện sẵn. Số chỉ hiện đầy đủ khi một khách bấm{' '}
+          <b>“Xem số điện thoại”</b> — kể cả người bạn không biết. Chúng tôi che một phần số cho tới
+          khi khách bấm, và có giới hạn số lần xem mỗi ngày cho mỗi người, nhưng sau khi bấm thì
+          khách thấy số đầy đủ và có thể lưu lại.
         </p>
+
+        <p className="t-body"><b>Hệ quả thực tế bạn nên biết trước:</b></p>
+        <DanhSach items={[
+          'Số điện thoại của bạn có thể bị người khác dùng để gọi quảng cáo hoặc gọi làm phiền. Chúng tôi hạn chế bằng mức trần lượt lấy số và chặn việc thu thập hàng loạt, nhưng không thể bảo đảm điều đó không bao giờ xảy ra.',
+          'Tên gọi và ảnh đại diện của bạn có thể bị người khác chụp lại hoặc sao chép ra ngoài nền tảng. Khi đã bị sao chép, chúng tôi không thu hồi được bản sao đó.',
+          'Phiên bản này chưa có công tắc để ẩn riêng ảnh đại diện trong khi tin vẫn đang hiển thị.',
+        ]} />
+
+        <p className="t-body"><b>Muốn đổi hoặc gỡ ảnh, hoặc không muốn công khai:</b></p>
+        <DanhSach items={[
+          'Ảnh được lấy từ tài khoản Google vào lúc bạn tạo tài khoản và hiện chưa tự cập nhật khi bạn đổi ảnh trên Google. Muốn đổi hoặc gỡ ảnh ngay, hãy liên hệ hỗ trợ (cách gửi ở mục 9).',
+          'Hồ sơ công khai chỉ tồn tại khi bạn có tin đang hiển thị. Khi bạn ẩn, xoá hoặc để hết hạn tất cả tin của mình, hồ sơ công khai tự biến mất khỏi nền tảng.',
+          'Nếu không muốn số điện thoại, tên gọi và ảnh của mình công khai thì đừng đăng tin — bạn vẫn dùng được nền tảng với vai trò khách thuê.',
+        ]} />
       </Muc>
 
       <Muc n="6" title="Ảnh giấy tờ">
@@ -189,8 +213,8 @@ export default function BaoMat() {
           Chúng tôi phân quyền truy cập ở tầng cơ sở dữ liệu, hạn chế số lần lấy số điện thoại,
           và không cho người dùng tự sửa huy hiệu xác minh hay sổ ví. Nhưng không hệ thống nào an
           toàn tuyệt đối. Những rủi ro có thể xảy ra: dữ liệu bị truy cập trái phép do lỗi của
-          chúng tôi hoặc của nhà cung cấp hạ tầng; số điện thoại công khai bị người khác thu thập
-          (mục 5); tài khoản của bạn bị chiếm nếu tài khoản Google của bạn bị chiếm. Nếu xảy ra sự
+          chúng tôi hoặc của nhà cung cấp hạ tầng; số điện thoại, tên gọi hoặc ảnh đại diện công khai bị người khác
+          thu thập hoặc sao chép (mục 5); tài khoản của bạn bị chiếm nếu tài khoản Google của bạn bị chiếm. Nếu xảy ra sự
           cố làm lộ dữ liệu, chúng tôi sẽ thông báo cho người bị ảnh hưởng và cho cơ quan có thẩm
           quyền theo quy định.
         </p>
