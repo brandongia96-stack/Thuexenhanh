@@ -49,8 +49,8 @@ export const PHAP_NHAN = {
   dienThoai: '090 123 4567',
 }
 
-// Email hỗ trợ chính thức
-export const EMAIL_HO_TRO = 'hotro@thuexenhanh.vn'
+// Email hỗ trợ chính thức (anh Gia cung cấp 16/10/2026). Thay bằng hộp thư tên miền riêng khi có.
+export const EMAIL_HO_TRO = 'huynhbaogia.le@gmail.com'
 
 export function coPhapNhan() {
   return Object.values(PHAP_NHAN).some((v) => v.trim() !== '')
