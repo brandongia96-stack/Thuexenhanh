@@ -68,14 +68,15 @@
   .hd-inner { gap: var(--sp-2); padding: 0 var(--sp-3); }
   .hd-nav { gap: 0; }
   /* "Thuê xe" từng bị xuống 2 dòng ở 375px. Giữ một dòng, thu padding cho vừa. */
-  .hd-link { white-space: nowrap; padding: 0 var(--sp-2); }
-  .hd-right { gap: var(--sp-1); }
-  .hd-right .btn-sm { padding: 0 var(--sp-2); }
+  .hd-link { white-space: nowrap; padding: 0 var(--sp-2); font-size: 13.5px; }
+  .hd-right { gap: var(--sp-2); }
+  .hd-right .btn-sm { padding: 0 var(--sp-2); font-size: 13.5px; }
 }
 
-/* Chỉ ẩn chữ cạnh logo khi thật sự hết chỗ (điện thoại hẹp). */
-@media (max-width: 520px) {
+/* Ẩn chữ cạnh logo khi điện thoại hẹp để nhường chỗ cho nút bấm */
+@media (max-width: 480px) {
   .hd-logo span { display: none; }
+  .hd-inner { padding: 0 var(--sp-2); gap: var(--sp-1); }
 }
 
 /* ─── Avatar Menu (Account Dropdown) ─── */
@@ -110,6 +111,7 @@
   top: calc(100% + 8px);
   right: 0;
   width: 240px;
+  max-width: calc(100vw - 20px);
   background: var(--m-surface);
   border: 1px solid var(--m-border);
   border-radius: var(--r-md);
@@ -119,6 +121,7 @@
   overflow: hidden;
   animation: dropIn 0.2s ease;
   transform-origin: top right;
+  z-index: calc(var(--z-header) + 10);
 }
 @keyframes dropIn {
   from { opacity: 0; transform: scale(0.95); }

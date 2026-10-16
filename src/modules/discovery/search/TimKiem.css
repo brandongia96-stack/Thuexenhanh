@@ -122,7 +122,12 @@
     overflow: hidden;
     animation: tkTruot var(--t-mid);
   }
-  .tk-loc.mo .tk-loc-than { flex: 1; overflow-y: auto; overscroll-behavior: contain; }
+  .tk-loc.mo .tk-loc-than {
+    flex: 1;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
 
   .tk-loc-dau { display: block; padding: var(--sp-2) var(--sp-5) 0; touch-action: pan-y; }
   .tk-loc-keo { display: block; width: 40px; height: 4px; margin: 0 auto var(--sp-2); border-radius: var(--r-full); background: var(--m-border); }

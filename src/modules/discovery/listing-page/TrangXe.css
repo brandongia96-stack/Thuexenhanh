@@ -639,7 +639,7 @@
   .hop-lienhe {
     border-radius: var(--r-lg) var(--r-lg) 0 0;
     box-shadow: var(--shadow-lg);
-    padding: var(--sp-4);
+    padding: var(--sp-3) var(--sp-4) max(var(--sp-3), calc(var(--sp-3) + env(safe-area-inset-bottom)));
   }
   /* Dòng miễn trừ KHÔNG bao giờ bị ẩn, kể cả khi hộp bám đáy chật
      (CLAUDE.md mục 1.2) — chỉ thu nhỏ lại. */

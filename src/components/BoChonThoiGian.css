@@ -458,6 +458,30 @@
 }
 
 @media (max-width: 520px) {
+  .modal-overlay {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .time-picker-modal {
+    max-height: 90vh;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    width: 100%;
+    animation: tkTruot var(--t-mid);
+  }
+  .modal-body {
+    padding: var(--sp-3);
+  }
+  .modal-foot-cal {
+    padding: var(--sp-3) var(--sp-4) max(var(--sp-3), env(safe-area-inset-bottom));
+  }
+  .cal-cell {
+    height: 38px;
+    font-size: 13.5px;
+  }
+  .cal-month {
+    min-width: 100%;
+  }
   .banggia-trigger--banggia {
     display: grid;
     grid-template-columns: 1fr auto;

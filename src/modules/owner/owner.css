@@ -23,7 +23,15 @@
 .cx-canh-bao svg { color: var(--m-amber); flex-shrink: 0; margin-top: 2px; }
 .cx-canh-bao a, .cx-lien-ket { color: var(--m-green-hover); font-weight: 600; text-decoration: underline; }
 
-.cx-tab { display: flex; gap: var(--sp-2); overflow-x: auto; padding-bottom: var(--sp-1); }
+.cx-tab {
+  display: flex;
+  gap: var(--sp-2);
+  overflow-x: auto;
+  padding-bottom: var(--sp-1);
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+.cx-tab::-webkit-scrollbar { display: none; }
 .cx-tab-nut {
   flex-shrink: 0; height: 36px; padding: 0 var(--sp-4); border-radius: var(--r-full);
   background: var(--m-surface); color: var(--m-mid); font-weight: 600; font-size: 14px;
@@ -32,6 +40,13 @@
 .cx-tab-nut.dang-chon { background: var(--m-green-light); color: var(--m-green-hover); box-shadow: inset 0 0 0 1px var(--m-green-border); }
 
 .cx-luoi { display: grid; gap: var(--sp-4); grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); align-items: start; }
+
+@media (max-width: 640px) {
+  .cx-dau { flex-direction: column; align-items: flex-start; gap: var(--sp-3); }
+  .cx-luoi { grid-template-columns: 1fr; }
+  .the-xe-bang { gap: var(--sp-1); }
+  .dong-so-gt { font-size: 16px; }
+}
 
 /* ── Thẻ xe ── */
 .the-xe { display: flex; flex-direction: column; }

@@ -221,3 +221,20 @@
   color: var(--m-subtle);
   line-height: 1.3;
 }
+
+@media (max-width: 480px) {
+  .hop-nen {
+    align-items: flex-end;
+    padding: 0;
+  }
+  .hop {
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+    max-height: 90vh;
+    padding: var(--sp-4);
+    padding-bottom: max(var(--sp-4), calc(var(--sp-4) + env(safe-area-inset-bottom)));
+  }
+  .chon-luoi {
+    grid-template-columns: 1fr;
+  }
+}

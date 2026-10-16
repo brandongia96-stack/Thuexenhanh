@@ -157,3 +157,26 @@
   top: 0; right: -1px; bottom: 0;
   border-right: 1px solid var(--m-border);
 }
+
+@media (max-width: 640px) {
+  .lich-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-3);
+  }
+  .lich-controls {
+    align-self: center;
+  }
+  .lich-th-xe, .lich-td-xe {
+    width: 130px;
+    min-width: 130px;
+    padding: var(--sp-2) !important;
+  }
+  .lich-xe-info img {
+    display: none;
+  }
+  .lich-xe-ten strong {
+    max-width: 110px;
+    font-size: 13px;
+  }
+}

@@ -186,3 +186,9 @@
   .tk-ds .thexe-than { justify-content: center; }
   .tk-ds .thexe-chan { margin-top: var(--sp-1); }
 }
+
+@media (max-width: 640px) {
+  .thexe-than { padding: var(--sp-3); }
+  .thexe-gia strong { font-size: 18px; }
+  .thexe-thongso { gap: var(--sp-1) var(--sp-2); }
+}

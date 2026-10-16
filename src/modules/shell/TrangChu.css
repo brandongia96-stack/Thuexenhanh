@@ -65,3 +65,12 @@
   .tc-buoc { grid-template-columns: repeat(3, 1fr); }
   .tc-cta { padding: var(--sp-10) var(--sp-6); }
 }
+
+@media (max-width: 640px) {
+  .tc { gap: var(--sp-6); }
+  .tc-hero { gap: var(--sp-4); padding-top: var(--sp-2); }
+  .tc-h1 { font-size: 26px; }
+  .tc-mota { font-size: 14.5px; }
+  .tc-tim { padding: var(--sp-4); }
+  .tc-cta { padding: var(--sp-6) var(--sp-3); }
+}
