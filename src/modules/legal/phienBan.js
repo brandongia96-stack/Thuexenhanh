@@ -46,7 +46,7 @@ export const PHAP_NHAN = {
   maSo: 'Đang hoàn tất thủ tục cấp phép',
   diaChi: 'Tòa nhà N1 Điện Biên Phủ, Phường Thạnh Mỹ Tây, TP. Hồ Chí Minh',
   nguoiDaiDien: 'Ban Quản Trị FastRent Tech',
-  dienThoai: '090 123 4567',
+  dienThoai: '0368 805 114', // số thật của anh Gia, cung cấp 16/10/2026
 }
 
 // Email hỗ trợ chính thức (anh Gia cung cấp 16/10/2026). Thay bằng hộp thư tên miền riêng khi có.
