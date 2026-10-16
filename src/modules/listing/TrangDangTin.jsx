@@ -28,7 +28,9 @@ export default function TrangDangTin() {
   const [soDu, setSoDu] = useState(null)
   const [moNapToken, setMoNapToken] = useState(false)
 
-  const daXacThucSdt = Boolean(profile?.phone && profile?.phone_verified_at)
+  // Chưa có nhà cung cấp SMS (FLAGS.otp_sdt = false) thì KHÔNG bắt xác thực —
+  // bắt khi không xác thực thật được là bắt chủ xe gõ mã giả.
+  const daXacThucSdt = !FLAGS.otp_sdt || Boolean(profile?.phone && profile?.phone_verified_at)
 
   const taiSoDu = useCallback(async () => {
     const uid = user?.id || (isTokenDemo() ? 'demo-user-01' : null)

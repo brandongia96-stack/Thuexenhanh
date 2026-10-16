@@ -112,3 +112,17 @@ lại Firebase. Phiên này làm rõ và chốt hướng hợp nhất.
 (view `owner_public`, chỉ người đang có tin hiển thị). Không có công tắc ẩn ảnh ở bản này.
 Không ảnh thì hiện chữ cái đầu tên gọi. Họ tên đầy đủ, email, SĐT vẫn KHÔNG công khai.
 Luồng 12 phải ghi việc hiển thị ảnh + tên gọi này vào Chính sách bảo vệ dữ liệu cá nhân.
+
+
+---
+
+## 17/10/2026 — Anh giao luồng nền tảng quyết
+
+1. **Không làm "gói Pro"** (chủ xe trả token để xem SĐT khách đăng tìm xe): trái mô hình
+   chỉ thu phí hiển thị tin (mục 6) và đem SĐT khách thuê đổi lấy tiền (Luật BVDLCN cấm
+   mua bán dữ liệu). Bảng tin "Cộng đồng tìm xe" tạm ẩn; làm lại sau KHÔNG có gói trả phí,
+   khách tự chọn hiện SĐT hay chỉ nhận chủ xe gọi qua nút liên hệ.
+2. **Chưa bắt xác thực SĐT** khi đăng tin cho tới khi có nhà cung cấp SMS thật.
+3. **Không hiện tên/MST/địa chỉ công ty trên web tới khi có GPKD** (dự kiến 24/12/2026).
+4. Repo GitHub chuyển **Private**; không viết lại lịch sử (ảnh CCCD lọt là ảnh báo chí
+   đã che một phần; Private đủ chặn truy cập công khai).

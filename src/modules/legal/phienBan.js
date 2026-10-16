@@ -42,10 +42,16 @@ export const THAY_DOI = {
 // CẤM điền thông tin của doanh nghiệp khác, cấm bịa mã số thuế.
 // ─────────────────────────────────────────────────────────────
 export const PHAP_NHAN = {
-  ten: 'CÔNG TY TNHH CÔNG NGHỆ THUÊ XE NHANH',
-  maSo: 'Đang hoàn tất thủ tục cấp phép',
-  diaChi: 'Tòa nhà N1 Điện Biên Phủ, Phường Thạnh Mỹ Tây, TP. Hồ Chí Minh',
-  nguoiDaiDien: 'Ban Quản Trị FastRent Tech',
+  // 17/10 (anh giao em quyết): công ty CHƯA có GPKD (dự kiến 24/12/2026). Hiện
+  // tên một pháp nhân chưa tồn tại = thông tin không thật (CLAUDE.md 1.2, PL-16).
+  // Điền lại 4 dòng dưới NGAY khi có GPKD: tên, MST, địa chỉ trên giấy phép,
+  // người đại diện theo pháp luật (họ tên thật, không phải "Ban Quản Trị").
+  //   ten: 'CÔNG TY TNHH CÔNG NGHỆ THUÊ XE NHANH'
+  //   diaChi: 'Tòa nhà N1 Điện Biên Phủ, Phường Thạnh Mỹ Tây, TP. Hồ Chí Minh'
+  ten: '',
+  maSo: '',
+  diaChi: '',
+  nguoiDaiDien: '',
   dienThoai: '0368 805 114', // số thật của anh Gia, cung cấp 16/10/2026
 }
 

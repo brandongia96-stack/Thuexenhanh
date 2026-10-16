@@ -23,5 +23,10 @@ export const FLAGS = {
   day_tin: false,        // luồng 07 — hạ tầng sẵn, chưa bật
   tru_theo_lead: false,  // trừ token theo lượt lấy số — hạ tầng sẵn, chưa bật
   danh_gia: false,       // luồng 09 — chỉ bật khi có đánh giá THẬT
-  otp_sdt: false,        // luồng 08
+  otp_sdt: false,        // luồng 08 — 17/10: chưa có nhà cung cấp SMS → KHÔNG bắt xác thực SĐT khi đăng tin
+  // 17/10 (anh giao em quyết): bảng tin "Cộng đồng tìm xe" TẠM ẨN. Migration 0029
+  // chưa chạy (bảng chưa có trên Supabase) và "gói Pro" bị bác vì trái mô hình
+  // thu phí (CLAUDE.md 1.1) + đưa SĐT khách cho bên trả tiền. Bật lại khi luồng
+  // nền tảng làm lại backend không có gói Pro.
+  cong_dong: false,
 }

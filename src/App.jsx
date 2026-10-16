@@ -7,6 +7,7 @@ import RequireRole from './components/RequireRole'
 import { PageLoading } from './components/Loading'
 import TrangChu from './modules/shell/TrangChu'
 import ChuaLam from './modules/shell/ChuaLam'
+import { FLAGS } from './lib/config'
 import TruocKhiBatDau from './modules/legal/TruocKhiBatDau'
 import { ViTriProvider } from './context/ViTriContext'
 import BannerHoiViTri from './components/BannerHoiViTri'
@@ -88,11 +89,11 @@ export default function App() {
               {/* Xe đã lưu thuộc luồng 05 (module discovery/saved), không phải 04. */}
               <Route path="/da-luu" element={<TrangDaLuu />} />
 
-              {/* ── Bảng tin Cộng đồng ── */}
-              <Route path="/cong-dong" element={<TrangCongDong />} />
-              <Route path="/cong-dong/dang-tin" element={
+              {/* ── Bảng tin Cộng đồng — tạm ẩn (FLAGS.cong_dong, 17/10) ── */}
+              {FLAGS.cong_dong && <Route path="/cong-dong" element={<TrangCongDong />} />}
+              {FLAGS.cong_dong && <Route path="/cong-dong/dang-tin" element={
                 <RequireRole><FormDangTinTimXe /></RequireRole>
-              } />
+              } />}
 
               {/* ── Tài khoản ── */}
               <Route path="/dang-nhap" element={<DangNhap />} />

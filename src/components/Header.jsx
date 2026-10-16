@@ -3,6 +3,7 @@ import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { LayoutDashboard, LogIn, LogOut, Plus, Wallet, Car, Heart, Settings, Calendar, Users } from 'lucide-react'
 import { useAuth } from '../modules/auth/AuthProvider'
 import ModalChonDangTin from './ModalChonDangTin'
+import { FLAGS } from '../lib/config'
 import './Header.css'
 
 export default function Header() {
@@ -24,7 +25,10 @@ export default function Header() {
 
   function handleNutDangTin(e) {
     e.preventDefault()
-    if (!isLoggedIn) {
+    // Cộng đồng tạm ẩn (FLAGS.cong_dong) → nút "Đăng tin" đi thẳng tới đăng xe.
+    if (!FLAGS.cong_dong) {
+      navigate(isLoggedIn ? '/chu-xe/dang-tin' : '/dang-nhap?next=/chu-xe/dang-tin')
+    } else if (!isLoggedIn) {
       navigate('/dang-nhap?next=/cong-dong')
     } else {
       setChonDangTinOpen(true)
@@ -55,10 +59,12 @@ export default function Header() {
 
         <nav className="hd-nav">
           <NavLink to="/thue-xe" className="hd-link">Thuê xe</NavLink>
-          <NavLink to="/cong-dong" className="hd-link">
-            <Users size={16} strokeWidth={1.8} />
-            Cộng đồng
-          </NavLink>
+          {FLAGS.cong_dong && (
+            <NavLink to="/cong-dong" className="hd-link">
+              <Users size={16} strokeWidth={1.8} />
+              Cộng đồng
+            </NavLink>
+          )}
           {isOwner && (
             <NavLink to="/chu-xe" className="hd-link">
               <LayoutDashboard size={16} strokeWidth={1.8} />
