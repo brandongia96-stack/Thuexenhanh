@@ -1,0 +1,1211 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SEO Top 3 Content Tool — Thuexenhanh</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-hover: #1d4ed8;
+      --primary-light: #eff6ff;
+      --dark: #0f172a;
+      --mid: #475569;
+      --subtle: #94a3b8;
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --green: #10b981;
+      --green-light: #ecfdf5;
+      --amber: #f59e0b;
+      --amber-light: #fffbeb;
+      --red: #ef4444;
+      --red-light: #fef2f2;
+      --r-box: 12px;
+      --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+      --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+      --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--dark);
+      line-height: 1.5;
+      padding-bottom: 60px;
+    }
+
+    /* Header */
+    header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow-sm);
+    }
+    .header-inner {
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 14px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo-area {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo-badge {
+      background: var(--primary);
+      color: white;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 6px 12px;
+      border-radius: var(--r-box);
+      letter-spacing: 0.5px;
+    }
+    .brand-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--dark);
+    }
+    .brand-subtitle {
+      font-size: 12px;
+      color: var(--subtle);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .status-pill.online {
+      background: var(--green-light);
+      color: #065f46;
+      border: 1px solid #a7f3d0;
+    }
+    .status-pill.offline {
+      background: var(--amber-light);
+      color: #92400e;
+      border: 1px solid #fde68a;
+    }
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+    .dot.green { background: var(--green); }
+    .dot.amber { background: var(--amber); }
+
+    /* Nav Tabs */
+    .nav-tabs {
+      display: flex;
+      gap: 4px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      max-width: 1440px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+    .tab-btn {
+      padding: 14px 18px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--mid);
+      background: none;
+      border: none;
+      border-bottom: 3px solid transparent;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.15s ease;
+    }
+    .tab-btn:hover { color: var(--primary); }
+    .tab-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    /* Container */
+    .container {
+      max-width: 1440px;
+      margin: 24px auto;
+      padding: 0 24px;
+    }
+
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    /* Layout Grids */
+    .writer-grid {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+    @media (max-width: 1024px) {
+      .writer-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Card Box */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r-box);
+      padding: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+    .card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* Form Elements */
+    .form-group {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--mid);
+      margin-bottom: 6px;
+    }
+    input[type="text"], select, textarea {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid var(--border);
+      border-radius: var(--r-box);
+      font-size: 14px;
+      color: var(--dark);
+      background: #fafafa;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+    input[type="text"]:focus, select:focus, textarea:focus {
+      border-color: var(--primary);
+      background: white;
+    }
+    .helper-text {
+      font-size: 12px;
+      color: var(--subtle);
+      margin-top: 4px;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px 18px;
+      border-radius: var(--r-box);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all 0.15s ease;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-primary:hover { background: var(--primary-hover); }
+    .btn-secondary {
+      background: #f1f5f9;
+      color: var(--mid);
+      border-color: #cbd5e1;
+    }
+    .btn-secondary:hover { background: #e2e8f0; color: var(--dark); }
+    .btn-success {
+      background: var(--green);
+      color: white;
+    }
+    .btn-success:hover { background: #059669; }
+    .btn-block { width: 100%; }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    /* Loading Spinner */
+    .spinner {
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 50%;
+      border-top-color: white;
+      animation: spin 0.8s linear infinite;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Scorecard */
+    .scorecard {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      color: white;
+      border-radius: var(--r-box);
+      padding: 20px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      box-shadow: var(--shadow-md);
+    }
+    .score-circle {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.1);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border: 4px solid var(--green);
+      flex-shrink: 0;
+    }
+    .score-number {
+      font-size: 26px;
+      font-weight: 800;
+      line-height: 1;
+      color: var(--green);
+    }
+    .score-max { font-size: 11px; opacity: 0.7; }
+    .score-details { flex: 1; }
+    .score-badge {
+      display: inline-block;
+      font-size: 12px;
+      font-weight: 700;
+      padding: 3px 10px;
+      border-radius: 9999px;
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      margin-bottom: 6px;
+    }
+    .score-metrics {
+      display: flex;
+      gap: 16px;
+      font-size: 13px;
+      opacity: 0.9;
+      margin-top: 6px;
+    }
+
+    /* Result Preview Tabs */
+    .result-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 8px;
+    }
+    .sub-tab-btn {
+      padding: 6px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      border-radius: var(--r-box);
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      cursor: pointer;
+      color: var(--mid);
+    }
+    .sub-tab-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* Content Preview Typography */
+    .preview-body {
+      background: white;
+      padding: 32px;
+      border-radius: var(--r-box);
+      border: 1px solid var(--border);
+      font-size: 16px;
+      line-height: 1.75;
+      color: #1e293b;
+    }
+    .preview-body h1 {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 16px;
+      color: #0f172a;
+      line-height: 1.3;
+    }
+    .preview-body h2 {
+      font-size: 22px;
+      font-weight: 700;
+      margin: 28px 0 14px;
+      color: #0f172a;
+      border-bottom: 2px solid #e2e8f0;
+      padding-bottom: 8px;
+    }
+    .preview-body h3 {
+      font-size: 18px;
+      font-weight: 600;
+      margin: 20px 0 10px;
+      color: #1e293b;
+    }
+    .preview-body p { margin-bottom: 16px; }
+    .preview-body ul, .preview-body ol { margin: 0 0 16px 24px; }
+    .preview-body li { margin-bottom: 6px; }
+    .preview-body a { color: var(--primary); text-decoration: underline; }
+
+    /* Callout Boxes */
+    .seo-callout {
+      padding: 16px 20px;
+      border-radius: var(--r-box);
+      margin: 20px 0;
+      border-left: 5px solid;
+    }
+    .seo-callout.note {
+      background: #eff6ff;
+      border-color: #3b82f6;
+      color: #1e40af;
+    }
+    .seo-callout.warning {
+      background: #fffbeb;
+      border-color: #f59e0b;
+      color: #92400e;
+    }
+    .seo-callout.tip {
+      background: #ecfdf5;
+      border-color: #10b981;
+      color: #065f46;
+    }
+    .callout-title {
+      font-weight: 700;
+      font-size: 15px;
+      margin-bottom: 6px;
+    }
+
+    /* Table Container */
+    .table-container {
+      overflow-x: auto;
+      margin: 20px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+    th, td {
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      text-align: left;
+    }
+    th {
+      background: #f1f5f9;
+      font-weight: 600;
+      color: var(--dark);
+    }
+    tr:nth-child(even) td { background: #f8fafc; }
+
+    /* Code View */
+    .code-view {
+      background: #0f172a;
+      color: #f8fafc;
+      padding: 20px;
+      border-radius: var(--r-box);
+      font-family: Consolas, Monaco, monospace;
+      font-size: 13px;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      max-height: 600px;
+    }
+
+    /* Keyword Cards */
+    .cluster-card {
+      background: white;
+      border: 1px solid var(--border);
+      border-radius: var(--r-box);
+      padding: 20px;
+      margin-bottom: 20px;
+    }
+    .cluster-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--dark);
+      margin-bottom: 4px;
+    }
+    .cluster-desc {
+      font-size: 13px;
+      color: var(--mid);
+      margin-bottom: 14px;
+    }
+    .keyword-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 12px;
+    }
+    .keyword-item {
+      border: 1px solid var(--border);
+      padding: 14px;
+      border-radius: var(--r-box);
+      background: #fafafa;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .keyword-item:hover {
+      border-color: var(--primary);
+      background: var(--primary-light);
+    }
+    .kw-name {
+      font-weight: 600;
+      font-size: 14px;
+      color: var(--dark);
+      margin-bottom: 6px;
+    }
+    .kw-badges {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 6px;
+    }
+    .badge {
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 9999px;
+      font-weight: 500;
+    }
+    .badge-diff { background: #e0f2fe; color: #0369a1; }
+    .badge-time { background: #dcfce7; color: #15803d; }
+    .badge-vol { background: #fef3c7; color: #b45309; }
+
+    /* Checklist Audit Items */
+    .audit-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 14px;
+      border-radius: var(--r-box);
+      margin-bottom: 10px;
+      border: 1px solid var(--border);
+      background: #fafafa;
+    }
+    .audit-item.pass { border-color: #86efac; background: #f0fdf4; }
+    .audit-item.warning { border-color: #fde047; background: #fefce8; }
+    .audit-item.fail { border-color: #fca5a5; background: #fef2f2; }
+    .audit-score-pill {
+      font-weight: 700;
+      font-size: 12px;
+      padding: 4px 8px;
+      border-radius: var(--r-box);
+      background: white;
+      border: 1px solid #cbd5e1;
+      flex-shrink: 0;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 200;
+      align-items: center;
+      justify-content: center;
+      backdrop-filter: blur(2px);
+    }
+    .modal-backdrop.open { display: flex; }
+    .modal-card {
+      background: white;
+      border-radius: var(--r-box);
+      max-width: 520px;
+      width: 90%;
+      padding: 28px;
+      box-shadow: var(--shadow-lg);
+    }
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
+    }
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-inner">
+      <div class="logo-area">
+        <span class="logo-badge">SEO TOP 3</span>
+        <div>
+          <div class="brand-title">Thuexenhanh Content AI Engine</div>
+          <div class="brand-subtitle">Chuẩn SEO Google • Chống Văn Phong AI • Dân Chuyên Nghiệp Viết</div>
+        </div>
+      </div>
+      <div class="header-actions">
+        <div id="statusPill" class="status-pill offline">
+          <span class="dot amber"></span>
+          <span id="statusText">Chế độ Offline Template</span>
+        </div>
+        <button class="btn btn-secondary" onclick="openKeyModal()">⚙️ Cấu hình API Key</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Nav Tabs -->
+  <nav class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('tab-writer')">✍️ Viết Bài Chuẩn Top 3</button>
+    <button class="tab-btn" onclick="switchTab('tab-keywords')">🎯 Kho 40+ Từ Khóa Vàng</button>
+    <button class="tab-btn" onclick="switchTab('tab-audit')">📊 Soi & Chấm Điểm SEO</button>
+    <button class="tab-btn" onclick="switchTab('tab-plan')">🚀 Chiến Lược 90 Ngày Lên Top 3</button>
+    <button class="tab-btn" onclick="switchTab('tab-saved')">📁 Bài Viết Đã Lưu (<span id="savedCount">0</span>)</button>
+  </nav>
+
+  <main class="container">
+
+    <!-- TAB 1: VIẾT BÀI -->
+    <section id="tab-writer" class="tab-pane active">
+      <div class="writer-grid">
+        
+        <!-- Left Column: Input Form -->
+        <div class="card">
+          <div class="card-title">📝 Thiết Lập Bài Viết Mục Tiêu</div>
+
+          <div class="form-group">
+            <label>Từ khóa chính (Primary Target Keyword) *</label>
+            <input type="text" id="targetKeyword" placeholder="Ví dụ: kinh nghiệm thuê xe tự lái tránh đền tiền oan" value="kinh nghiệm thuê xe tự lái tránh bị đền tiền oan">
+            <div class="helper-text">Chọn từ kho từ khóa bên tab 2 hoặc gõ từ khóa bạn muốn vào Top 3.</div>
+          </div>
+
+          <div class="form-group">
+            <label>Ý định tìm kiếm (Search Intent)</label>
+            <select id="searchIntent">
+              <option value="Informational / How-to" selected>Cẩm nang & Kinh nghiệm thực tế (How-to / Avoid Mistakes)</option>
+              <option value="Commercial / Pricing">Bảng giá & So sánh dòng xe (Commercial Investigation)</option>
+              <option value="Transactional / Direct">Thủ tục thuê xe & Đặt xe trực tiếp (Transactional)</option>
+              <option value="Business / For Owners">Dành cho chủ xe muốn kiếm thêm tiền (Supply side)</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Đối tượng độc giả mục tiêu</label>
+            <select id="targetAudience">
+              <option value="Khách gia đình / nhóm bạn đi du lịch tự lái">Khách gia đình / nhóm bạn đi du lịch tự lái</option>
+              <option value="Tài xế mới thuê xe lần đầu (lo ngại va chạm, đền bù)">Tài xế mới thuê xe lần đầu (lo ngại rủi ro)</option>
+              <option value="Khách công tác, cần xe đưa đón sân bay">Khách công tác, cần xe nhanh</option>
+              <option value="Chủ xe có xe nhàn rỗi muốn cho thuê an toàn">Chủ xe có xe nhàn rỗi muốn cho thuê</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label>Yêu cầu hoặc ghi chú riêng (Tùy chọn)</label>
+            <textarea id="customNotes" rows="2" placeholder="Ví dụ: Nhấn mạnh kiểm tra camera hành trình, lưu ý cung đường đèo Bảo Lộc..."></textarea>
+          </div>
+
+          <div style="display: flex; gap: 10px; margin-top: 20px;">
+            <button id="btnOutline" class="btn btn-secondary" style="flex: 1;" onclick="handleGenerateOutline()">
+              <span>📑 1. Lập Dàn Ý</span>
+            </button>
+            <button id="btnArticle" class="btn btn-primary" style="flex: 1.4;" onclick="handleGenerateArticle()">
+              <span id="btnArticleText">🚀 2. Viết Bài Đầy Đủ</span>
+            </button>
+          </div>
+
+          <!-- Anti-AI Reminder Box -->
+          <div style="margin-top: 24px; padding: 14px; background: #f8fafc; border: 1px dashed #cbd5e1; border-radius: var(--r-box); font-size: 13px;">
+            <strong style="color: var(--primary);">🛡️ Bộ lọc Anti-AI đang kích hoạt:</strong>
+            <ul style="margin: 6px 0 0 16px; color: var(--mid);">
+              <li>Chặn 60+ từ ngữ sáo rỗng AI ("trong bối cảnh", "không thể phủ nhận"...)</li>
+              <li>Ép giọng dân trong nghề 10 năm chia sẻ chân thật</li>
+              <li>Nhúng số liệu giá thực tế & quy định cấm giữ CCCD theo NĐ 282</li>
+              <li>Chèn sẵn Internal links chuẩn vào hệ sinh thái Thuexenhanh</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Right Column: Results & Scorecard -->
+        <div>
+          <!-- Scorecard -->
+          <div class="scorecard" id="scorecardBox">
+            <div class="score-circle">
+              <div class="score-number" id="seoScoreVal">94</div>
+              <div class="score-max">/ 100 điểm</div>
+            </div>
+            <div class="score-details">
+              <span class="score-badge" id="seoScoreBadge">ĐẠT TIÊU CHUẨN TOP 1 - 3 GOOGLE</span>
+              <div style="font-weight: 700; font-size: 16px;" id="seoScoreTitle">Sẵn sàng xuất bản lên trang web</div>
+              <div class="score-metrics">
+                <span>📝 Độ dài: <strong id="metricWords">2.140</strong> từ</span>
+                <span>🔑 Mật độ từ khóa: <strong id="metricDensity">1.4%</strong></span>
+                <span>🛡️ Anti-AI: <strong id="metricHuman">100% Tự nhiên</strong></span>
+              </div>
+            </div>
+            <div>
+              <button class="btn btn-success" onclick="handleSaveArticle()">💾 Lưu Bài Viết</button>
+            </div>
+          </div>
+
+          <!-- View Switcher -->
+          <div class="result-tabs">
+            <button class="sub-tab-btn active" onclick="switchPreview('preview-web')">👁️ Xem Trước (Web View)</button>
+            <button class="sub-tab-btn" onclick="switchPreview('preview-md')">📝 Markdown</button>
+            <button class="sub-tab-btn" onclick="switchPreview('preview-meta')">🏷️ Meta & Schema JSON-LD</button>
+            <button class="sub-tab-btn" onclick="switchPreview('preview-html')">💻 HTML Nhúng</button>
+            <button class="btn btn-secondary" style="margin-left: auto; padding: 4px 12px; font-size: 12px;" onclick="copyCurrentContent()">📋 Sao chép</button>
+          </div>
+
+          <!-- Previews -->
+          <div id="preview-web" class="preview-body">
+            <div id="articleHtmlContainer">
+              <!-- Nội dung bài viết hiển thị ở đây -->
+              <p style="color: var(--subtle); text-align: center; padding: 40px 0;">Bấm nút <strong>"🚀 2. Viết Bài Đầy Đủ"</strong> để bắt đầu sinh bài viết chuẩn SEO Top 3.</p>
+            </div>
+          </div>
+
+          <div id="preview-md" style="display: none;">
+            <textarea id="articleMdContainer" class="code-view" rows="22" style="width: 100%; border: none;"></textarea>
+          </div>
+
+          <div id="preview-meta" style="display: none;">
+            <div class="card" style="margin-bottom: 16px;">
+              <h4 style="margin-bottom: 8px;">Thẻ Title Tag & Meta Description:</h4>
+              <div style="background: #f8fafc; padding: 12px; border-radius: 8px; font-size: 13px;">
+                <p><strong>Title:</strong> <span id="metaTitleDisplay">Chưa có</span></p>
+                <p style="margin-top: 6px;"><strong>Meta Description:</strong> <span id="metaDescDisplay">Chưa có</span></p>
+              </div>
+            </div>
+            <h4 style="margin-bottom: 8px;">Mã Schema JSON-LD (Article + FAQPage):</h4>
+            <pre id="schemaJsonContainer" class="code-view"></pre>
+          </div>
+
+          <div id="preview-html" style="display: none;">
+            <textarea id="articleHtmlRawContainer" class="code-view" rows="22" style="width: 100%; border: none;"></textarea>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- TAB 2: KHO TỪ KHÓA VÀNG -->
+    <section id="tab-keywords" class="tab-pane">
+      <div style="margin-bottom: 20px;">
+        <h2 style="font-size: 22px; font-weight: 700;">Kho 40+ Từ Khóa Vàng Ngành Thuê Xe (Topic Clusters)</h2>
+        <p style="color: var(--mid); font-size: 14px;">Bấm vào bất kỳ thẻ từ khóa nào để tự động điền vào công cụ viết bài. Các từ khóa này đã được đo lường có khả năng lên Top 3 trong 30 - 90 ngày.</p>
+      </div>
+      <div id="keywordClustersContainer">
+        <!-- Render danh sách cụm từ khóa -->
+      </div>
+    </section>
+
+    <!-- TAB 3: SOI & CHẤM ĐIỂM SEO -->
+    <section id="tab-audit" class="tab-pane">
+      <div class="writer-grid">
+        <div class="card">
+          <div class="card-title">🔍 Nhập Bài Viết Cần Soi SEO</div>
+          <div class="form-group">
+            <label>Từ khóa mục tiêu</label>
+            <input type="text" id="auditKwInput" placeholder="Ví dụ: thuê xe tự lái tphcm giá rẻ">
+          </div>
+          <div class="form-group">
+            <label>Tiêu đề bài viết</label>
+            <input type="text" id="auditTitleInput" placeholder="Tiêu đề H1...">
+          </div>
+          <div class="form-group">
+            <label>Thẻ Meta Description</label>
+            <textarea id="auditMetaInput" rows="2" placeholder="Thẻ mô tả..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Nội dung bài viết (Markdown hoặc văn bản)</label>
+            <textarea id="auditContentInput" rows="12" placeholder="Dán toàn bộ nội dung bài viết vào đây để chấm điểm..."></textarea>
+          </div>
+          <button class="btn btn-primary btn-block" onclick="runManualAudit()">Chấm Điểm 12 Tiêu Chuẩn Vàng</button>
+        </div>
+
+        <div>
+          <div class="card">
+            <div class="card-title">📋 Kết Quả Chấm Điểm 12 Tiêu Chí SEO Top 3</div>
+            <div id="auditListContainer">
+              <p style="color: var(--subtle); text-align: center; padding: 40px 0;">Nhập nội dung bên trái và bấm "Chấm Điểm" để xem phân tích chi tiết.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 4: CHIẾN LƯỢC 90 NGÀY -->
+    <section id="tab-plan" class="tab-pane">
+      <div class="card" style="margin-bottom: 24px;">
+        <h2 style="font-size: 22px; font-weight: 700; margin-bottom: 8px;">🗺️ Lộ Trình 90 Ngày Đưa Website Lên Top 3 Google</h2>
+        <p style="color: var(--mid); font-size: 14px;">Quy trình hành động từng tuần chuẩn E-E-A-T và Helpful Content System để kéo hàng ngàn organic users cho Thuexenhanh.</p>
+      </div>
+      <div id="rankingPlanContainer">
+        <!-- Render chi tiết roadmap -->
+      </div>
+    </section>
+
+    <!-- TAB 5: BÀI VIẾT ĐÃ LƯU -->
+    <section id="tab-saved" class="tab-pane">
+      <div class="card">
+        <div class="card-title">📁 Thư Viện Bài Viết Đã Xuất Bản (tools/seo-writer/output/)</div>
+        <div id="savedArticlesList" style="margin-top: 16px;">
+          <p style="color: var(--subtle);">Đang tải danh sách bài viết...</p>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Modal API Key -->
+  <div class="modal-backdrop" id="keyModal">
+    <div class="modal-card">
+      <div class="modal-title">⚙️ Cấu Hình Google Gemini API Key</div>
+      <p style="font-size: 13px; color: var(--mid); margin-bottom: 16px;">
+        Khóa API được lưu cục bộ trên máy tính của bạn (tại <code>tools/seo-writer/.state.json</code>) và KHÔNG BAO GIỜ bị gửi ra ngoài.
+        Bạn có thể lấy khóa miễn phí 100% tại <a href="https://aistudio.google.com/" target="_blank" style="color: var(--primary);">Google AI Studio</a>.
+      </p>
+
+      <div class="form-group">
+        <label>GEMINI_API_KEY *</label>
+        <input type="text" id="apiKeyInput" placeholder="AIzaSy...">
+      </div>
+
+      <div class="form-group">
+        <label>Chọn Model Gemini</label>
+        <select id="modelSelect">
+          <option value="gemini-1.5-flash" selected>Gemini 1.5 Flash (Nhanh, Rất Tiết Kiệm Token, Đủ Mạnh)</option>
+          <option value="gemini-2.0-flash">Gemini 2.0 Flash (Thế Hệ Mới, Cực Nhanh & Sâu Sắc)</option>
+          <option value="gemini-1.5-pro">Gemini 1.5 Pro (Viết Chuyên Sâu Cực Đại, Dành Cho Bài Trụ Cột)</option>
+        </select>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeKeyModal()">Đóng</button>
+        <button class="btn btn-primary" onclick="saveApiKey()">Lưu Cấu Hình</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // State
+    let currentArticleData = null;
+    let currentOutline = null;
+
+    // Khởi động
+    document.addEventListener('DOMContentLoaded', () => {
+      checkStatus();
+      loadKeywords();
+      loadRankingPlan();
+      loadSavedArticles();
+    });
+
+    // Chuyển Tab
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+
+      event.currentTarget.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+
+      if (tabId === 'tab-saved') loadSavedArticles();
+    }
+
+    // Chuyển Preview Sub-Tab
+    function switchPreview(subId) {
+      document.querySelectorAll('.sub-tab-btn').forEach(b => b.classList.remove('active'));
+      event.currentTarget.classList.add('active');
+
+      document.getElementById('preview-web').style.display = 'none';
+      document.getElementById('preview-md').style.display = 'none';
+      document.getElementById('preview-meta').style.display = 'none';
+      document.getElementById('preview-html').style.display = 'none';
+
+      document.getElementById(subId).style.display = 'block';
+    }
+
+    // Modal API Key
+    function openKeyModal() { document.getElementById('keyModal').classList.add('open'); }
+    function closeKeyModal() { document.getElementById('keyModal').classList.remove('open'); }
+
+    async function checkStatus() {
+      try {
+        const res = await fetch('/api/status');
+        const data = await res.json();
+        const pill = document.getElementById('statusPill');
+        const txt = document.getElementById('statusText');
+        document.getElementById('savedCount').textContent = data.savedCount || 0;
+
+        if (data.hasApiKey) {
+          pill.className = 'status-pill online';
+          pill.innerHTML = '<span class="dot green"></span><span>Gemini Sẵn Sàng (' + (data.selectedModel || '1.5 Flash') + ')</span>';
+        } else {
+          pill.className = 'status-pill offline';
+          pill.innerHTML = '<span class="dot amber"></span><span>Chế độ Offline Template</span>';
+        }
+      } catch (e) {
+        console.error('Lỗi kiểm tra status:', e);
+      }
+    }
+
+    async function saveApiKey() {
+      const apiKey = document.getElementById('apiKeyInput').value.trim();
+      const model = document.getElementById('modelSelect').value;
+
+      try {
+        const res = await fetch('/api/save-key', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ apiKey, model })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert('Đã lưu cấu hình thành công!');
+          closeKeyModal();
+          checkStatus();
+        } else {
+          alert('Lỗi: ' + data.error);
+        }
+      } catch (e) {
+        alert('Lỗi kết nối server: ' + e.message);
+      }
+    }
+
+    // 1. Sinh Dàn Ý
+    async function handleGenerateOutline() {
+      const keyword = document.getElementById('targetKeyword').value.trim();
+      const intent = document.getElementById('searchIntent').value;
+      const audience = document.getElementById('targetAudience').value;
+
+      if (!keyword) return alert('Vui lòng nhập từ khóa chính.');
+
+      const btn = document.getElementById('btnOutline');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = '<div class="spinner"></div> Đang lập dàn ý...';
+      btn.disabled = true;
+
+      try {
+        const res = await fetch('/api/generate-outline', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ keyword, intent, audience })
+        });
+        const data = await res.json();
+        if (data.success) {
+          currentOutline = data.outline;
+          alert(`Đã lập xong dàn ý: "${data.outline.title}"\nSẵn sàng viết bài!`);
+          // Hiển thị sơ lược
+          document.getElementById('articleHtmlContainer').innerHTML = `
+            <div class="seo-callout note">
+              <div class="callout-title">📑 Dàn Ý Đã Tạo Xong: ${data.outline.title}</div>
+              <p><strong>Mô tả:</strong> ${data.outline.metaDescription}</p>
+              <p><strong>Góc nhìn mới:</strong> ${data.outline.informationGainHook}</p>
+              <p style="margin-top: 10px;">Bấm nút <strong>"🚀 2. Viết Bài Đầy Đủ"</strong> để hoàn thiện toàn bộ bài viết.</p>
+            </div>
+          `;
+        } else {
+          alert('Lỗi: ' + data.error);
+        }
+      } catch (e) {
+        alert('Lỗi: ' + e.message);
+      } finally {
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+      }
+    }
+
+    // 2. Viết Bài Đầy Đủ
+    async function handleGenerateArticle() {
+      const keyword = document.getElementById('targetKeyword').value.trim();
+      const customNotes = document.getElementById('customNotes').value.trim();
+
+      if (!keyword) return alert('Vui lòng nhập từ khóa chính.');
+
+      const btn = document.getElementById('btnArticle');
+      const btnText = document.getElementById('btnArticleText');
+      btn.disabled = true;
+      btnText.innerHTML = '<span class="spinner"></span> Đang viết bài chuyên sâu (1.800+ từ)...';
+
+      try {
+        const res = await fetch('/api/generate-article', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            keyword,
+            outline: currentOutline,
+            customNotes
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          currentArticleData = data;
+          renderArticleResult(data);
+        } else {
+          alert('Lỗi tạo bài viết: ' + data.error);
+        }
+      } catch (e) {
+        alert('Lỗi kết nối: ' + e.message);
+      } finally {
+        btn.disabled = false;
+        btnText.textContent = '🚀 2. Viết Lại / Nâng Cấp';
+      }
+    }
+
+    function renderArticleResult(data) {
+      // 1. Cập nhật Preview Web
+      document.getElementById('articleHtmlContainer').innerHTML = data.contentHtml;
+      document.getElementById('articleMdContainer').value = data.contentMarkdown;
+      document.getElementById('articleHtmlRawContainer').value = data.contentHtml;
+
+      // 2. Cập nhật Meta & Schema
+      document.getElementById('metaTitleDisplay').textContent = data.title;
+      document.getElementById('metaDescDisplay').textContent = data.metaDescription;
+
+      const fullSchema = [data.schemas.articleSchema];
+      if (data.schemas.faqSchema) fullSchema.push(data.schemas.faqSchema);
+      if (data.schemas.breadcrumbSchema) fullSchema.push(data.schemas.breadcrumbSchema);
+
+      document.getElementById('schemaJsonContainer').textContent = 
+        `<script type="application/ld+json">\n${JSON.stringify(fullSchema, null, 2)}\n<\/script>`;
+
+      // 3. Cập nhật Scorecard
+      const audit = data.auditResult;
+      document.getElementById('seoScoreVal').textContent = audit.totalScore;
+      document.getElementById('metricWords').textContent = audit.wordCount;
+      document.getElementById('metricDensity').textContent = audit.density + '%';
+
+      const badge = document.getElementById('seoScoreBadge');
+      const title = document.getElementById('seoScoreTitle');
+
+      if (audit.totalScore >= 90) {
+        badge.textContent = 'ĐẠT TIÊU CHUẨN TOP 1 - 3 GOOGLE';
+        badge.style.background = 'rgba(16, 185, 129, 0.2)';
+        badge.style.color = '#34d399';
+        title.textContent = 'Sẵn sàng xuất bản lên trang web';
+      } else {
+        badge.textContent = 'CẦN CHỈNH SỬA THÊM';
+        badge.style.background = 'rgba(245, 158, 11, 0.2)';
+        badge.style.color = '#fbbf24';
+        title.textContent = 'Khuyến nghị bổ sung thêm chi tiết';
+      }
+
+      document.getElementById('metricHuman').textContent = audit.slopMatches.length === 0 ? '100% Tự nhiên' : `Có ${audit.slopMatches.length} từ AI`;
+
+      // Đồng thời cập nhật bên Tab Audit
+      renderAuditDetails(audit);
+    }
+
+    // 3. Lưu Bài Viết
+    async function handleSaveArticle() {
+      if (!currentArticleData) return alert('Chưa có bài viết nào để lưu.');
+
+      const keyword = document.getElementById('targetKeyword').value.trim();
+      try {
+        const res = await fetch('/api/save-article', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title: currentArticleData.title,
+            metaDescription: currentArticleData.metaDescription,
+            targetKeyword: keyword,
+            contentMarkdown: currentArticleData.contentMarkdown,
+            contentHtml: currentArticleData.contentHtml,
+            schemas: currentArticleData.schemas,
+            auditResult: currentArticleData.auditResult
+          })
+        });
+        const data = await res.json();
+        if (data.success) {
+          alert(`Đã lưu bài viết thành công!\nFile: ${data.savedPath}`);
+          checkStatus();
+        } else {
+          alert('Lỗi: ' + data.error);
+        }
+      } catch (e) {
+        alert('Lỗi: ' + e.message);
+      }
+    }
+
+    // 4. Load Kho Từ Khóa
+    async function loadKeywords() {
+      try {
+        const res = await fetch('/api/keywords');
+        const data = await res.json();
+        const container = document.getElementById('keywordClustersContainer');
+        container.innerHTML = '';
+
+        data.clusters.forEach(cluster => {
+          const card = document.createElement('div');
+          card.className = 'cluster-card';
+          card.innerHTML = `
+            <div class="cluster-title">${cluster.name}</div>
+            <div class="cluster-desc">${cluster.description}</div>
+            <div class="keyword-list">
+              ${cluster.keywords.map(kw => `
+                <div class="keyword-item" onclick="selectKeyword('${kw.keyword.replace(/'/g, "\\'")}', '${kw.intent}')">
+                  <div class="kw-name">${kw.keyword}</div>
+                  <div class="kw-badges">
+                    <span class="badge badge-diff">${kw.difficulty}</span>
+                    <span class="badge badge-time">🎯 Top 3: ${kw.targetDays}</span>
+                    <span class="badge badge-vol">📊 ${kw.searchVolumeEst}</span>
+                  </div>
+                  <div style="font-size: 12px; color: var(--mid); margin-top: 4px;">💡 ${kw.primaryHook}</div>
+                </div>
+              `).join('')}
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      } catch (e) {
+        console.error('Lỗi tải từ khóa:', e);
+      }
+    }
+
+    function selectKeyword(kw, intent) {
+      document.getElementById('targetKeyword').value = kw;
+      // Chuyển sang Tab 1
+      document.querySelectorAll('.tab-btn')[0].click();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // 5. Chấm điểm SEO thủ công
+    async function runManualAudit() {
+      const targetKeyword = document.getElementById('auditKwInput').value.trim();
+      const title = document.getElementById('auditTitleInput').value.trim();
+      const metaDescription = document.getElementById('auditMetaInput').value.trim();
+      const content = document.getElementById('auditContentInput').value.trim();
+
+      if (!content) return alert('Vui lòng dán nội dung bài viết vào.');
+
+      try {
+        const res = await fetch('/api/audit-seo', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ targetKeyword, title, metaDescription, content })
+        });
+        const data = await res.json();
+        if (data.success) {
+          renderAuditDetails(data.auditResult);
+        }
+      } catch (e) {
+        alert('Lỗi: ' + e.message);
+      }
+    }
+
+    function renderAuditDetails(audit) {
+      const container = document.getElementById('auditListContainer');
+      container.innerHTML = `
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding: 12px; background: #f8fafc; border-radius: 8px;">
+          <div><strong>Tổng điểm:</strong> <span style="font-size: 20px; font-weight: 800; color: var(--primary);">${audit.totalScore} / 100</span></div>
+          <div><strong>Trạng thái:</strong> ${audit.rankReadiness}</div>
+        </div>
+      `;
+
+      audit.criteria.forEach(c => {
+        const item = document.createElement('div');
+        item.className = `audit-item ${c.status}`;
+        item.innerHTML = `
+          <div class="audit-score-pill">${c.score}/${c.maxScore}đ</div>
+          <div>
+            <div style="font-weight: 700; font-size: 14px;">${c.name}</div>
+            <div style="font-size: 13px; color: var(--mid); margin-top: 2px;">${c.feedback}</div>
+          </div>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    // 6. Tải Lộ Trình 90 Ngày
+    async function loadRankingPlan() {
+      try {
+        const res = await fetch('/api/ranking-plan');
+        const plan = await res.json();
+        const container = document.getElementById('rankingPlanContainer');
+        container.innerHTML = '';
+
+        plan.phases.forEach(p => {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.style.marginBottom = '20px';
+          card.innerHTML = `
+            <h3 style="color: var(--primary); font-size: 18px; font-weight: 700; margin-bottom: 6px;">${p.name}</h3>
+            <p style="font-size: 14px; font-weight: 600; color: var(--dark); margin-bottom: 14px;">🎯 Mục tiêu: ${p.objective}</p>
+            <div style="display: grid; gap: 14px;">
+              ${p.tasks.map(t => `
+                <div style="background: #fafafa; border: 1px solid var(--border); padding: 14px; border-radius: 8px;">
+                  <div style="font-weight: 700; font-size: 14px; color: var(--dark);">${t.week}: ${t.action}</div>
+                  <ul style="margin: 8px 0 0 20px; font-size: 13px; color: var(--mid);">
+                    ${t.details.map(d => `<li style="margin-bottom: 4px;">${d}</li>`).join('')}
+                  </ul>
+                </div>
+              `).join('')}
+            </div>
+          `;
+          container.appendChild(card);
+        });
+      } catch (e) {
+        console.error('Lỗi tải roadmap:', e);
+      }
+    }
+
+    // 7. Tải Danh Sách Bài Đã Lưu
+    async function loadSavedArticles() {
+      try {
+        const res = await fetch('/api/saved-articles');
+        const data = await res.json();
+        const container = document.getElementById('savedArticlesList');
+        if (!data.articles || data.articles.length === 0) {
+          container.innerHTML = '<p style="color: var(--subtle);">Chưa có bài viết nào được lưu vào thư mục.</p>';
+          return;
+        }
+
+        container.innerHTML = `
+          <div style="display: grid; gap: 12px;">
+            ${data.articles.map(a => `
+              <div style="border: 1px solid var(--border); padding: 14px; border-radius: 8px; display: flex; justify-content: space-between; align-items: center; background: #fafafa;">
+                <div>
+                  <div style="font-weight: 700; font-size: 15px;">${a.title}</div>
+                  <div style="font-size: 12px; color: var(--subtle); margin-top: 4px;">
+                    🔑 Từ khóa: <strong>${a.targetKeyword}</strong> • 📝 ${a.wordCount} từ • 📅 ${new Date(a.createdAt).toLocaleDateString('vi-VN')}
+                  </div>
+                </div>
+                <div style="display: flex; gap: 8px; align-items: center;">
+                  <span class="badge" style="background: #ecfdf5; color: #047857; font-weight: 700; font-size: 13px; padding: 6px 10px;">${a.auditScore}đ</span>
+                  <a href="/output/${a.slug}.html" target="_blank" class="btn btn-secondary" style="padding: 6px 12px; font-size: 12px;">Xem HTML</a>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+        `;
+      } catch (e) {
+        console.error('Lỗi tải bài đã lưu:', e);
+      }
+    }
+
+    function copyCurrentContent() {
+      const md = document.getElementById('articleMdContainer').value;
+      if (!md) return alert('Chưa có nội dung để sao chép.');
+      navigator.clipboard.writeText(md).then(() => {
+        alert('Đã sao chép toàn bộ nội dung Markdown vào bộ nhớ tạm!');
+      });
+    }
+  </script>
+</body>
+</html>
