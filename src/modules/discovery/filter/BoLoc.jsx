@@ -4,6 +4,7 @@ import { BRANDS } from '../../../data/brands'
 import { AMENITIES } from '../../../data/amenities'
 import { SEAT_OPTIONS, TRANSMISSIONS, FUELS } from '../../../data/options'
 import { KHOANG_GIA } from './loc'
+import BoChonThoiGian from '../../../components/BoChonThoiGian'
 import './BoLoc.css'
 
 const chonGia = (loc) => {
@@ -93,6 +94,16 @@ export default function BoLoc({ loc, onDoi }) {
 
   return (
     <div className="boloc">
+      <section className="boloc-nhom">
+        <h3 className="boloc-tieude">Ngày thuê</h3>
+        <BoChonThoiGian
+          chiNgay
+          tu={loc.tu}
+          den={loc.den}
+          onChange={(tu, den) => onDoi({ ...loc, tu, den })}
+        />
+      </section>
+
       <section className="boloc-nhom">
         <h3 className="boloc-tieude">Địa điểm</h3>
         <select

@@ -71,7 +71,50 @@
 
 /* ─── Thân thẻ ─── */
 .thexe-than { display: flex; flex-direction: column; gap: var(--sp-3); padding: var(--sp-4); flex: 1; }
-.thexe-dau { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.thexe-dau {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+.thexe-dau-trai {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  flex: 1;
+}
+.thexe-dau-phai {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 4px;
+  flex: none;
+  position: relative;
+  z-index: 2;
+}
+.thexe-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  height: 22px;
+  padding: 0 var(--sp-2);
+  border-radius: var(--r-box);
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.thexe-tag-thechap {
+  background: var(--m-green-ok-bg);
+  color: var(--m-green-ok);
+  box-shadow: inset 0 0 0 1px var(--m-green-border);
+}
+.thexe-tag-xacminh {
+  background: var(--m-green-light);
+  color: var(--m-green-hover);
+  box-shadow: inset 0 0 0 1px var(--m-green-border);
+}
 .thexe-ten {
   overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
   transition: color var(--t-fast);

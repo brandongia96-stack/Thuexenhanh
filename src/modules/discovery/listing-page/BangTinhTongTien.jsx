@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Calculator, Truck, MessageCircle, Loader2, Info } from 'lucide-react'
+import { useSearchParams } from 'react-router-dom'
+import { Calculator, Truck, MessageCircle, Loader2, Info, AlertTriangle } from 'lucide-react'
 
 import { formatVnd } from '../../../lib/format'
 import { zaloHref } from '../../../lib/phone'
@@ -34,8 +35,38 @@ function dinhDangInput(d) {
  * hiện kết quả — không có logic tính tiền nào nằm ở đây.
  */
 export default function BangTinhTongTien({ tin, userId, conHienThi }) {
-  const [gioNhan, setGioNhan] = useState(gioMacDinh)
-  const [gioTra, setGioTra] = useState(() => new Date(gioMacDinh().getTime() + 24 * 60 * 60 * 1000))
+  const [sp] = useSearchParams()
+  const tuParam = sp.get('tu')
+  const denParam = sp.get('den')
+
+  const [gioNhan, setGioNhan] = useState(() => {
+    if (tuParam && /^\d{4}-\d{2}-\d{2}$/.test(tuParam)) {
+      const d = new Date(`${tuParam}T09:00:00`)
+      if (!isNaN(d.getTime())) return d
+    }
+    return gioMacDinh()
+  })
+
+  const [gioTra, setGioTra] = useState(() => {
+    if (denParam && /^\d{4}-\d{2}-\d{2}$/.test(denParam)) {
+      const d = new Date(`${denParam}T21:00:00`)
+      if (!isNaN(d.getTime())) return d
+    }
+    return new Date(gioMacDinh().getTime() + 24 * 60 * 60 * 1000)
+  })
+
+  // Cập nhật khi query string thay đổi
+  useEffect(() => {
+    if (tuParam && /^\d{4}-\d{2}-\d{2}$/.test(tuParam) && denParam && /^\d{4}-\d{2}-\d{2}$/.test(denParam)) {
+      const d1 = new Date(`${tuParam}T09:00:00`)
+      const d2 = new Date(`${denParam}T21:00:00`)
+      if (!isNaN(d1.getTime()) && !isNaN(d2.getTime()) && d2 >= d1) {
+        setGioNhan(d1)
+        setGioTra(d2)
+      }
+    }
+  }, [tuParam, denParam])
+
   const [kmText, setKmText] = useState('')
   const [canGiaoXe, setCanGiaoXe] = useState(false)
   const [giaThamChieu, setGiaThamChieu] = useState(null)
@@ -102,6 +133,19 @@ export default function BangTinhTongTien({ tin, userId, conHienThi }) {
     }
   }
 
+  const trungLichBan = useMemo(() => {
+    if (!tin.ngayChan?.length || !gioNhan || !gioTra) return false
+    const p = (n) => String(n).padStart(2, '0')
+    const nhanYMD = `${gioNhan.getFullYear()}-${p(gioNhan.getMonth() + 1)}-${p(gioNhan.getDate())}`
+    const traYMD = `${gioTra.getFullYear()}-${p(gioTra.getMonth() + 1)}-${p(gioTra.getDate())}`
+
+    return tin.ngayChan.some((k) => {
+      const tu = k.date_from || k.tu
+      const den = k.date_to || k.den
+      return tu && den && nhanYMD <= den && traYMD >= tu
+    })
+  }, [tin.ngayChan, gioNhan, gioTra])
+
   const phuDeGiaoXe = useMemo(() => {
     if (tin.delivery_fee != null) {
       return tin.delivery_fee === 0 ? 'Miễn phí giao xe' : `+${formatVnd(tin.delivery_fee)}`
@@ -119,8 +163,16 @@ export default function BangTinhTongTien({ tin, userId, conHienThi }) {
           <BoChonThoiGian 
             gioNhan={gioNhan} 
             gioTra={gioTra} 
+            ngayBan={tin.ngayChan}
             onChange={(n, t) => { setGioNhan(n); setGioTra(t) }} 
           />
+
+          {trungLichBan && (
+            <div className="banggia-canhbao-ban" role="alert">
+              <AlertTriangle size={16} strokeWidth={2} />
+              <span>Chủ xe đã báo bận một số ngày bạn chọn</span>
+            </div>
+          )}
 
           <div className="banggia-hang-phu">
             <label className="field banggia-field-km">

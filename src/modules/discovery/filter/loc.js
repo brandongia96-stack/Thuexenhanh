@@ -37,6 +37,7 @@ export const KHOANG_GIA = [
 
 export const locRong = () => ({
   q: '', tinh: '', quan: '',
+  tu: '', den: '',
   giaMin: null, giaMax: null,
   cho: [], so: '', nl: '', hang: '', tn: [],
   // Xe điện (NGHIEN-CUU-XE-DIEN.md mục 2 đợt 1 #3). `sac`/`khongTheChap` lọc
@@ -57,6 +58,27 @@ const soDuong = (v) => {
 }
 const tach = (v) => (v ? v.split(',').map((s) => s.trim()).filter(Boolean) : [])
 
+// Kiểm tra định dạng ngày YYYY-MM-DD, không chọn quá khứ, den >= tu, tối đa 180 ngày.
+function hopLeKhoangNgay(tu, den) {
+  if (!tu || !den) return { tu: '', den: '' }
+  const reDate = /^\d{4}-\d{2}-\d{2}$/
+  if (!reDate.test(tu) || !reDate.test(den)) return { tu: '', den: '' }
+
+  const homNay = new Date()
+  homNay.setHours(0, 0, 0, 0)
+  const dTu = new Date(`${tu}T00:00:00`)
+  const dDen = new Date(`${den}T00:00:00`)
+
+  if (isNaN(dTu.getTime()) || isNaN(dDen.getTime())) return { tu: '', den: '' }
+  if (dTu < homNay) return { tu: '', den: '' }
+  if (dDen < dTu) return { tu: '', den: '' }
+
+  const diffDays = Math.round((dDen - dTu) / 86_400_000)
+  if (diffDays > 180) return { tu: '', den: '' }
+
+  return { tu, den }
+}
+
 export function urlSangLoc(sp) {
   const tinh = PROVINCES.includes(sp.get('tinh')) ? sp.get('tinh') : ''
   const quan = tinh && districtsOf(tinh).includes(sp.get('quan')) ? sp.get('quan') : ''
@@ -64,10 +86,12 @@ export function urlSangLoc(sp) {
   const nl = sp.get('nl')
   const xep = sp.get('xep')
   const hang = sp.get('hang')
+  const { tu, den } = hopLeKhoangNgay(sp.get('tu'), sp.get('den'))
 
   return {
     q: (sp.get('q') ?? '').slice(0, 100),
     tinh, quan,
+    tu, den,
     giaMin: soDuong(sp.get('gia_tu')),
     giaMax: soDuong(sp.get('gia_den')),
     cho: tach(sp.get('cho')).map(Number).filter((n) => SEAT_OPTIONS.includes(n)),
@@ -88,6 +112,10 @@ export function locSangUrl(loc) {
   if (loc.q?.trim()) sp.set('q', loc.q.trim())
   if (loc.tinh) sp.set('tinh', loc.tinh)
   if (loc.tinh && loc.quan) sp.set('quan', loc.quan)
+  if (loc.tu && loc.den) {
+    sp.set('tu', loc.tu)
+    sp.set('den', loc.den)
+  }
   if (loc.giaMin != null) sp.set('gia_tu', String(loc.giaMin))
   if (loc.giaMax != null) sp.set('gia_den', String(loc.giaMax))
   if (loc.cho?.length) sp.set('cho', [...loc.cho].sort((a, b) => a - b).join(','))
@@ -288,6 +316,11 @@ const nhanGia = (min, max) => {
 export function danhSachChip(loc) {
   const chips = []
   if (loc.q?.trim()) chips.push({ key: 'q', label: `“${loc.q.trim()}”`, xoa: (l) => ({ ...l, q: '' }) })
+  if (loc.tu && loc.den) {
+    const [, m1, d1] = loc.tu.split('-')
+    const [, m2, d2] = loc.den.split('-')
+    chips.push({ key: 'ngay', label: `${d1}/${m1} – ${d2}/${m2}`, xoa: (l) => ({ ...l, tu: '', den: '' }) })
+  }
   if (loc.tinh) chips.push({ key: 'tinh', label: loc.tinh, xoa: (l) => ({ ...l, tinh: '', quan: '' }) })
   if (loc.quan) chips.push({ key: 'quan', label: loc.quan, xoa: (l) => ({ ...l, quan: '' }) })
   if (loc.giaMin != null || loc.giaMax != null) {

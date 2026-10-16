@@ -59,6 +59,17 @@
 /* Dạng danh sách: mỗi hàng một thẻ (thẻ tự chuyển ngang từ 768px, xem TheXe.css). */
 .tk-ds { grid-template-columns: minmax(0, 1fr); }
 
+.tk-nhac-ngay {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--m-mid);
+  background: var(--m-bg);
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-box);
+  padding: var(--sp-2) var(--sp-3);
+  margin-bottom: var(--sp-3);
+}
+
 .tk-moc { height: 1px; }
 .tk-them { display: flex; align-items: center; justify-content: center; gap: var(--sp-3); }
 

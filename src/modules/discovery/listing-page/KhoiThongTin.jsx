@@ -152,21 +152,35 @@ export function KhoiQuyDinhPin({ text, fuel }) {
  * Lịch bận. CHỈ HIỆN — khách không đặt được ngày ở đây.
  * App là rao vặt, không giữ chỗ (CLAUDE.md 1.2).
  */
-export function KhoiLichBan({ khoang = [] }) {
+export function KhoiLichBan({ khoang = [], calendarUpdatedAt }) {
+  const capNhatText = calendarUpdatedAt
+    ? (() => {
+        const diffDays = Math.floor((Date.now() - new Date(calendarUpdatedAt).getTime()) / 86_400_000)
+        return diffDays <= 0 ? 'Lịch cập nhật hôm nay' : `Lịch cập nhật ${diffDays} ngày trước`
+      })()
+    : 'Chủ xe chưa cập nhật lịch — gọi để hỏi ngày trống'
+
   return (
-    <Khoi title="Ngày xe đã bận" trong={!khoang.length}>
-      <ul className="lichban">
-        {khoang.map((k) => (
-          <li key={k.id}>
-            <CalendarX2 size={16} strokeWidth={1.8} />
-            <span>
-              {formatDate(k.date_from)}
-              {k.date_to !== k.date_from && ` – ${formatDate(k.date_to)}`}
-            </span>
-            {k.note && <span className="t-small">{k.note}</span>}
-          </li>
-        ))}
-      </ul>
+    <Khoi title="Ngày xe đã bận" trong={!khoang.length && !calendarUpdatedAt}>
+      {khoang.length > 0 ? (
+        <ul className="lichban">
+          {khoang.map((k) => (
+            <li key={k.id}>
+              <CalendarX2 size={16} strokeWidth={1.8} />
+              <span>
+                {formatDate(k.date_from)}
+                {k.date_to !== k.date_from && ` – ${formatDate(k.date_to)}`}
+              </span>
+              {k.note && <span className="t-small">{k.note}</span>}
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="t-small" style={{ color: 'var(--m-mid)' }}>Xe chưa có ngày báo bận.</p>
+      )}
+      <p className="t-small" style={{ marginTop: 'var(--sp-2)', fontWeight: 600, color: 'var(--m-mid)' }}>
+        {capNhatText}
+      </p>
       <p className="t-small">
         Đây là lịch chủ xe tự khai. Muốn chắc ngày của mình thì gọi hỏi trực tiếp.
       </p>

@@ -266,6 +266,23 @@
   border: 1px solid var(--m-border);
 }
 
+.banggia-canhbao-ban {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3);
+  background: var(--m-amber-bg);
+  color: var(--m-dark);
+  border: 1px solid var(--m-amber);
+  border-radius: var(--r-box);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+.banggia-canhbao-ban svg {
+  color: var(--m-amber);
+  flex-shrink: 0;
+}
+
 .banggia-hang-phu {
   display: grid;
   grid-template-columns: 1fr 1fr;

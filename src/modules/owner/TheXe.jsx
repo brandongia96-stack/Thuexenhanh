@@ -8,7 +8,7 @@
 
 import { memo } from 'react'
 import { Link } from 'react-router-dom'
-import { BarChart3, Car, ChevronDown, Pencil, Phone, PhoneOff, RefreshCw, ShieldAlert } from 'lucide-react'
+import { BarChart3, Calendar, Car, ChevronDown, Pencil, Phone, PhoneOff, RefreshCw, ShieldAlert } from 'lucide-react'
 import Badge, { VerifiedBadge } from '../../components/Badge'
 import { formatVnd, formatDate, formatPhone } from '../../lib/format'
 import { coTheGiaHan, coTheSua, loiNhacHan, nhanTrangThai, trangThaiThuc } from '../listing/lifecycle'
@@ -100,6 +100,14 @@ function TheXe({ xe, soLieu, rieng, canhBao, anLienHe, uuTien = false, dangTaiSo
         <div className={`nhac-han nhac-han-${nhacHan.tone}`}>
           {nhacHan.text}
           {xe.expires_at && <span className="t-small"> · {formatDate(xe.expires_at)}</span>}
+        </div>
+      )}
+
+      {(!xe.calendar_updated_at || (Date.now() - new Date(xe.calendar_updated_at).getTime()) > 14 * 86_400_000) && (
+        <div className="the-xe-nhac-lich" role="note">
+          <Calendar size={15} strokeWidth={1.8} />
+          <span>Cập nhật lịch để khách tìm theo ngày thấy đúng xe của anh.</span>
+          <Link to="/chu-xe/lich" className="the-xe-nhac-lich-link">Cập nhật ngay</Link>
         </div>
       )}
 

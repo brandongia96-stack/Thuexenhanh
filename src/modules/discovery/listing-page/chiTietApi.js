@@ -42,7 +42,7 @@ const COT = [
   'charge_fee_per_pct', 'pickup_min_pct', 'return_min_pct',
   'has_portable_charger', 'battery_ownership', 'battery_policy_note',
   'amenity_codes', 'is_verified', 'published_at', 'expires_at', 'created_at',
-  'report_count'
+  'report_count', 'calendar_updated_at'
 ].join(',')
 
 // Ảnh: lấy medium + full + blur. KHÔNG lấy url_original (cấm phục vụ ảnh gốc).

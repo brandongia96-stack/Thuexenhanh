@@ -151,7 +151,7 @@ export default function TrangXe() {
           <BangTinhTongTien tin={tin} userId={user?.id ?? null} conHienThi={conSong} />
           <KhoiMoTa text={tin.description} />
           <KhoiQuyDinhPin text={tin.battery_policy_note} fuel={tin.fuel} />
-          <KhoiLichBan khoang={tin.ngayChan} />
+          <KhoiLichBan khoang={tin.ngayChan} calendarUpdatedAt={tin.calendar_updated_at} />
           <BanDo tin={tin} />
           <KhoiDanhGia />
         </div>

@@ -124,8 +124,19 @@
   cursor: pointer;
   transition: background var(--t-fast);
 }
-.lich-td-ngay:hover {
+.lich-td-ngay:hover:not(.qua-khu) {
   background: var(--m-bg);
+  outline: 2px solid var(--m-green);
+  z-index: 1;
+}
+.lich-td-ngay.qua-khu {
+  cursor: not-allowed;
+  opacity: 0.4;
+  background: var(--m-bg);
+}
+.lich-td-ngay.dang-luu {
+  opacity: 0.6;
+  pointer-events: none;
 }
 
 .lich-td-ngay.ban .lich-cell-content {
@@ -134,8 +145,8 @@
   bottom: 6px;
   left: 2px;
   right: 2px;
-  background: #FFEbee;
-  border: 1px solid #FFCDD2;
+  background: var(--m-red-bg);
+  border: 1px solid var(--m-red-border, #fca5a5);
   border-radius: var(--r-box);
 }
 

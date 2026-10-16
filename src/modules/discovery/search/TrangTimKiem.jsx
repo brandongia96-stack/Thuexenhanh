@@ -340,9 +340,21 @@ export default function TrangTimKiem() {
 
           {!dangTai && !loi && items.length > 0 && (
             <>
+              {loc.tu && loc.den && (
+                <div className="tk-nhac-ngay">
+                  Xe chưa báo bận trong những ngày này — gọi chủ xe để xác nhận
+                </div>
+              )}
               <div className={'grid-cards tk-the' + (kieuXem === 'ds' ? ' tk-ds' : '')}>
                 {items.map((the, i) => (
-                  <TheXe key={the.id} the={the} bangDiaGioi={bangDiaGioi} uuTien={i < SO_THE_UU_TIEN} />
+                  <TheXe
+                    key={the.id}
+                    the={the}
+                    bangDiaGioi={bangDiaGioi}
+                    uuTien={i < SO_THE_UU_TIEN}
+                    tu={loc.tu}
+                    den={loc.den}
+                  />
                 ))}
               </div>
 
@@ -373,7 +385,13 @@ export default function TrangTimKiem() {
         >
           <SlidersHorizontal size={18} strokeWidth={2} aria-hidden="true" />
           <span className="tk-thanh-chu">
-            <strong>{loc.quan ? `${loc.quan}, ${loc.tinh}` : loc.tinh || 'Tất cả địa điểm'}</strong>
+            <strong>
+              {loc.tu && loc.den
+                ? `${loc.tu.slice(8, 10)}/${loc.tu.slice(5, 7)} – ${loc.den.slice(8, 10)}/${loc.den.slice(5, 7)}`
+                : loc.quan
+                  ? `${loc.quan}, ${loc.tinh}`
+                  : loc.tinh || 'Tất cả địa điểm'}
+            </strong>
             <span>{soBoLoc > 0 ? `${soBoLoc} bộ lọc đang bật` : 'Bấm để lọc xe'}</span>
           </span>
           <ChevronDown size={18} strokeWidth={2} aria-hidden="true" style={{ transform: 'rotate(180deg)' }} />

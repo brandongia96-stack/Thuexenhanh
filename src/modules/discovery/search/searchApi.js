@@ -18,13 +18,14 @@ export const CO_TRANG = 20
 // listing_card có (NGHIEN-CUU-XE-DIEN.md mục 3) — dùng cho huy hiệu "Free sạc"
 // + quãng đường trên thẻ, và cho 3 bộ lọc dưới. Không thêm cột nào khác.
 // owner_ten/owner_avatar: hồ sơ công khai chủ xe (contracts/api.md §3g) — có
-// sẵn trên listing_card và listing_card_gan, dùng để hiện avatar + liên kết
+// sẵn trên listing_card và listing_card_tim, dùng để hiện avatar + liên kết
 // /chu/:owner_id ở chân thẻ (TheXe.jsx).
+// calendar_updated_at: lần cuối chủ xe cập nhật lịch bận (contracts/api.md §3h).
 const COT_THE =
   'id,status,brand_text,model_text,year,seats,transmission,fuel,price_per_day,' +
   'province_id,district_id,is_verified,published_at,expires_at,owner_id,' +
   'ev_range_km,charge_policy,collateral_required,' +
-  'cover_thumb,cover_blur,cover_width,cover_height,owner_ten,owner_avatar'
+  'cover_thumb,cover_blur,cover_width,cover_height,owner_ten,owner_avatar,calendar_updated_at'
 
 // `sap_het_han` vẫn còn hiển thị (chủ xe đã trả phí tới hết hạn).
 const TRANG_THAI_HIEN = ['dang_hien_thi', 'sap_het_han']
@@ -62,10 +63,19 @@ export async function timTheXe(loc, { cursor = null, signal, viTri = null } = {}
     }
   }
 
-  // RPC trả mọi cột của listing_card + distance_km, gắn tiếp bộ lọc/sắp xếp/
-  // keyset y như đọc thẳng view (contracts/api.md §3f) — select phải có `id`.
-  let q = dungGan
-    ? sb.rpc('listing_card_gan', { p_lat: viTri.lat, p_lng: viTri.lng }).select(`${COT_THE},distance_km`)
+  const coNgay = Boolean(loc.tu && loc.den)
+  const dungRpc = coNgay || dungGan
+
+  // RPC listing_card_tim (contracts/api.md §3h): gửi p_tu/p_den khi có ngày,
+  // p_lat/p_lng khi xếp "Gần bạn nhất"; không có cả hai thì đọc thẳng view listing_card.
+  // select PHẢI có `id` VÀ cột đang order (xep.cot) để tránh lỗi "record.X does not exist".
+  let q = dungRpc
+    ? sb.rpc('listing_card_tim', {
+        p_lat: dungGan ? viTri.lat : null,
+        p_lng: dungGan ? viTri.lng : null,
+        p_tu: coNgay ? loc.tu : null,
+        p_den: coNgay ? loc.den : null,
+      }).select(dungGan ? `${COT_THE},distance_km` : COT_THE)
     : sb.from('listing_card').select(COT_THE)
 
   q = q

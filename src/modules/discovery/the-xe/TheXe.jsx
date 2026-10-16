@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { MapPin, Users, Cog, Fuel, Clock, Share2, Check, X, Zap, AlertTriangle } from 'lucide-react'
+import { MapPin, Users, Cog, Fuel, Clock, Share2, Check, X, Zap, AlertTriangle, ShieldCheck } from 'lucide-react'
 
 import { VerifiedBadge } from '../../../components/Badge'
 import { formatVndShort, timeAgo } from '../../../lib/format'
@@ -35,8 +35,10 @@ import './TheXe.css'
  * @param {object} bangDiaGioi   kết quả `taiTenDiaGioi()`; null thì ẩn dòng địa điểm
  * @param {boolean} uuTien       thẻ nằm ngay màn hình đầu: không lazy, tải ảnh trước
  *                               (HIEU-NANG.md mục 1.3 — ảnh đầu tiên quyết định LCP)
+ * @param {string} tu            ngày nhận YYYY-MM-DD nếu đang lọc ngày
+ * @param {string} den           ngày trả YYYY-MM-DD nếu đang lọc ngày
  */
-function TheXe({ the, bangDiaGioi, uuTien = false }) {
+function TheXe({ the, bangDiaGioi, uuTien = false, tu = '', den = '' }) {
   const ten = `${the.brand_text} ${the.model_text}${the.year ? ` ${the.year}` : ''}`
   const noi = tenNoi(bangDiaGioi, the.province_id, the.district_id)
   const hopSo = TRANSMISSIONS.find((x) => x.value === the.transmission)?.label
@@ -48,6 +50,10 @@ function TheXe({ the, bangDiaGioi, uuTien = false }) {
   // (NGHIEN-CUU-XE-DIEN.md mục 3). Chưa khai (null) thì không hiện gì cả —
   // đây là lời hứa của CHỦ XE, không phải cam kết của app (CLAUDE.md 1.2).
   const freeSac = the.charge_policy === 'mien_phi' || the.charge_policy === 'mien_phi_gioi_han'
+
+  // Giữ query ngày sang trang chi tiết để điền sẵn vào bảng tính tiền
+  const queryNgay = tu && den ? `?tu=${encodeURIComponent(tu)}&den=${encodeURIComponent(den)}` : ''
+  const linkXe = `/xe/${the.id}${queryNgay}`
 
   return (
     <article className={'card card-hover thexe' + (the.is_verified ? ' thexe-xacminh' : '')}>
@@ -62,7 +68,7 @@ function TheXe({ the, bangDiaGioi, uuTien = false }) {
             Rê chuột / chạm là nạp trước tin → bấm vào mở gần như tức thì
             (HIEU-NANG.md mục 3). */}
         <Link
-          to={`/xe/${the.id}`}
+          to={linkXe}
           className="thexe-lien"
           onMouseEnter={() => napTruocTin(the.id)}
           onTouchStart={() => napTruocTin(the.id)}
@@ -90,13 +96,29 @@ function TheXe({ the, bangDiaGioi, uuTien = false }) {
 
       <div className="thexe-than">
         <div className="thexe-dau">
-          <Link to={`/xe/${the.id}`} className="t-h3 thexe-ten" title={ten}>{ten}</Link>
-          {dang && (
-            <span className="thexe-dang t-small">
-              <Clock size={12} strokeWidth={1.8} aria-hidden="true" />
-              Đăng {dang}
-            </span>
-          )}
+          <div className="thexe-dau-trai">
+            <Link to={linkXe} className="t-h3 thexe-ten" title={ten}>{ten}</Link>
+            {dang && (
+              <span className="thexe-dang t-small">
+                <Clock size={12} strokeWidth={1.8} aria-hidden="true" />
+                Đăng {dang}
+              </span>
+            )}
+          </div>
+          <div className="thexe-dau-phai">
+            {the.collateral_required === false && (
+              <span className="thexe-tag thexe-tag-thechap" title="Thuê xe không cần thế chấp tài sản/xe máy">
+                <ShieldCheck size={12} strokeWidth={2} aria-hidden="true" />
+                Miễn thế chấp
+              </span>
+            )}
+            {the.collateral_required !== false && the.is_verified && (
+              <span className="thexe-tag thexe-tag-xacminh" title="Tin đăng đã được xác minh giấy tờ">
+                <ShieldCheck size={12} strokeWidth={2} aria-hidden="true" />
+                Đã xác minh
+              </span>
+            )}
+          </div>
         </div>
 
         {/* Tối đa 4 thông số, lưới 2×2, không hộp nền (anh chốt 12/10).

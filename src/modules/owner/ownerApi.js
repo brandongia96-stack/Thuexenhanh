@@ -22,7 +22,7 @@ const COT_THE =
   'id,status,brand_text,model_text,year,seats,transmission,fuel,price_per_day,' +
   'province_id,district_id,is_verified,published_at,expires_at,' +
   'cover_thumb,cover_blur,cover_width,cover_height,report_count,' +
-  'owner_id,owner_ten,owner_avatar'
+  'owner_id,owner_ten,owner_avatar,calendar_updated_at'
 
 // Nhóm lọc ở màn "Xe của tôi". Lọc theo cột `status` trong CSDL (server cập nhật
 // theo cron) — lọc ở server vì phân trang keyset không lọc lại phía client được.

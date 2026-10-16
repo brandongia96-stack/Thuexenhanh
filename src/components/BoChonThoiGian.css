@@ -222,7 +222,7 @@
 .cal-header-nav .btn-nav {
   background: none;
   border: 1px solid var(--m-border);
-  border-radius: var(--r-sm);
+  border-radius: var(--r-box);
   width: 36px;
   height: 36px;
   display: flex;
@@ -288,6 +288,26 @@
   cursor: default;
 }
 
+/* Xe đã báo bận: tô vàng cảnh báo nhưng không chặn */
+.cal-cell.is-busy {
+  position: relative;
+  background: var(--m-amber-bg, #fffbeb);
+  color: var(--m-amber, #b45309);
+  font-weight: 700;
+}
+
+.cal-cell.is-busy::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: var(--r-circle);
+  background: var(--m-amber, #b45309);
+}
+
 .cal-cell.in-range {
   background: var(--m-green-light);
   color: var(--m-green);
@@ -296,6 +316,15 @@
 .cal-cell.selected {
   background: var(--m-green);
   color: white;
+}
+
+.cal-cell.selected.is-busy {
+  background: var(--m-green);
+  color: white;
+}
+
+.cal-cell.selected.is-busy::after {
+  background: white;
 }
 
 .cal-cell.start-range {
