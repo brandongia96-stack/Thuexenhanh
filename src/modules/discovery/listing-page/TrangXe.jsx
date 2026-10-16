@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import { ChevronLeft, MapPin, AlertTriangle, CarFront } from 'lucide-react'
+import { ChevronLeft, MapPin, AlertTriangle, CarFront, Zap } from 'lucide-react'
 
 import { useAuth } from '../../auth/AuthProvider'
 import { VerifiedBadge } from '../../../components/Badge'
@@ -93,6 +93,7 @@ export default function TrangXe() {
   const ten = `${tin.brand_text} ${tin.model_text}${tin.year ? ` ${tin.year}` : ''}`
   const conSong = conHienThi(tin)
   const noi = [tin.tenQuan, tin.tenTinh].filter(Boolean).join(', ')
+  const freeSac = tin.charge_policy === 'mien_phi' || tin.charge_policy === 'mien_phi_gioi_han'
 
   return (
     <div className="page trangxe">
@@ -113,11 +114,26 @@ export default function TrangXe() {
 
       <div className="trangxe-luoi">
         <div className="trangxe-trai">
-          <SliderAnh anh={tin.anh} ten={ten} />
+          <SliderAnh
+            anh={tin.anh}
+            ten={ten}
+            freeSac={freeSac}
+            freeChargeKm={tin.free_charge_km}
+            chargePolicy={tin.charge_policy}
+          />
 
           <header className="trangxe-dau">
             <h1 className="t-h1">{ten}</h1>
             <div className="row trangxe-nhan">
+              {freeSac && (
+                <span
+                  className="badge badge-freesac"
+                  title={tin.charge_policy === 'mien_phi_gioi_han' && tin.free_charge_km ? `Miễn phí sạc trong ${tin.free_charge_km} km` : 'Chủ xe cam kết miễn phí sạc pin'}
+                >
+                  <Zap size={13} fill="currentColor" strokeWidth={2.2} aria-hidden="true" />
+                  Free sạc
+                </span>
+              )}
               <VerifiedBadge verified={tin.is_verified} />
               {noi && (
                 <span className="t-small row" style={{ gap: 'var(--sp-1)' }}>
@@ -137,6 +153,25 @@ export default function TrangXe() {
             )}
           </header>
 
+          {/* Khối cam kết Free sạc nổi bật ngay trên đầu thông tin xe */}
+          {freeSac && (
+            <div className="trangxe-hop-freesac" role="region" aria-label="Ưu đãi Free sạc">
+              <div className="trangxe-hop-freesac-icon">
+                <Zap size={22} fill="currentColor" strokeWidth={2} aria-hidden="true" />
+              </div>
+              <div className="trangxe-hop-freesac-than">
+                <div className="trangxe-hop-freesac-tieude">
+                  Ưu đãi nổi bật: Miễn phí sạc pin (Free sạc)
+                </div>
+                <p className="trangxe-hop-freesac-mota">
+                  {tin.charge_policy === 'mien_phi_gioi_han' && tin.free_charge_km
+                    ? `Chủ xe cam kết miễn phí sạc pin trong giới hạn ${tin.free_charge_km} km. Bạn tiết kiệm tối đa chi phí nhiên liệu trong suốt chuyến đi!`
+                    : 'Chủ xe cam kết miễn phí sạc pin toàn bộ trong suốt chuyến đi. Bạn an tâm di chuyển mà không lo phát sinh chi phí sạc!'}
+                </p>
+              </div>
+            </div>
+          )}
+
           {/* Bản mobile của khối Chủ xe — xem .chuxe-trongnoi/.chuxe-trongdock
               trong TrangXe.css cho lý do tại sao có hai bản. */}
           {tin.chuXe && (
@@ -150,7 +185,12 @@ export default function TrangXe() {
           <KhoiGia tin={tin} />
           <BangTinhTongTien tin={tin} userId={user?.id ?? null} conHienThi={conSong} />
           <KhoiMoTa text={tin.description} />
-          <KhoiQuyDinhPin text={tin.battery_policy_note} fuel={tin.fuel} />
+          <KhoiQuyDinhPin
+            text={tin.battery_policy_note}
+            fuel={tin.fuel}
+            chargePolicy={tin.charge_policy}
+            freeChargeKm={tin.free_charge_km}
+          />
           <KhoiLichBan khoang={tin.ngayChan} calendarUpdatedAt={tin.calendar_updated_at} />
           <BanDo tin={tin} />
           <KhoiDanhGia />
@@ -169,6 +209,12 @@ export default function TrangXe() {
               <span className="t-price">{formatVnd(tin.price_per_day)}</span>
               <span className="t-small">/ ngày</span>
             </div>
+            {freeSac && (
+              <div className="hop-freesac-tag">
+                <Zap size={14} fill="currentColor" strokeWidth={2.2} aria-hidden="true" />
+                <span>Bao gồm miễn phí sạc pin</span>
+              </div>
+            )}
             <NutLuu tin={tin} />
             <HopLienHe tin={tin} userId={user?.id ?? null} conHienThi={conSong} />
             

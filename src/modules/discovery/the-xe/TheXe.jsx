@@ -59,8 +59,12 @@ function TheXe({ the, bangDiaGioi, uuTien = false, tu = '', den = '' }) {
     <article className={'card card-hover thexe' + (the.is_verified ? ' thexe-xacminh' : '')}>
       <div className="thexe-anh" style={the.cover_blur ? { backgroundImage: `url(${the.cover_blur})` } : undefined}>
         {freeSac && (
-          <span className="thexe-sac">
-            <Zap size={12} strokeWidth={2} aria-hidden="true" /> Free sạc
+          <span
+            className="thexe-sac"
+            title={the.charge_policy === 'mien_phi_gioi_han' && the.free_charge_km ? `Miễn phí sạc trong ${the.free_charge_km} km` : 'Chủ xe cam kết miễn phí sạc pin'}
+          >
+            <Zap size={13} fill="currentColor" strokeWidth={2.2} aria-hidden="true" />
+            <span>Free sạc</span>
           </span>
         )}
         {/* Liên kết phủ kín ảnh. Hai nút nổi bên dưới là anh em của nó chứ không

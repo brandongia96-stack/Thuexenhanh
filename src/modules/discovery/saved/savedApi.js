@@ -60,6 +60,7 @@ export async function boLuu(userId, listingId) {
 const COT_THE =
   'id,status,brand_text,model_text,year,seats,transmission,fuel,price_per_day,' +
   'province_id,district_id,is_verified,published_at,expires_at,owner_id,' +
+  'ev_range_km,charge_policy,' +
   'cover_thumb,cover_blur,cover_width,cover_height,owner_ten,owner_avatar'
 
 const TRANG = 20

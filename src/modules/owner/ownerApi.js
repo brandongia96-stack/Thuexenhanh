@@ -21,6 +21,7 @@ export const TRANG = 20
 const COT_THE =
   'id,status,brand_text,model_text,year,seats,transmission,fuel,price_per_day,' +
   'province_id,district_id,is_verified,published_at,expires_at,' +
+  'charge_policy,' +
   'cover_thumb,cover_blur,cover_width,cover_height,report_count,' +
   'owner_id,owner_ten,owner_avatar,calendar_updated_at'
 

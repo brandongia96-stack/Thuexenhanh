@@ -8,7 +8,7 @@
 
 import { memo } from 'react'
 import { Link } from 'react-router-dom'
-import { BarChart3, Calendar, Car, ChevronDown, Pencil, Phone, PhoneOff, RefreshCw, ShieldAlert } from 'lucide-react'
+import { BarChart3, Calendar, Car, ChevronDown, Pencil, Phone, PhoneOff, RefreshCw, ShieldAlert, Zap } from 'lucide-react'
 import Badge, { VerifiedBadge } from '../../components/Badge'
 import { formatVnd, formatDate, formatPhone } from '../../lib/format'
 import { coTheGiaHan, coTheSua, loiNhacHan, nhanTrangThai, trangThaiThuc } from '../listing/lifecycle'
@@ -18,10 +18,17 @@ import BieuDo, { ChuGiai } from './BieuDo'
 import { DongSo } from './ChiSo'
 
 function Anh({ xe, uuTien }) {
+  const freeSac = xe.charge_policy === 'mien_phi' || xe.charge_policy === 'mien_phi_gioi_han'
+
   if (!xe.cover_thumb) {
     // Không có ảnh thì hiện đúng là không có ảnh. Không nhét ảnh mẫu.
     return (
       <div className="the-xe-anh the-xe-anh-trong">
+        {freeSac && (
+          <span className="thexe-sac">
+            <Zap size={12} fill="currentColor" strokeWidth={2.2} aria-hidden="true" /> Free sạc
+          </span>
+        )}
         <Car size={28} strokeWidth={1.5} />
         <span className="t-small">Chưa có ảnh</span>
       </div>
@@ -33,6 +40,11 @@ function Anh({ xe, uuTien }) {
       // Ảnh mờ 20px đi kèm JSON, hiện ngay, tốn 0 request (HIEU-NANG.md 1.2).
       style={xe.cover_blur ? { backgroundImage: `url(${xe.cover_blur})` } : undefined}
     >
+      {freeSac && (
+        <span className="thexe-sac">
+          <Zap size={12} fill="currentColor" strokeWidth={2.2} aria-hidden="true" /> Free sạc
+        </span>
+      )}
       <img
         src={xe.cover_thumb}
         alt=""

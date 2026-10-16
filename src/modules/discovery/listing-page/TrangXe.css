@@ -56,6 +56,41 @@
 .chuxe-trongnoi { display: none; }
 .chuxe-trongdock { display: block; }
 .trangxe-nhan { flex-wrap: wrap; gap: var(--sp-2); }
+.badge-freesac {
+  background: var(--m-green-ok-bg);
+  color: var(--m-green-ok);
+  box-shadow: inset 0 0 0 1.5px var(--m-green-ok);
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Khối nổi bật "Free sạc" trong trang chi tiết xe */
+.trangxe-hop-freesac {
+  display: flex; align-items: flex-start; gap: var(--sp-3);
+  padding: var(--sp-4);
+  background: var(--m-green-ok-bg);
+  border: 1.5px solid var(--m-green-ok);
+  border-radius: var(--r-box);
+  box-shadow: var(--shadow-sm);
+}
+.trangxe-hop-freesac-icon {
+  display: flex; align-items: center; justify-content: center;
+  width: 40px; height: 40px; flex: none;
+  border-radius: var(--r-box);
+  background: var(--m-green-ok); color: #fff;
+  box-shadow: 0 2px 6px rgba(22, 163, 74, .3);
+}
+.trangxe-hop-freesac-than {
+  display: flex; flex-direction: column; gap: 4px; min-width: 0;
+}
+.trangxe-hop-freesac-tieude {
+  font-size: 15px; font-weight: 700; color: var(--m-green-ok);
+}
+.trangxe-hop-freesac-mota {
+  font-size: 14px; color: var(--m-dark); line-height: 1.5; margin: 0;
+}
 
 /* ─── Thông báo tin hết hạn / không còn hiển thị ─── */
 .bang-hethan {
@@ -105,6 +140,23 @@
 .slider-to {
   top: var(--sp-3); right: var(--sp-3); transform: none;
   width: 32px; height: 32px;
+}
+
+/* Huy hiệu "Free sạc" nổi bật góc trái trên slider ảnh chi tiết */
+.slider-sac {
+  position: absolute; top: var(--sp-3); left: var(--sp-3); z-index: 2;
+  display: inline-flex; align-items: center; gap: 5px;
+  height: 30px; padding: 0 var(--sp-3);
+  border-radius: var(--r-box);
+  background: var(--m-green-ok); color: #fff;
+  font-size: 13px; font-weight: 800; letter-spacing: .02em;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, .35), 0 0 0 1.5px rgba(255, 255, 255, .4);
+  text-shadow: 0 1px 2px rgba(0, 0, 0, .25);
+  pointer-events: auto;
+}
+.slider-sac svg {
+  flex: none;
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, .2));
 }
 
 .slider-dem {
@@ -180,6 +232,14 @@
 
 .mota { font-size: 15px; line-height: 1.7; color: var(--m-mid); white-space: pre-line; }
 
+.quydinh-sac {
+  display: flex; flex-direction: column; gap: var(--sp-2);
+  padding: var(--sp-3); border-radius: var(--r-box);
+  background: var(--m-bg); font-size: 14px;
+}
+.quydinh-sac-dong { display: flex; flex-direction: column; gap: 2px; }
+.quydinh-sac-giatri { color: var(--m-green-ok); font-size: 15px; font-weight: 700; }
+
 .lichban { display: flex; flex-direction: column; gap: var(--sp-2); }
 .lichban li {
   display: flex; align-items: center; gap: var(--sp-2);
@@ -207,6 +267,15 @@
 /* ─── Hộp liên hệ (cột phải) ─── */
 .hop-lienhe { display: flex; flex-direction: column; gap: var(--sp-3); }
 .hop-gia { display: flex; align-items: baseline; gap: var(--sp-1); }
+.hop-freesac-tag {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--m-green-ok-bg);
+  color: var(--m-green-ok);
+  border-radius: var(--r-box);
+  box-shadow: inset 0 0 0 1px var(--m-green-ok);
+  font-size: 13px; font-weight: 700;
+}
 
 .lienhe { display: flex; flex-direction: column; gap: var(--sp-3); }
 .lienhe-loi { font-size: 13px; color: var(--m-red); }

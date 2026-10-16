@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { ChevronLeft, ChevronRight, Expand, X, ImageOff } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Expand, X, ImageOff, Zap } from 'lucide-react'
 import { anhTin, tiLeKhung, napTruoc } from '../anh'
 
 /**
@@ -11,7 +11,7 @@ import { anhTin, tiLeKhung, napTruoc } from '../anh'
  *   · Vuốt nhanh qua thì huỷ request ảnh không còn cần.
  *   · Mọi <img> có aspect-ratio → ảnh tải xong trang không nhảy (CLS).
  */
-export default function SliderAnh({ anh = [], ten }) {
+export default function SliderAnh({ anh = [], ten, freeSac = false, freeChargeKm = null, chargePolicy = null }) {
   const [i, setI] = useState(0)
   const [hien, setHien] = useState(() => new Set([0])) // chỉ mục đã được phép tải
   const [phongTo, setPhongTo] = useState(false)
@@ -73,6 +73,15 @@ export default function SliderAnh({ anh = [], ten }) {
           chamX.current = null
         }}
       >
+        {freeSac && (
+          <div
+            className="slider-sac"
+            title={chargePolicy === 'mien_phi_gioi_han' && freeChargeKm ? `Miễn phí sạc trong ${freeChargeKm} km` : 'Chủ xe cam kết miễn phí sạc pin'}
+          >
+            <Zap size={14} fill="currentColor" strokeWidth={2.2} aria-hidden="true" />
+            <span>Free sạc</span>
+          </div>
+        )}
         {anh.map((a, idx) => {
           const src = anhTin(a, 'medium')
           if (!src) return null

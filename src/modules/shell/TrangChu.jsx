@@ -17,6 +17,7 @@ import './TrangChu.css'
 const COT_THE =
   'id,status,brand_text,model_text,year,seats,transmission,fuel,price_per_day,' +
   'province_id,district_id,is_verified,published_at,owner_id,' +
+  'ev_range_km,charge_policy,' +
   'cover_thumb,cover_blur,cover_width,cover_height'
 
 // Dưới ngưỡng này thì ẩn cả khối "Thuê xe điện" — vài xe lẻ tẻ không đủ để
@@ -138,7 +139,7 @@ function XeDien() {
       if (!sb) return
       const { data, error } = await sb
         .from('listing_card')
-        .select(COT_THE + ',ev_range_km,charge_policy')
+        .select(COT_THE)
         .eq('status', 'dang_hien_thi')
         .eq('fuel', 'dien')
         .order('published_at', { ascending: false })

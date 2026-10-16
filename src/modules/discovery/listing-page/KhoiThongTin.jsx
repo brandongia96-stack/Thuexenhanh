@@ -1,6 +1,6 @@
 import {
   Users, Cog, Fuel, Calendar, Palette, Car, Gauge as GaugeIcon,
-  MapPin, CalendarX2, Hash,
+  MapPin, CalendarX2, Hash, Zap,
 } from 'lucide-react'
 // 13 icon tiện nghi — import TỪNG CÁI. Import cả gói lucide-react là hơn 1 MB
 // (HIEU-NANG.md mục 3, CLAUDE.md mục 1.4).
@@ -54,7 +54,24 @@ export function KhoiThongSo({ tin }) {
         ? `${tin.fuel_consumption} ${tin.fuel === 'dien' ? 'km / 1%' : 'lít / 100km'}`
         : null,
     },
-  ].filter((d) => d.value != null && d.value !== '')
+    tin.fuel === 'dien' && tin.ev_range_km != null
+      ? { icon: Zap, label: 'Quãng đường 1 lần sạc', value: `${tin.ev_range_km} km` }
+      : null,
+    tin.fuel === 'dien' && tin.charge_policy
+      ? {
+          icon: Zap,
+          label: 'Chính sách sạc',
+          value:
+            tin.charge_policy === 'mien_phi'
+              ? 'Miễn phí sạc pin (Free sạc)'
+              : tin.charge_policy === 'mien_phi_gioi_han'
+                ? `Miễn phí sạc (${tin.free_charge_km ? `giới hạn ${tin.free_charge_km} km` : 'có giới hạn km'})`
+                : tin.charge_policy === 'tinh_theo_phan_tram'
+                  ? 'Tính phí theo % pin'
+                  : 'Khách tự trả tiền sạc',
+        }
+      : null,
+  ].filter(Boolean).filter((d) => d.value != null && d.value !== '')
 
   return (
     <Khoi title="Thông số xe" trong={!dong.length}>
@@ -137,13 +154,27 @@ export function KhoiMoTa({ text }) {
   )
 }
 
-/**
- * Quy định Pin của xe điện.
- */
-export function KhoiQuyDinhPin({ text, fuel }) {
+export function KhoiQuyDinhPin({ text, fuel, chargePolicy, freeChargeKm }) {
+  const coSac = Boolean(chargePolicy)
+  const coText = Boolean(text?.trim())
+  if (fuel !== 'dien' || (!coSac && !coText)) return null
+
   return (
-    <Khoi title="Chính sách & Quy định Pin" trong={fuel !== 'dien' || !text?.trim()}>
-      <p className="mota">{text}</p>
+    <Khoi title="Chính sách sạc & Quy định Pin">
+      {coSac && (
+        <div className="quydinh-sac">
+          <div className="quydinh-sac-dong">
+            <span className="t-small">Chính sách sạc pin:</span>
+            <strong className="quydinh-sac-giatri">
+              {chargePolicy === 'mien_phi' && '⚡ Miễn phí sạc pin (Chủ xe tài trợ sạc toàn bộ)'}
+              {chargePolicy === 'mien_phi_gioi_han' && `⚡ Miễn phí sạc trong giới hạn ${freeChargeKm ? `${freeChargeKm} km` : ''}`}
+              {chargePolicy === 'tinh_theo_phan_tram' && 'Tính phí sạc theo % pin đã sử dụng khi trả xe'}
+              {chargePolicy === 'khach_tu_sac' && 'Khách tự thanh toán chi phí sạc pin dọc đường'}
+            </strong>
+          </div>
+        </div>
+      )}
+      {coText && <p className="mota" style={{ marginTop: coSac ? 'var(--sp-2)' : 0 }}>{text}</p>}
     </Khoi>
   )
 }
