@@ -7,11 +7,14 @@
 // Trang tự biết mình đang ở chế độ nào qua `:id` — không cần hai component.
 // Bắt buộc xác thực số điện thoại trước khi đăng tin mới.
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useNavigate, useParams, Link } from 'react-router-dom'
-import { ArrowLeft, ShieldAlert, ShieldCheck, AlertCircle, PhoneCall } from 'lucide-react'
+import { ArrowLeft, ShieldAlert, ShieldCheck, AlertCircle, PhoneCall, Coins, Plus } from 'lucide-react'
 import { useAuth } from '../auth/AuthProvider'
-import { HAS_BACKEND } from '../../lib/config'
+import { HAS_BACKEND, FLAGS } from '../../lib/config'
+import { HopNapToken, soDuVi, isTokenDemo, SU_KIEN_DEMO_THAY_DOI, SU_KIEN_VI_THAY_DOI } from '../billing'
+import '../billing/billing.css'
+import './editor/FormDangTin.css'
 import { useFormDangTin } from './editor/useFormDangTin'
 import FormDangTin from './editor/FormDangTin'
 import KhoiHienThi from './lifecycle/KhoiHienThi'
@@ -22,8 +25,36 @@ export default function TrangDangTin() {
   const navigate = useNavigate()
   const { user, profile, loading, reload, capNhatSoDienThoaiXacThuc } = useAuth()
   const [moModalOtp, setMoModalOtp] = useState(false)
+  const [soDu, setSoDu] = useState(null)
+  const [moNapToken, setMoNapToken] = useState(false)
 
   const daXacThucSdt = Boolean(profile?.phone && profile?.phone_verified_at)
+
+  const taiSoDu = useCallback(async () => {
+    const uid = user?.id || (isTokenDemo() ? 'demo-user-01' : null)
+    if (!uid) return
+    try {
+      const v = await soDuVi(uid)
+      setSoDu(v?.so_du ?? 0)
+    } catch {
+      setSoDu(0)
+    }
+  }, [user?.id])
+
+  useEffect(() => {
+    taiSoDu()
+  }, [taiSoDu])
+
+  useEffect(() => {
+    const handleDemoChange = () => taiSoDu()
+    const handleWalletChange = () => taiSoDu()
+    window.addEventListener(SU_KIEN_DEMO_THAY_DOI, handleDemoChange)
+    window.addEventListener(SU_KIEN_VI_THAY_DOI, handleWalletChange)
+    return () => {
+      window.removeEventListener(SU_KIEN_DEMO_THAY_DOI, handleDemoChange)
+      window.removeEventListener(SU_KIEN_VI_THAY_DOI, handleWalletChange)
+    }
+  }, [taiSoDu])
 
   const dieuKhien = useFormDangTin({
     listingId: id ?? null,
@@ -72,16 +103,36 @@ export default function TrangDangTin() {
   if (!daXacThucSdt) {
     return (
       <div className="page stack" style={{ maxWidth: 640, margin: '0 auto' }}>
-        <div className="row" style={{ marginBottom: 'var(--sp-4)', alignItems: 'flex-start' }}>
-          <button className="btn btn-ghost btn-sm" onClick={() => navigate(-1)} style={{ marginTop: 'var(--sp-1)' }}>
-            <ArrowLeft size={16} strokeWidth={1.8} />
-            Quay lại
-          </button>
-          <div>
-            <h1 className="t-h2" style={{ margin: 0 }}>Đăng xe cho thuê</h1>
-            <p className="t-small" style={{ margin: 'var(--sp-1) 0 0 0', color: 'var(--m-mid)' }}>
-              Bạn có nhiều xe? <Link to="/lien-he" style={{ color: 'var(--m-green)', fontWeight: 600 }}>Bấm liên hệ thêm</Link>
-            </p>
+        <div className="tdt-header" style={{ marginBottom: 'var(--sp-4)' }}>
+          <div className="tdt-header-left">
+            <button className="btn btn-ghost btn-sm" onClick={() => navigate(-1)} style={{ marginTop: 'var(--sp-1)' }}>
+              <ArrowLeft size={16} strokeWidth={1.8} />
+              Quay lại
+            </button>
+            <div>
+              <h1 className="t-h2" style={{ margin: 0 }}>Đăng xe cho thuê</h1>
+              <p className="t-small" style={{ margin: 'var(--sp-1) 0 0 0', color: 'var(--m-mid)' }}>
+                Bạn có nhiều xe? <Link to="/lien-he" style={{ color: 'var(--m-green)', fontWeight: 600 }}>Bấm liên hệ thêm</Link>
+              </p>
+            </div>
+          </div>
+
+          <div className="tdt-token-widget">
+            <Link to="/chu-xe/vi" className="tdt-sodu-link" title="Xem ví token">
+              <Coins size={16} className="tdt-coin-icon" />
+              <span className="tdt-sodu-label">Số dư:</span>
+              <strong className="tdt-sodu-val">{soDu != null ? `${soDu} token` : '...'}</strong>
+            </Link>
+            <button
+              type="button"
+              className="tdt-btn-topup"
+              onClick={() => setMoNapToken(true)}
+              title="Nạp thêm token"
+              aria-label="Nạp thêm token"
+            >
+              <Plus size={15} strokeWidth={2.5} />
+              <span className="tdt-btn-topup-label">Nạp token</span>
+            </button>
           </div>
         </div>
 
@@ -173,6 +224,18 @@ export default function TrangDangTin() {
             setMoModalOtp(false)
           }}
         />
+
+        {/* Modal nạp token */}
+        {moNapToken && (
+          <HopNapToken
+            onDong={() => setMoNapToken(false)}
+            onXong={() => {
+              setMoNapToken(false)
+              taiSoDu()
+            }}
+            demo={!FLAGS.nap_tien_that && !isTokenDemo()}
+          />
+        )}
       </div>
     )
   }
@@ -180,18 +243,39 @@ export default function TrangDangTin() {
   // ĐÃ XÁC THỰC SỐ ĐIỆN THOẠI → MỞ FORM ĐĂNG TIN
   return (
     <div className="page stack">
-      <div className="row" style={{ alignItems: 'flex-start' }}>
-        <button className="btn btn-ghost btn-sm" onClick={() => navigate(-1)} style={{ marginTop: 'var(--sp-1)' }}>
-          <ArrowLeft size={16} strokeWidth={1.8} />
-          Quay lại
-        </button>
-        <div>
-          <h1 className="t-h1" style={{ margin: 0 }}>{id ? 'Sửa tin đăng' : 'Đăng xe cho thuê'}</h1>
-          {!id && (
-            <p className="t-small" style={{ margin: 'var(--sp-1) 0 0 0', color: 'var(--m-mid)' }}>
-              Bạn có nhiều xe? <Link to="/lien-he" style={{ color: 'var(--m-green)', fontWeight: 600 }}>Bấm liên hệ thêm</Link>
-            </p>
-          )}
+      <div className="tdt-header">
+        <div className="tdt-header-left">
+          <button className="btn btn-ghost btn-sm" onClick={() => navigate(-1)} style={{ marginTop: 'var(--sp-1)' }}>
+            <ArrowLeft size={16} strokeWidth={1.8} />
+            Quay lại
+          </button>
+          <div>
+            <h1 className="t-h1" style={{ margin: 0 }}>{id ? 'Sửa tin đăng' : 'Đăng xe cho thuê'}</h1>
+            {!id && (
+              <p className="t-small" style={{ margin: 'var(--sp-1) 0 0 0', color: 'var(--m-mid)' }}>
+                Bạn có nhiều xe? <Link to="/lien-he" style={{ color: 'var(--m-green)', fontWeight: 600 }}>Bấm liên hệ thêm</Link>
+              </p>
+            )}
+          </div>
+        </div>
+
+        {/* Khối số dư & dấu + để topup token */}
+        <div className="tdt-token-widget">
+          <Link to="/chu-xe/vi" className="tdt-sodu-link" title="Xem ví token & lịch sử giao dịch">
+            <Coins size={16} className="tdt-coin-icon" />
+            <span className="tdt-sodu-label">Số dư:</span>
+            <strong className="tdt-sodu-val">{soDu != null ? `${soDu} token` : '...'}</strong>
+          </Link>
+          <button
+            type="button"
+            className="tdt-btn-topup"
+            onClick={() => setMoNapToken(true)}
+            title="Nạp thêm token"
+            aria-label="Nạp thêm token"
+          >
+            <Plus size={15} strokeWidth={2.5} />
+            <span className="tdt-btn-topup-label">Nạp token</span>
+          </button>
         </div>
       </div>
 
@@ -200,6 +284,8 @@ export default function TrangDangTin() {
 
       <FormDangTin
         dieuKhien={dieuKhien}
+        soDu={soDu}
+        onMoNapToken={() => setMoNapToken(true)}
         onXong={async (listingId, viec) => {
           // Tin đầu tiên vừa biến khách thành chủ xe (trigger phía server). Nạp lại
           // vai trò TRƯỚC khi chuyển trang, nếu không RequireRole còn nhớ vai trò cũ
@@ -216,6 +302,18 @@ export default function TrangDangTin() {
           if (id) navigate('/chu-xe/dang-tin', { replace: true })
         }}
       />
+
+      {/* Modal nạp token */}
+      {moNapToken && (
+        <HopNapToken
+          onDong={() => setMoNapToken(false)}
+          onXong={() => {
+            setMoNapToken(false)
+            taiSoDu()
+          }}
+          demo={!FLAGS.nap_tien_that && !isTokenDemo()}
+        />
+      )}
     </div>
   )
 }

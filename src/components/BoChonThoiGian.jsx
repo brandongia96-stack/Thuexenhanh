@@ -41,6 +41,20 @@ function dinhDangNgay(val) {
   return `${p(d.getDate())}/${p(d.getMonth() + 1)}/${d.getFullYear()}`
 }
 
+function dinhDangKhoangNgay(tu, den) {
+  if (!tu || !den) return ''
+  const d1 = typeof tu === 'string' ? new Date(`${tu}T00:00:00`) : tu
+  const d2 = typeof den === 'string' ? new Date(`${den}T00:00:00`) : den
+  if (!d1 || isNaN(d1.getTime()) || !d2 || isNaN(d2.getTime())) return ''
+  const p = (n) => String(n).padStart(2, '0')
+  const y1 = d1.getFullYear()
+  const y2 = d2.getFullYear()
+  if (y1 === y2) {
+    return `${p(d1.getDate())}/${p(d1.getMonth() + 1)} – ${p(d2.getDate())}/${p(d2.getMonth() + 1)}/${y1}`
+  }
+  return `${p(d1.getDate())}/${p(d1.getMonth() + 1)}/${y1} – ${p(d2.getDate())}/${p(d2.getMonth() + 1)}/${y2}`
+}
+
 function dinhDangInputString(d) {
   if (!d || isNaN(d.getTime())) return 'Chọn ngày'
   const p = (n) => String(n).padStart(2, '0')
@@ -292,37 +306,87 @@ export default function BoChonThoiGian({
     : dinhDangInputString(gioTra)
 
   const khoangThoiGianText = chiNgay
-    ? (coNgayChon ? `${Math.max(1, Math.round((new Date(`${den}T00:00:00`) - new Date(`${tu}T00:00:00`)) / 86_400_000))} ngày` : '—')
+    ? (coNgayChon ? `${Math.max(1, Math.round((new Date(`${den}T00:00:00`) - new Date(`${tu}T00:00:00`)) / 86_400_000))} ngày` : '')
     : tinhKhoangThoiGian(gioNhan, gioTra)
 
   return (
     <>
       <div className="banggia-thoigian-nhom">
-        <button
-          type="button"
-          className="banggia-trigger-hopnhat"
-          onClick={moModal}
-          title="Bấm để chọn thời gian nhận và trả xe"
-        >
-          <div className="banggia-trigger-khoi">
-            <span className="banggia-trigger-nhan">Nhận xe</span>
-            <span className="banggia-trigger-giatri">{nhanText}</span>
-          </div>
+        {chiNgay ? (
+          !coNgayChon ? (
+            <button
+              type="button"
+              className="banggia-trigger-hopnhat banggia-trigger--loc-trong"
+              onClick={moModal}
+              title="Bấm để chọn ngày nhận và trả xe"
+            >
+              <div className="banggia-trigger-loc-trai">
+                <Calendar size={18} className="banggia-trigger-lich-icon" />
+                <span className="banggia-trigger-loc-placeholder">Chọn ngày nhận — trả xe</span>
+              </div>
+              <ArrowRight size={14} className="banggia-trigger-loc-arrow" />
+            </button>
+          ) : (
+            <div className="banggia-trigger-hopnhat banggia-trigger--loc-dachon">
+              <button
+                type="button"
+                className="banggia-trigger-loc-nut-chinh"
+                onClick={moModal}
+                title="Bấm để đổi ngày nhận và trả xe"
+              >
+                <Calendar size={18} className="banggia-trigger-lich-icon" />
+                <div className="banggia-trigger-loc-dachon-chu">
+                  <span className="banggia-trigger-loc-khoang">
+                    {dinhDangKhoangNgay(tu, den)}
+                  </span>
+                  {khoangThoiGianText && (
+                    <span className="banggia-trigger-badge">{khoangThoiGianText}</span>
+                  )}
+                </div>
+              </button>
+              <button
+                type="button"
+                className="banggia-trigger-xoa"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  boChon()
+                }}
+                title="Xóa bộ lọc ngày"
+                aria-label="Xóa bộ lọc ngày"
+              >
+                <X size={15} />
+              </button>
+            </div>
+          )
+        ) : (
+          <button
+            type="button"
+            className="banggia-trigger-hopnhat banggia-trigger--banggia"
+            onClick={moModal}
+            title="Bấm để chọn thời gian nhận và trả xe"
+          >
+            <div className="banggia-trigger-khoi">
+              <span className="banggia-trigger-nhan">Nhận xe</span>
+              <span className="banggia-trigger-giatri">{nhanText}</span>
+            </div>
 
-          <div className="banggia-trigger-ngan">
-            <span className="banggia-trigger-badge">{khoangThoiGianText}</span>
-            <ArrowRight size={14} className="banggia-trigger-arrow" />
-          </div>
+            <div className="banggia-trigger-ngan">
+              {khoangThoiGianText && khoangThoiGianText !== '—' && (
+                <span className="banggia-trigger-badge">{khoangThoiGianText}</span>
+              )}
+              <ArrowRight size={14} className="banggia-trigger-arrow" />
+            </div>
 
-          <div className="banggia-trigger-khoi banggia-trigger-khoi-tra">
-            <span className="banggia-trigger-nhan">Trả xe</span>
-            <span className="banggia-trigger-giatri">{traText}</span>
-          </div>
+            <div className="banggia-trigger-khoi banggia-trigger-khoi-tra">
+              <span className="banggia-trigger-nhan">Trả xe</span>
+              <span className="banggia-trigger-giatri">{traText}</span>
+            </div>
 
-          <div className="banggia-trigger-lich">
-            <Calendar size={18} />
-          </div>
-        </button>
+            <div className="banggia-trigger-lich">
+              <Calendar size={18} />
+            </div>
+          </button>
+        )}
       </div>
 
       {mo && (

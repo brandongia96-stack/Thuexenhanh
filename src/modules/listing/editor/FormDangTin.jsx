@@ -6,7 +6,7 @@
 //   3. Chủ xe không tự đặt được tích xanh. Không có ô nào cho việc đó.
 
 import { useState } from 'react'
-import { AlertCircle, AlertTriangle, CheckCircle2, Copy, HelpCircle, Info, Loader2, Save, Send } from 'lucide-react'
+import { AlertCircle, AlertTriangle, CheckCircle2, Copy, HelpCircle, Info, Loader2, Plus, Save, Send } from 'lucide-react'
 import { AMENITIES } from '../../../data/amenities'
 import { TOKENS_PER_MONTH } from '../../../lib/config'
 import { vndForMonths } from '../../../lib/pricing'
@@ -19,7 +19,7 @@ import ModalSoSanhGoi from './ModalSoSanhGoi'
 import TruongNhap from './TruongNhap'
 import './FormDangTin.css'
 
-export default function FormDangTin({ dieuKhien, onXong, onNhanBan }) {
+export default function FormDangTin({ dieuKhien, onXong, onNhanBan, soDu, onMoNapToken }) {
   const {
     goi, doiGoi,
     form, doiTruong, doiTienNghi, chonTatCaTienNghi,
@@ -250,12 +250,35 @@ export default function FormDangTin({ dieuKhien, onXong, onNhanBan }) {
       {/* ─── Giá hiển thị tin: nói thẳng trước khi bấm gửi ─── */}
       <div className="card card-pad fdt-gia">
         <Info size={18} strokeWidth={1.8} />
-        <div>
-          <strong>Hiển thị tin tốn {TOKENS_PER_MONTH} token cho 1 tháng</strong>
+        <div style={{ flex: 1 }}>
+          <div className="fdt-gia-top">
+            <strong>Hiển thị tin tốn {TOKENS_PER_MONTH} token cho 1 tháng</strong>
+            {soDu !== undefined && soDu !== null && (
+              <div className="fdt-gia-sodu-inline">
+                <span>Số dư: <strong>{soDu} token</strong></span>
+                {onMoNapToken && (
+                  <button
+                    type="button"
+                    className="fdt-btn-topup-inline"
+                    onClick={onMoNapToken}
+                    title="Nạp thêm token"
+                  >
+                    <Plus size={13} strokeWidth={2.5} />
+                    <span>Nạp</span>
+                  </button>
+                )}
+              </div>
+            )}
+          </div>
           <p className="t-small">
             Tương đương {formatVnd(vndForMonths(1))}. Token chỉ bị trừ sau khi tin được duyệt và
             anh xác nhận đăng — gửi duyệt chưa mất gì. Tin luôn có hạn, hết hạn thì gia hạn tiếp.
           </p>
+          {soDu != null && soDu < TOKENS_PER_MONTH && (
+            <p className="t-small fdt-gia-nhac-thieu">
+              Số dư hiện tại ({soDu} token) chưa đủ để hiển thị xe sau khi duyệt. Anh có thể bấm dấu + ở trên để nạp trước hoặc nạp sau khi tin được duyệt.
+            </p>
+          )}
         </div>
       </div>
 

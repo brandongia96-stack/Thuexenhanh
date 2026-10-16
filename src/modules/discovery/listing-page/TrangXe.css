@@ -353,17 +353,17 @@
 }
 
 .banggia-hang-phu {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--sp-3);
-  align-items: stretch;
+  display: flex;
+  align-items: flex-end;
+  gap: var(--sp-4);
+  flex-wrap: wrap;
 }
 
 .banggia-field-km {
   margin: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
+  flex: 1;
+  min-width: 200px;
+  max-width: 340px;
 }
 
 .banggia-input-km-wrap {
@@ -386,29 +386,26 @@
   pointer-events: none;
 }
 
-.banggia-the-giaoxe {
-  display: flex;
+.banggia-check-giaoxe {
+  display: inline-flex;
   align-items: center;
-  gap: var(--sp-3);
-  padding: 8px var(--sp-3);
-  background: var(--m-surface);
-  border: 1px solid var(--m-border);
-  border-radius: var(--r-box);
+  gap: 7px;
+  height: 44px;
   cursor: pointer;
-  transition: all var(--t-fast);
   user-select: none;
-  min-height: 42px;
-  align-self: end;
-  width: 100%;
+  font-size: 13.5px;
+  color: var(--m-dark);
+  padding: 0 var(--sp-1);
 }
 
-.banggia-the-giaoxe:hover {
-  border-color: var(--m-green);
+.banggia-check-giaoxe:hover .banggia-giaoxe-chu,
+.banggia-check-giaoxe.active .banggia-giaoxe-chu {
+  color: var(--m-green);
 }
 
-.banggia-the-giaoxe.active {
-  background: var(--m-green-light);
-  border-color: var(--m-green);
+.banggia-check-giaoxe:hover .banggia-giaoxe-icon,
+.banggia-check-giaoxe.active .banggia-giaoxe-icon {
+  color: var(--m-green);
 }
 
 .banggia-giaoxe-check {
@@ -417,35 +414,30 @@
   accent-color: var(--m-green);
   cursor: pointer;
   flex-shrink: 0;
+  margin: 0;
 }
 
-.banggia-giaoxe-noidung {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
+.banggia-giaoxe-icon {
+  color: var(--m-mid);
+  flex-shrink: 0;
+  transition: color var(--t-fast);
 }
 
-.banggia-giaoxe-tieude {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 13px;
-  font-weight: 700;
+.banggia-giaoxe-chu {
+  font-weight: 600;
   color: var(--m-dark);
+  white-space: nowrap;
+  transition: color var(--t-fast);
 }
 
 .banggia-giaoxe-phu {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--m-mid);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
-.banggia-the-giaoxe.active .banggia-giaoxe-phu {
+.banggia-check-giaoxe.active .banggia-giaoxe-phu {
   color: var(--m-green);
-  font-weight: 600;
+  font-weight: 500;
 }
 
 .banggia-trong {
@@ -611,10 +603,17 @@
 
 @media (max-width: 600px) {
   .banggia-hang-phu {
-    grid-template-columns: 1fr;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--sp-2);
   }
-  .banggia-the-giaoxe {
-    align-self: stretch;
+  .banggia-field-km {
+    max-width: 100%;
+    width: 100%;
+  }
+  .banggia-check-giaoxe {
+    height: auto;
+    padding: var(--sp-1) 0;
   }
   .banggia-coc-luoi {
     grid-template-columns: 1fr;

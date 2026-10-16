@@ -40,6 +40,7 @@
   color: var(--m-mid);
   text-transform: uppercase;
   letter-spacing: 0.3px;
+  white-space: nowrap;
 }
 
 .banggia-trigger-giatri {
@@ -64,6 +65,7 @@
   padding: 2px 8px;
   border-radius: var(--r-box);
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .banggia-trigger-arrow {
@@ -79,6 +81,104 @@
   margin-left: auto;
   padding-left: var(--sp-2);
   flex-shrink: 0;
+}
+
+/* ─── Dành cho bộ lọc tìm kiếm (chiNgay) ─── */
+.banggia-trigger--loc-trong {
+  height: 44px;
+  padding: 0 var(--sp-3);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.banggia-trigger-loc-trai {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+}
+
+.banggia-trigger-lich-icon {
+  color: var(--m-green);
+  flex-shrink: 0;
+}
+
+.banggia-trigger-loc-placeholder {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--m-mid);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.banggia-trigger-loc-arrow {
+  color: var(--m-subtle);
+  flex-shrink: 0;
+}
+
+.banggia-trigger--loc-dachon {
+  min-height: 44px;
+  padding: 4px var(--sp-2) 4px var(--sp-3);
+  border-color: var(--m-green-border);
+  background: var(--m-surface);
+}
+
+.banggia-trigger--loc-dachon:hover {
+  border-color: var(--m-green);
+  box-shadow: 0 0 0 1px var(--m-green);
+}
+
+.banggia-trigger-loc-nut-chinh {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  flex: 1;
+  min-width: 0;
+  cursor: pointer;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 4px 0;
+  color: inherit;
+  font-family: inherit;
+}
+
+.banggia-trigger-loc-dachon-chu {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+
+.banggia-trigger-loc-khoang {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--m-dark);
+  white-space: nowrap;
+}
+
+.banggia-trigger-xoa {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--r-box);
+  color: var(--m-subtle);
+  background: none;
+  border: none;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: all var(--t-fast);
+  margin-left: 4px;
+}
+
+.banggia-trigger-xoa:hover {
+  background: var(--m-red-bg);
+  color: var(--m-red);
 }
 
 /* Tabs chọn bước trong popup */
@@ -358,22 +458,22 @@
 }
 
 @media (max-width: 520px) {
-  .banggia-trigger-hopnhat {
+  .banggia-trigger--banggia {
     display: grid;
     grid-template-columns: 1fr auto;
     row-gap: 8px;
     column-gap: var(--sp-2);
     padding: var(--sp-3);
   }
-  .banggia-trigger-ngan {
+  .banggia-trigger--banggia .banggia-trigger-ngan {
     display: none;
   }
-  .banggia-trigger-khoi-tra {
+  .banggia-trigger--banggia .banggia-trigger-khoi-tra {
     grid-column: 1 / 2;
     border-top: 1px dashed var(--m-border);
     padding-top: 6px;
   }
-  .banggia-trigger-lich {
+  .banggia-trigger--banggia .banggia-trigger-lich {
     grid-row: 1 / 3;
     grid-column: 2 / 3;
     align-self: center;

@@ -1,0 +1,433 @@
+/* Modal Báo Cáo Tin Đăng — Đồng bộ theo design tokens của Thuexenhanh */
+
+.modal-baocao-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: var(--z-modal);
+  padding: var(--sp-4);
+  animation: modalBaoCaoFadeIn 0.2s ease-out;
+}
+
+@keyframes modalBaoCaoFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-baocao-card {
+  background: var(--m-surface);
+  border-radius: var(--r-box);
+  border: 1px solid var(--m-border);
+  box-shadow: var(--shadow-xl);
+  width: 100%;
+  max-width: 520px;
+  max-height: calc(100vh - var(--sp-8));
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  animation: modalBaoCaoSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes modalBaoCaoSlideUp {
+  from { transform: translateY(16px) scale(0.98); opacity: 0; }
+  to { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* ─── Header ─── */
+.modal-baocao-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-4) var(--sp-5);
+  border-bottom: 1px solid var(--m-border);
+  background: var(--m-surface);
+  flex-shrink: 0;
+}
+
+.modal-baocao-header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  min-width: 0;
+}
+
+.mbc-icon-wrap {
+  width: 38px;
+  height: 38px;
+  border-radius: var(--r-circle);
+  background: var(--m-red-bg);
+  color: var(--m-red);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.mbc-header-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.mbc-header-title {
+  font-size: 17px;
+  font-weight: 700;
+  color: var(--m-dark);
+  margin: 0;
+  line-height: 1.3;
+}
+
+.mbc-header-sub {
+  font-size: 13px;
+  color: var(--m-subtle);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-top: 2px;
+}
+
+.mbc-close-btn {
+  background: none;
+  border: none;
+  color: var(--m-subtle);
+  cursor: pointer;
+  padding: var(--sp-2);
+  border-radius: var(--r-box);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--t-fast);
+  flex-shrink: 0;
+}
+
+.mbc-close-btn:hover {
+  background: var(--m-bg);
+  color: var(--m-dark);
+}
+
+/* ─── Body ─── */
+.modal-baocao-body {
+  padding: var(--sp-5);
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-4);
+  flex: 1;
+}
+
+.mbc-bat-buoc {
+  color: var(--m-red);
+}
+
+/* ─── Danh sách lý do ─── */
+.mbc-reasons {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+}
+
+.mbc-reason-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-box);
+  background: var(--m-surface);
+  cursor: pointer;
+  transition: all var(--t-fast);
+  text-align: left;
+  user-select: none;
+  width: 100%;
+}
+
+.mbc-reason-item:hover {
+  background: var(--m-bg);
+  border-color: #cbd5e1;
+}
+
+.mbc-reason-selected {
+  background: var(--m-blue-bg);
+  border-color: var(--m-blue);
+  box-shadow: 0 0 0 1px var(--m-blue);
+}
+
+.mbc-reason-selected:hover {
+  background: var(--m-blue-bg);
+}
+
+.mbc-radio-circle {
+  width: 18px;
+  height: 18px;
+  border-radius: var(--r-circle);
+  border: 2px solid var(--m-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+  transition: all var(--t-fast);
+}
+
+.mbc-reason-selected .mbc-radio-circle {
+  border-color: var(--m-blue);
+  background: var(--m-blue);
+}
+
+.mbc-radio-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: var(--r-circle);
+  background: #ffffff;
+}
+
+.mbc-reason-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mbc-reason-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--m-dark);
+  line-height: 1.4;
+}
+
+.mbc-reason-selected .mbc-reason-label {
+  font-weight: 600;
+  color: var(--m-blue);
+}
+
+.mbc-reason-desc {
+  font-size: 12px;
+  color: var(--m-subtle);
+  line-height: 1.35;
+}
+
+/* ─── Ô nhập chi tiết ─── */
+.modal-baocao-body .textarea {
+  min-height: 80px;
+  font-size: 14px;
+}
+
+/* ─── Khu vực tải bằng chứng ─── */
+.mbc-upload-dropzone {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  border: 1.5px dashed var(--m-border);
+  border-radius: var(--r-box);
+  background: var(--m-bg);
+  cursor: pointer;
+  transition: all var(--t-fast);
+}
+
+.mbc-upload-dropzone:hover {
+  border-color: var(--m-blue);
+  background: var(--m-blue-bg);
+}
+
+.mbc-upload-icon {
+  color: var(--m-blue);
+  flex-shrink: 0;
+}
+
+.mbc-upload-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.mbc-upload-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--m-dark);
+}
+
+.mbc-upload-hint {
+  font-size: 12px;
+  color: var(--m-subtle);
+}
+
+.mbc-file-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--sp-2);
+  margin-top: var(--sp-2);
+}
+
+.mbc-file-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--m-surface);
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-box);
+  font-size: 13px;
+}
+
+.mbc-file-left {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  min-width: 0;
+  color: var(--m-dark);
+}
+
+.mbc-file-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 260px;
+  font-weight: 500;
+}
+
+.mbc-file-size {
+  color: var(--m-subtle);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.mbc-file-remove {
+  background: none;
+  border: none;
+  color: var(--m-subtle);
+  cursor: pointer;
+  padding: 4px;
+  border-radius: var(--r-box);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--t-fast);
+}
+
+.mbc-file-remove:hover {
+  background: var(--m-red-bg);
+  color: var(--m-red);
+}
+
+.mbc-privacy-note {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+  padding: var(--sp-2) var(--sp-3);
+  background: var(--m-blue-bg);
+  border-radius: var(--r-box);
+  color: var(--m-mid);
+  font-size: 12px;
+  line-height: 1.4;
+  margin-top: var(--sp-1);
+}
+
+.mbc-privacy-note svg {
+  color: var(--m-blue);
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ─── Cam kết ─── */
+.mbc-camket-box {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-3);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--m-bg);
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-box);
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1.45;
+  color: var(--m-dark);
+  transition: background var(--t-fast);
+}
+
+.mbc-camket-box:hover {
+  background: #ebebee;
+}
+
+.mbc-camket-input {
+  width: 17px;
+  height: 17px;
+  margin-top: 2px;
+  cursor: pointer;
+  accent-color: var(--m-blue);
+  flex-shrink: 0;
+}
+
+/* ─── Báo lỗi ─── */
+.mbc-error-alert {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  padding: var(--sp-3) var(--sp-4);
+  background: var(--m-red-bg);
+  border: 1px solid rgba(232, 54, 75, 0.2);
+  border-radius: var(--r-box);
+  color: var(--m-red);
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+.mbc-error-alert svg {
+  flex-shrink: 0;
+}
+
+/* ─── Footer ─── */
+.modal-baocao-footer {
+  padding: var(--sp-4) var(--sp-5);
+  border-top: 1px solid var(--m-border);
+  background: var(--m-bg);
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--sp-3);
+  flex-shrink: 0;
+}
+
+.mbc-spin {
+  animation: mbcSpin 1s linear infinite;
+}
+
+@keyframes mbcSpin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* ─── Trạng thái thành công ─── */
+.mbc-success-view {
+  padding: var(--sp-8) var(--sp-6);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--sp-4);
+}
+
+.mbc-success-icon {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--r-circle);
+  background: var(--m-green-ok-bg);
+  color: var(--m-green-ok);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: var(--sp-1);
+}
+
+.mbc-success-desc {
+  font-size: 14px;
+  color: var(--m-mid);
+  line-height: 1.6;
+  max-width: 400px;
+  margin: 0;
+}

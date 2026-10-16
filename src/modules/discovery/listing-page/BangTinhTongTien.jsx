@@ -148,7 +148,7 @@ export default function BangTinhTongTien({ tin, userId, conHienThi }) {
 
   const phuDeGiaoXe = useMemo(() => {
     if (tin.delivery_fee != null) {
-      return tin.delivery_fee === 0 ? 'Miễn phí giao xe' : `+${formatVnd(tin.delivery_fee)}`
+      return tin.delivery_fee === 0 ? 'Miễn phí' : `+${formatVnd(tin.delivery_fee)}`
     }
     return tin.delivery_fee_note || 'Thỏa thuận theo cự ly'
   }, [tin.delivery_fee, tin.delivery_fee_note])
@@ -191,20 +191,16 @@ export default function BangTinhTongTien({ tin, userId, conHienThi }) {
               </div>
             </label>
 
-            <label className={`banggia-the-giaoxe ${canGiaoXe ? 'active' : ''}`}>
+            <label className={`banggia-check-giaoxe ${canGiaoXe ? 'active' : ''}`}>
               <input
                 type="checkbox"
                 className="banggia-giaoxe-check"
                 checked={canGiaoXe}
                 onChange={(e) => setCanGiaoXe(e.target.checked)}
               />
-              <div className="banggia-giaoxe-noidung">
-                <div className="banggia-giaoxe-tieude">
-                  <Truck size={16} strokeWidth={2} />
-                  <span>Cần giao xe tận nơi</span>
-                </div>
-                <span className="banggia-giaoxe-phu">{phuDeGiaoXe}</span>
-              </div>
+              <Truck size={16} strokeWidth={2} className="banggia-giaoxe-icon" />
+              <span className="banggia-giaoxe-chu">Giao xe tận nơi</span>
+              <span className="banggia-giaoxe-phu">({phuDeGiaoXe})</span>
             </label>
           </div>
         </div>
