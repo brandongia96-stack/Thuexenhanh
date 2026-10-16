@@ -57,6 +57,12 @@ function banSuKien(ten, detail) {
  *   3. localStorage: key `token-demo` === '1' hoặc 'true'
  */
 export function isTokenDemo() {
+  // 0. KHÔNG BAO GIỜ bật trên bản production (anh xác nhận rà 17/10): ở chế
+  //    độ demo, "trả phí hiển thị" chỉ trừ ví giả trong trình duyệt — chủ xe
+  //    thật bấm ?demo=1 sẽ tưởng tin đã lên mà thực ra không. Chỉ dùng ở máy dev
+  //    / bản xem thử (VITE_APP_ENV khác 'production').
+  if (import.meta.env?.VITE_APP_ENV === 'production') return false
+
   // 1. Kiểm tra query param trong URL
   try {
     if (typeof window !== 'undefined' && window.location) {

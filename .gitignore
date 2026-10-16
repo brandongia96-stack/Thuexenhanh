@@ -47,3 +47,13 @@ supabase/.temp/
 
 # Codebase cu, chi de tra cuu - khong theo doi, khong doc
 _archive/
+
+# Công cụ quét CCCD (rà 17/10): KHÔNG commit ảnh giấy tờ, kết quả quét, cache Python.
+# Repo đang CÔNG KHAI — ảnh CCCD người thật từng lọt lên GitHub.
+tools/cccd-scanner/anh_cccd_dau_vao/
+tools/cccd-scanner/ket_qua_xuat_excel/
+tools/cccd-scanner/*.webp
+tools/cccd-scanner/*.jpg
+tools/cccd-scanner/*.jpeg
+__pycache__/
+*.pyc

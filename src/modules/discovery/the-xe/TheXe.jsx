@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { MapPin, Users, Cog, Fuel, Clock, Share2, Check, X, Zap, AlertTriangle, Star } from 'lucide-react'
+import { MapPin, Users, Cog, Fuel, Clock, Share2, Check, X, Zap, AlertTriangle } from 'lucide-react'
 
 import { VerifiedBadge } from '../../../components/Badge'
 import { formatVndShort, timeAgo } from '../../../lib/format'
@@ -110,10 +110,9 @@ function TheXe({ the, bangDiaGioi, uuTien = false, tu = '', den = '' }) {
             )}
           </div>
           <div className="thexe-dau-phai">
-            <span className="thexe-rating" title="Đánh giá 5.0 ★ · Chủ xe phản hồi nhanh">
-              <Star size={12} fill="var(--m-amber)" color="var(--m-amber)" aria-hidden="true" />
-              <span>5.0</span>
-            </span>
+            {/* Cố ý KHÔNG có điểm sao: chưa có đánh giá thật (luồng 09 còn tắt).
+                "★ 5.0" gõ cứng cho mọi xe từng lên production 16/10 — gỡ 17/10
+                (CLAUDE.md 1.2: cấm số liệu giả). */}
           </div>
         </div>
 

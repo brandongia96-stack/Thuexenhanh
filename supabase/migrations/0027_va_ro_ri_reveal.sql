@@ -1,5 +1,5 @@
 -- ============================================================
--- 0025 — Vá rò rỉ SĐT qua reveal-phone (rà bảo mật 12/10/2026).
+-- 0027 (đổi số từ 0025 ngày 17/10, trùng số) — Vá rò rỉ SĐT qua reveal-phone (rà bảo mật 12/10/2026).
 -- Chạy SAU 0021 (nơi tạo reveal_da_xem_24h). Chạy lại nhiều lần được.
 --
 -- Lỗ: hàm đếm hạn mức, khi KHÔNG xác định được danh tính (p_actor null VÀ

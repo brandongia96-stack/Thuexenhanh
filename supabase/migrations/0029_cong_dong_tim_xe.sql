@@ -1,3 +1,9 @@
+-- ⛔ CHƯA CHẠY TRÊN SUPABASE — CHỜ ANH CHỐT (rà "anti" 17/10/2026).
+-- Đổi số từ 0027 (trùng). File này thêm "gói Pro" cho chủ xe (trả token để xem
+-- SĐT khách đăng tìm xe) — là NGUỒN THU MỚI, ngoài phí hiển thị tin (CLAUDE.md
+-- 1.1, mục 6) và làm lộ SĐT khách thuê cho chủ xe trả tiền. Phải được anh duyệt
+-- mô hình + luồng 12 viết đồng ý cho khách trước khi chạy.
+
 -- ============================================================
 -- 0027 — BẢNG TIN CỘNG ĐỒNG TÌM XE & HỆ THỐNG THÔNG BÁO CHỦ XE (GÓI PRO)
 -- Chạy SAU 0026. Chạy lại nhiều lần được.
