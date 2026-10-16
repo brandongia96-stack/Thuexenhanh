@@ -33,20 +33,10 @@ export function AuthProvider({ children }) {
       sb.from('user_roles').select('role').eq('user_id', userId).is('deleted_at', null),
     ])
     if (huy.current) return
-    let finalProfile = u ?? null
-    if (finalProfile && !finalProfile.phone_verified_at && typeof localStorage !== 'undefined') {
-      try {
-        const cached = localStorage.getItem(`txn_verified_phone_${userId}`)
-        if (cached) {
-          const parsed = JSON.parse(cached)
-          if (parsed.phone === finalProfile.phone || !finalProfile.phone) {
-            finalProfile.phone_verified_at = parsed.verified_at
-            if (!finalProfile.phone) finalProfile.phone = parsed.phone
-          }
-        }
-      } catch {}
-    }
-    setProfile(finalProfile)
+    // "Đã xác thực SĐT" CHỈ lấy từ CSDL. Không đọc localStorage để tự gán
+    // `phone_verified_at` — cái đó là xác thực giả, ai sửa localStorage cũng
+    // thành "đã xác thực".
+    setProfile(u ?? null)
     setRoles(r?.map((x) => x.role) ?? [])
   }, [])
 
@@ -116,15 +106,13 @@ export function AuthProvider({ children }) {
     setRoles([])
   }, [])
 
-  const capNhatSoDienThoaiXacThuc = useCallback((phone, verifiedAt = new Date().toISOString()) => {
-    setProfile((prev) => (prev ? { ...prev, phone, phone_verified_at: verifiedAt } : prev))
-    const uid = session?.user?.id
-    if (uid && typeof localStorage !== 'undefined') {
-      try {
-        localStorage.setItem(`txn_verified_phone_${uid}`, JSON.stringify({ phone, verified_at: verifiedAt }))
-      } catch {}
-    }
-  }, [session?.user?.id])
+  // Sau khi verify-otp THẬT chạy xong, server đã ghi `phone_verified_at`; nơi gọi
+  // luôn `await reload()` ngay sau đó để đọc lại sự thật từ CSDL. Ở đây chỉ cập
+  // nhật SĐT hiển thị cho mượt — KHÔNG tự gán `phone_verified_at`, KHÔNG ghi
+  // localStorage (xác thực chỉ lấy từ CSDL).
+  const capNhatSoDienThoaiXacThuc = useCallback((phone) => {
+    setProfile((prev) => (prev ? { ...prev, phone } : prev))
+  }, [])
 
   const value = {
     session,

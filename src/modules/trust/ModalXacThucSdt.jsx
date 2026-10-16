@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import {
   ShieldCheck, Phone, X, AlertCircle, CheckCircle2,
-  RefreshCw, ArrowRight, Sparkles,
+  RefreshCw, ArrowRight,
 } from 'lucide-react'
 import { normalizePhone, isValidPhone } from '../../lib/phone'
 import { guiOtp, xacThucOtp } from './trustApi'
@@ -21,7 +21,6 @@ export default function ModalXacThucSdt({
   const [demNguoc, setDemNguoc] = useState(0)
   const [loi, setLoi] = useState(null)
   const [thanhCong, setThanhCong] = useState(false)
-  const [devCode, setDevCode] = useState(null)
 
   const otpInputRef = useRef(null)
 
@@ -32,7 +31,6 @@ export default function ModalXacThucSdt({
       setOtp('')
       setLoi(null)
       setThanhCong(false)
-      setDevCode(null)
       setBuoc(1)
     }
   }, [open, sdtBanDau])
@@ -65,14 +63,9 @@ export default function ModalXacThucSdt({
 
     setDangGui(true)
     try {
-      const res = await guiOtp(norm)
+      await guiOtp(norm)
       setBuoc(2)
       setDemNguoc(60)
-      if (res?.dev_code) {
-        setDevCode(res.dev_code)
-      } else {
-        setDevCode('123456')
-      }
     } catch (err) {
       setLoi(err?.message || 'Không thể gửi mã OTP, vui lòng thử lại sau.')
     } finally {
@@ -237,15 +230,6 @@ export default function ModalXacThucSdt({
                   required
                 />
               </div>
-
-              {devCode && (
-                <div className="modal-otp-test-box">
-                  <Sparkles size={16} color="var(--m-amber)" flexShrink={0} />
-                  <span>
-                    Chế độ thử nghiệm: mã OTP mẫu của bạn là <strong>{devCode}</strong>
-                  </span>
-                </div>
-              )}
 
               <div className="modal-otp-resend-row">
                 <button
