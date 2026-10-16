@@ -10,6 +10,35 @@
 
 import { getSupabase, callFunction } from '../../lib/supabase'
 import { publishIdemKey } from '../../lib/pricing'
+import {
+  isTokenDemo,
+  demoSoDuVi,
+  demoSoGiaoDich,
+  demoNapGanDay,
+  demoTrangThaiNap,
+  demoTaoYeuCauNap,
+  demoTraPhiHienThi,
+  batTokenDemo,
+  tatTokenDemo,
+  chuyenDoiTokenDemo,
+  demoXacNhanNapTien,
+  demoReset,
+  demoDieuChinhVi,
+  SU_KIEN_DEMO_THAY_DOI,
+  SU_KIEN_VI_THAY_DOI,
+} from './demo/tokenDemoStore'
+
+export {
+  isTokenDemo,
+  batTokenDemo,
+  tatTokenDemo,
+  chuyenDoiTokenDemo,
+  demoXacNhanNapTien,
+  demoReset,
+  demoDieuChinhVi,
+  SU_KIEN_DEMO_THAY_DOI,
+  SU_KIEN_VI_THAY_DOI,
+}
 
 export const TRANG_SO = 20
 
@@ -19,8 +48,12 @@ export const TRANG_SO = 20
  * TRẢ của mình với chủ xe, chỉ phần đã tiêu mới là doanh thu.
  *
  * Trả `null` khi chưa có ví — "chưa có ví" khác "có ví, 0 token".
+ * Khi bật biến `token-demo`, trả số dư từ kho demo.
  */
 export async function soDuVi(userId) {
+  if (isTokenDemo()) {
+    return demoSoDuVi(userId)
+  }
   const sb = await getSupabase()
   const { data, error } = await sb
     .from('wallet_balances')
@@ -37,8 +70,12 @@ export async function soDuVi(userId) {
  * Đọc view `wallet_ledger`: mỗi dòng có sẵn SỐ DƯ SAU tính bằng cửa sổ trượt
  * phía Postgres. Không tự cộng dồn ở client — client chỉ thấy một trang, cộng
  * dồn ở đây là ra số sai ngay từ trang thứ hai.
+ * Khi bật biến `token-demo`, đọc sổ giao dịch từ kho demo.
  */
 export async function soGiaoDich(userId, { cursor = null, limit = TRANG_SO } = {}) {
+  if (isTokenDemo()) {
+    return demoSoGiaoDich(userId, { cursor, limit })
+  }
   const sb = await getSupabase()
   let q = sb
     .from('wallet_ledger')
@@ -71,6 +108,9 @@ export async function soGiaoDich(userId, { cursor = null, limit = TRANG_SO } = {
 
 /** Các yêu cầu nạp gần đây. Dùng để nối lại một lần nạp còn dang dở. */
 export async function napGanDay(userId, { limit = 5 } = {}) {
+  if (isTokenDemo()) {
+    return demoNapGanDay(userId, { limit })
+  }
   const sb = await getSupabase()
   const { data, error } = await sb
     .from('topups')
@@ -85,6 +125,9 @@ export async function napGanDay(userId, { limit = 5 } = {}) {
 
 /** Trạng thái một lần nạp. Màn QR hỏi lại định kỳ cho tới khi tiền về. */
 export async function trangThaiNap(topupId) {
+  if (isTokenDemo()) {
+    return demoTrangThaiNap(topupId)
+  }
   const sb = await getSupabase()
   const { data, error } = await sb
     .from('topups')
@@ -95,13 +138,16 @@ export async function trangThaiNap(topupId) {
   return data ?? null
 }
 
-// ─── GHI: chỉ qua Edge Function ───
+// ─── GHI: chỉ qua Edge Function (hoặc demo khi bật token-demo) ───
 
 /**
  * Tạo yêu cầu nạp + sinh QR ngân hàng động.
  * KHÔNG cộng token. Token chỉ vào ví khi tiền thật về và webhook bắn tới.
  */
 export function taoYeuCauNap(tokenAmount) {
+  if (isTokenDemo()) {
+    return demoTaoYeuCauNap(tokenAmount)
+  }
   return callFunction('create-topup', { token_amount: tokenAmount })
 }
 
@@ -112,10 +158,14 @@ export function taoYeuCauNap(tokenAmount) {
  *
  * Giá do server tính lại từ `months`. Ở đây không gửi số token lên.
  */
-export function traPhiHienThi({ listingId, months }) {
+export function traPhiHienThi({ listingId, months, listing = null }) {
+  if (isTokenDemo()) {
+    return demoTraPhiHienThi({ listingId, months, listing })
+  }
   return callFunction('publish-listing', {
     listing_id: listingId,
     months,
     idem_key: publishIdemKey(listingId, months),
   })
 }
+

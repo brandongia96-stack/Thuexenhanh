@@ -4,6 +4,7 @@ import { canAccess } from '../modules/auth/rbac'
 import { PageLoading } from './Loading'
 import EmptyState from './EmptyState'
 import { ShieldAlert } from 'lucide-react'
+import { isTokenDemo } from '../modules/billing/billingApi'
 
 /**
  * Chặn điều hướng theo vai trò. Đây chỉ là lớp giao diện cho êm —
@@ -13,8 +14,14 @@ export default function RequireRole({ children }) {
   const { isLoggedIn, roles, loading } = useAuth()
   const { pathname } = useLocation()
 
+  // Chế độ token-demo: cho phép xem và thao tác thử ví token mà không cần đăng nhập
+  if (isTokenDemo() && (pathname === '/chu-xe/vi' || pathname === '/tai-khoan/vi')) {
+    return children
+  }
+
   if (loading) return <PageLoading />
   if (!isLoggedIn) return <Navigate to="/dang-nhap" state={{ from: pathname }} replace />
+
 
   if (!canAccess(pathname, roles)) {
     return (

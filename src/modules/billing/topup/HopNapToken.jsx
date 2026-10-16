@@ -1,8 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Copy, Check, Loader2 } from 'lucide-react'
+import { Copy, Check, Loader2, Sparkles } from 'lucide-react'
 import Hop from '../Hop'
 import { GOI_NAP, TOI_THIEU, TOI_DA } from '../goiNap'
-import { taoYeuCauNap, trangThaiNap } from '../billingApi'
+import { taoYeuCauNap, trangThaiNap, isTokenDemo, demoXacNhanNapTien } from '../billingApi'
 import { taoYeuCauNapDemo, oQrDemo } from '../demo/napDemo'
 import { vndForTokens } from '../../../lib/pricing'
 import { formatVnd } from '../../../lib/format'
@@ -64,6 +64,7 @@ function QrXemThu({ seed }) {
  * đều đeo nhãn. Dùng khi nạp tiền thật chưa mở (xem `demo/napDemo.js`).
  */
 export default function HopNapToken({ onDong, onXong, demo = false }) {
+  const cheDoDemo = demo || isTokenDemo()
   const [buoc, setBuoc] = useState('chon')      // chon | qr | xong
   const [tokens, setTokens] = useState(GOI_NAP[0].tokens)
   const [dangGui, setDangGui] = useState(false)
@@ -76,18 +77,21 @@ export default function HopNapToken({ onDong, onXong, demo = false }) {
 
   const tao = useCallback(async () => {
     if (!hopLe) return
-    // Bản xem thử: dựng dữ liệu tại chỗ, không gọi Edge Function.
-    if (demo) {
-      setYeuCau(taoYeuCauNapDemo(tokens))
-      setBuoc('qr')
-      return
-    }
     setDangGui(true)
     setLoi(null)
     try {
-      const kq = await taoYeuCauNap(tokens)
-      setYeuCau(kq)
-      setBuoc('qr')
+      if (isTokenDemo()) {
+        const kq = await taoYeuCauNap(tokens)
+        setYeuCau(kq)
+        setBuoc('qr')
+      } else if (demo) {
+        setYeuCau(taoYeuCauNapDemo(tokens))
+        setBuoc('qr')
+      } else {
+        const kq = await taoYeuCauNap(tokens)
+        setYeuCau(kq)
+        setBuoc('qr')
+      }
     } catch (e) {
       setLoi(e?.message ?? 'Không tạo được yêu cầu nạp')
     } finally {
@@ -95,11 +99,25 @@ export default function HopNapToken({ onDong, onXong, demo = false }) {
     }
   }, [tokens, hopLe, demo])
 
+  const giaLapTienVe = useCallback(async () => {
+    try {
+      if (isTokenDemo() && yeuCau?.topup_id) {
+        await demoXacNhanNapTien(yeuCau.topup_id)
+      }
+      setBuoc('xong')
+      onXong?.()
+    } catch (e) {
+      setLoi(e?.message ?? 'Lỗi khi mô phỏng tiền về')
+    }
+  }, [yeuCau, onXong])
+
   // Chờ tiền về. Dọn interval khi đóng hộp — quên chỗ này là app vẫn gọi mạng
   // sau khi người ta đã rời màn hình.
   useEffect(() => {
     if (buoc !== 'qr' || !yeuCau?.topup_id) return
-    if (demo) return   // xem thử thì không có gì để hỏi: anh tự bấm "giả lập tiền về"
+    // Nếu chỉ là demo giao diện tĩnh (không phải token-demo store) thì không hỏi định kỳ
+    if (demo && !isTokenDemo()) return
+
     demRef.current = 0
     let dung = false
 
@@ -130,25 +148,28 @@ export default function HopNapToken({ onDong, onXong, demo = false }) {
     return () => { dung = true; clearInterval(id) }
   }, [buoc, yeuCau, onXong, demo])
 
-  // Nhãn dán ở MỌI màn của bản xem thử. Không có ngoại lệ: một màn quên nhãn là
-  // một màn nhìn y như thật.
-  const nhanXemThu = demo ? (
+  // Nhãn dán ở MỌI màn của bản xem thử.
+  const nhanXemThu = cheDoDemo ? (
     <div className="hop-demo">
-      <b>Bản xem thử giao diện.</b> Số tài khoản và mã QR dưới đây là giả, không
-      chuyển tiền vào. Nạp token thật sẽ mở khi có tài khoản ngân hàng.
+      <b>{isTokenDemo() ? 'Chế độ Thử nghiệm Token (token-demo).' : 'Bản xem thử giao diện.'}</b>{' '}
+      {isTokenDemo()
+        ? 'Dữ liệu được lưu vào ví demo để anh kiểm tra toàn bộ luồng nạp và trừ phí như thật.'
+        : 'Số tài khoản và mã QR dưới đây là giả, không chuyển tiền vào. Nạp token thật sẽ mở khi có tài khoản ngân hàng.'}
     </div>
   ) : null
 
   if (buoc === 'xong') {
     return (
-      <Hop tieuDe={demo ? 'Đã cộng token (xem thử)' : 'Đã cộng token'} onDong={onDong}>
+      <Hop tieuDe={cheDoDemo ? 'Đã cộng token (thử nghiệm)' : 'Đã cộng token'} onDong={onDong}>
         {nhanXemThu}
         <div className="row" style={{ gap: 'var(--sp-3)' }}>
           <Check size={24} strokeWidth={2} color="var(--m-green-ok)" />
           <div>
             <div className="t-h3">{yeuCau?.token_amount} token đã vào ví</div>
             <div className="t-small">
-              {demo
+              {isTokenDemo()
+                ? 'Ví demo đã được cộng token và sổ giao dịch đã ghi nhận một dòng nạp mới.'
+                : demo
                 ? 'Ở bản thật, dòng này chỉ hiện sau khi ngân hàng báo tiền về. Ví của anh KHÔNG được cộng gì.'
                 : 'Sổ giao dịch đã ghi một dòng cho lần nạp này.'}
             </div>
@@ -162,7 +183,7 @@ export default function HopNapToken({ onDong, onXong, demo = false }) {
   if (buoc === 'qr' && yeuCau) {
     return (
       <Hop
-        tieuDe={demo ? 'Chuyển khoản để nhận token (xem thử)' : 'Chuyển khoản để nhận token'}
+        tieuDe={cheDoDemo ? 'Chuyển khoản để nhận token (thử nghiệm)' : 'Chuyển khoản để nhận token'}
         moTa="Quét mã bằng app ngân hàng. Số tiền và nội dung đã điền sẵn."
         onDong={onDong}
       >
@@ -176,7 +197,7 @@ export default function HopNapToken({ onDong, onXong, demo = false }) {
             height={240}
             alt={`Mã QR chuyển khoản ${formatVnd(yeuCau.vnd_amount)}`}
           />
-        ) : demo ? (
+        ) : cheDoDemo ? (
           <QrXemThu seed={yeuCau.token_amount} />
         ) : null}
 
@@ -194,12 +215,10 @@ export default function HopNapToken({ onDong, onXong, demo = false }) {
 
         {loi && <div className="hop-loi">{loi}</div>}
 
-        {/* Bản thật KHÔNG có nút này — token vào ví chỉ khi ngân hàng báo tiền
-            về (xem đầu file). Ở bản xem thử thì cần một cách để anh xem nốt
-            màn cuối, nên nút nói thẳng nó là giả lập. */}
-        {demo ? (
-          <button type="button" className="btn btn-ghost btn-block" onClick={() => setBuoc('xong')}>
-            Giả lập ngân hàng báo tiền về →
+        {/* Nút mô phỏng ở chế độ demo */}
+        {cheDoDemo ? (
+          <button type="button" className="btn btn-soft btn-block" onClick={giaLapTienVe}>
+            <Sparkles size={16} strokeWidth={2} /> Mô phỏng ngân hàng báo có tiền về ngay →
           </button>
         ) : hetGio ? (
           <div className="t-small">
@@ -215,6 +234,7 @@ export default function HopNapToken({ onDong, onXong, demo = false }) {
       </Hop>
     )
   }
+
 
   return (
     <Hop

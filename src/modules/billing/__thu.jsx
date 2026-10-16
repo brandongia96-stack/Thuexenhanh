@@ -1,15 +1,13 @@
-// TẠM — trang thử riêng của luồng 06, để nhìn tận mắt màn nạp token và màn trả
-// phí hiển thị mà không phải đăng nhập, không phải mở tài khoản ngân hàng.
+// Trang thử nghiệm riêng của luồng 06 và chế độ token-demo.
+// Cho phép demo và kiểm tra tận mắt toàn bộ thao tác liên quan đến token trong app:
+// nạp token, trừ phí hiển thị, gia hạn, hoàn token, phân trang sổ giao dịch.
 //
-// Theo đúng quy ước có sẵn của repo (`discovery/__thu.jsx` + `thu-luong-05.html`).
-// Dữ liệu dưới đây là DỮ LIỆU THỬ, chỉ sống trong file này — `App.jsx` KHÔNG
-// import file này, nên không có đường nào lọt vào app thật.
-//
-// Mở: `npm run dev` rồi vào /thu-luong-06.html
+// Mở: `npm run dev` rồi vào /thu-luong-06.html hoặc /chu-xe/vi?token-demo=1
 
-import React, { useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { createRoot } from 'react-dom/client'
 import { MemoryRouter } from 'react-router-dom'
+import { Sparkles, RotateCcw, Plus, ReceiptText } from 'lucide-react'
 import '../../styles.css'
 import './billing.css'
 
@@ -17,26 +15,19 @@ import HopNapToken from './topup/HopNapToken'
 import HopTraPhi from './charging/HopTraPhi'
 import { NHAN_GIAO_DICH, quyDoiVnd } from './goiNap'
 import { formatVnd, formatDateTime } from '../../lib/format'
-
-// Sổ giao dịch thử. Số dư sau được tính CỘNG DỒN như view `wallet_ledger` làm
-// phía Postgres, để nhìn ra ngay nếu bố cục cột bị lệch.
-const SO_THU = [
-  { kind: 'nap', amount: 50, note: 'Nạp 50 token · mã TXNAB2CD34', created_at: '2026-10-14T09:12:00Z' },
-  { kind: 'tieu', amount: -10, note: 'Hiển thị tin Toyota Innova · 1 tháng', created_at: '2026-10-14T09:20:00Z' },
-  { kind: 'tieu', amount: -30, note: 'Gia hạn tin Kia Morning · 3 tháng', created_at: '2026-10-15T14:02:00Z' },
-  { kind: 'hoan', amount: 10, note: 'Hoàn token do tin bị ẩn sai', created_at: '2026-10-16T08:30:00Z' },
-].reduce((acc, d, i) => {
-  const truoc = i === 0 ? 0 : acc[i - 1].so_du_sau
-  acc.push({ ...d, id: 'thu-' + i, so_du_sau: truoc + d.amount })
-  return acc
-}, [])
-
-const SO_DU = SO_THU[SO_THU.length - 1].so_du_sau
+import {
+  soDuVi,
+  soGiaoDich,
+  batTokenDemo,
+  demoReset,
+  demoDieuChinhVi,
+  SU_KIEN_VI_THAY_DOI,
+} from './billingApi'
 
 const TIN_THU = {
   id: '11111111-1111-4111-8111-111111111111',
   brand_text: 'Toyota',
-  model_text: 'Innova',
+  model_text: 'Innova 2022',
   published_at: null,          // chưa từng đăng -> hộp hiện "Trả phí hiển thị tin"
   expires_at: null,
 }
@@ -44,7 +35,7 @@ const TIN_GIA_HAN = {
   ...TIN_THU,
   id: '22222222-2222-4222-8222-222222222222',
   brand_text: 'Kia',
-  model_text: 'Morning',
+  model_text: 'Morning 2021',
   published_at: '2026-09-20T00:00:00Z',
   expires_at: '2026-10-28T00:00:00Z',   // còn hạn -> hộp phải NỐI TIẾP, không cắt ngắn
 }
@@ -70,46 +61,114 @@ function DongSo({ d }) {
 
 function Thu() {
   const [mo, setMo] = useState(null)   // nap | traphi | giahan | thieu
+  const [vi, setVi] = useState(null)
+  const [so, setSo] = useState([])
+
+  // Luôn kích hoạt demo mode trên trang thử này
+  useEffect(() => {
+    batTokenDemo()
+  }, [])
+
+  const tai = useCallback(async () => {
+    try {
+      const [b, s] = await Promise.all([soDuVi('demo-user'), soGiaoDich('demo-user')])
+      setVi(b)
+      setSo(s.items)
+    } catch (e) {
+      console.error('Lỗi tải ví demo:', e)
+    }
+  }, [])
+
+  useEffect(() => {
+    tai()
+    const handleUpdate = () => tai()
+    window.addEventListener(SU_KIEN_VI_THAY_DOI, handleUpdate)
+    return () => window.removeEventListener(SU_KIEN_VI_THAY_DOI, handleUpdate)
+  }, [tai])
+
+  const soDu = vi?.so_du ?? 0
+  const daNap = vi?.token_da_nap ?? 0
+  const daTieu = vi?.token_da_tieu ?? 0
 
   return (
     <div className="page stack">
-      <div>
-        <h1 className="t-h1">Thử ví token (luồng 06)</h1>
-        <p className="t-body">
-          Toàn bộ số liệu trên trang này là <b>dữ liệu thử</b> nằm trong{' '}
-          <code>src/modules/billing/__thu.jsx</code>. Không gọi Supabase, không
-          cộng trừ token của ai.
+      <div className="hop-demo stack" style={{ gap: 'var(--sp-2)' }}>
+        <div className="row" style={{ justifyContent: 'space-between', flexWrap: 'wrap', gap: 'var(--sp-2)' }}>
+          <div className="row" style={{ gap: 'var(--sp-2)' }}>
+            <Sparkles size={18} strokeWidth={2} />
+            <h1 className="t-h2" style={{ margin: 0 }}>Thử nghiệm tất cả thao tác Token (token-demo)</h1>
+          </div>
+          <div className="row" style={{ gap: 'var(--sp-2)', flexWrap: 'wrap' }}>
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm"
+              onClick={async () => {
+                await demoDieuChinhVi({ kind: 'hoan', tokens: 10, reason: 'Hoàn token khiếu nại (demo)' })
+                tai()
+              }}
+            >
+              +10 hoàn token
+            </button>
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm"
+              onClick={() => {
+                demoReset()
+                tai()
+              }}
+            >
+              <RotateCcw size={14} /> Đặt lại ví gốc (50 token)
+            </button>
+          </div>
+        </div>
+        <p className="t-body" style={{ margin: 0 }}>
+          Trang thử nghiệm trực quan kết nối với <code>tokenDemoStore</code>. Mọi thao tác nạp tiền, trừ phí hiển thị, gia hạn
+          và biến động số dư được lưu vào <code>localStorage</code> (key <code>thuexe_token_demo_state</code>) y như thật.
         </p>
       </div>
 
       <div className="vi-tomtat">
         <div className="vi-o vi-o-chinh">
           <span className="vi-nhan">Số dư</span>
-          <span className="vi-so">{SO_DU} token</span>
-          <span className="vi-phu">tương đương {formatVnd(quyDoiVnd(SO_DU))}</span>
+          <span className="vi-so">{soDu} token</span>
+          <span className="vi-phu">tương đương {formatVnd(quyDoiVnd(soDu))}</span>
         </div>
         <div className="vi-o">
           <span className="vi-nhan">Đã nạp</span>
-          <span className="vi-so-phu">60 token</span>
+          <span className="vi-so-phu">{daNap} token</span>
           <span className="vi-phu">tổng từ trước tới nay</span>
         </div>
         <div className="vi-o">
           <span className="vi-nhan">Đã dùng</span>
-          <span className="vi-so-phu">40 token</span>
+          <span className="vi-so-phu">{daTieu} token</span>
           <span className="vi-phu">đổi thành tháng hiển thị</span>
         </div>
       </div>
 
-      <div className="row" style={{ flexWrap: 'wrap' }}>
-        <button className="btn btn-primary" onClick={() => setMo('nap')}>Màn nạp token (xem thử)</button>
-        <button className="btn btn-ghost" onClick={() => setMo('traphi')}>Trả phí tin mới · ví đủ token</button>
-        <button className="btn btn-ghost" onClick={() => setMo('giahan')}>Gia hạn tin còn hạn</button>
-        <button className="btn btn-ghost" onClick={() => setMo('thieu')}>Ví thiếu token</button>
+      <div className="row" style={{ flexWrap: 'wrap', gap: 'var(--sp-2)' }}>
+        <button className="btn btn-primary" onClick={() => setMo('nap')}>
+          <Plus size={16} strokeWidth={2} /> Màn nạp token (chuyển khoản + tiền về)
+        </button>
+        <button className="btn btn-soft" onClick={() => setMo('traphi')}>
+          Trả phí tin mới (Toyota Innova · 1-12 tháng)
+        </button>
+        <button className="btn btn-soft" onClick={() => setMo('giahan')}>
+          Gia hạn tin còn hạn (Kia Morning · nối tiếp ngày)
+        </button>
+        <button className="btn btn-ghost" onClick={() => setMo('thieu')}>
+          Mô phỏng ví thiếu token (kiểm tra chặn)
+        </button>
       </div>
 
       <div className="card card-pad stack" style={{ gap: 0 }}>
-        <h2 className="t-h3" style={{ paddingBottom: 'var(--sp-3)' }}>Sổ giao dịch</h2>
-        {SO_THU.slice().reverse().map((d) => <DongSo key={d.id} d={d} />)}
+        <div className="row" style={{ justifyContent: 'space-between', paddingBottom: 'var(--sp-3)' }}>
+          <h2 className="t-h3">Sổ giao dịch đối soát ({so.length} dòng)</h2>
+        </div>
+        {so.length === 0 ? (
+          <div className="t-small">Chưa có giao dịch nào.</div>
+        ) : (
+          so.map((d) => <DongSo key={d.id} d={d} />)
+        )}
       </div>
 
       <p className="disclaimer">
@@ -117,15 +176,17 @@ function Thu() {
         không giữ tiền thuê xe — mọi giao dịch thuê xe do hai bên tự thoả thuận.
       </p>
 
-      {mo === 'nap' && <HopNapToken demo onDong={() => setMo(null)} />}
+      {mo === 'nap' && (
+        <HopNapToken demo onDong={() => setMo(null)} onXong={tai} />
+      )}
       {mo === 'traphi' && (
-        <HopTraPhi listing={TIN_THU} soDu={SO_DU} onDong={() => setMo(null)} />
+        <HopTraPhi listing={TIN_THU} soDu={soDu} onDong={() => setMo(null)} onXong={tai} />
       )}
       {mo === 'giahan' && (
-        <HopTraPhi listing={TIN_GIA_HAN} soDu={SO_DU} onDong={() => setMo(null)} />
+        <HopTraPhi listing={TIN_GIA_HAN} soDu={soDu} onDong={() => setMo(null)} onXong={tai} />
       )}
       {mo === 'thieu' && (
-        <HopTraPhi listing={TIN_THU} soDu={3} onDong={() => setMo(null)} />
+        <HopTraPhi listing={TIN_THU} soDu={2} onDong={() => setMo(null)} onXong={tai} />
       )}
     </div>
   )
@@ -138,3 +199,4 @@ createRoot(document.getElementById('root')).render(
     </MemoryRouter>
   </React.StrictMode>,
 )
+

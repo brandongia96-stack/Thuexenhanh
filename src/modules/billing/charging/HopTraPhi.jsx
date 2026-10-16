@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import { Check, Wallet } from 'lucide-react'
 import Hop from '../Hop'
 import HopNapToken from '../topup/HopNapToken'
-import { traPhiHienThi } from '../billingApi'
+import { traPhiHienThi, isTokenDemo } from '../billingApi'
 import { GOI_HIEN_THI } from '../../../lib/pricing'
 import { formatVnd, formatDate } from '../../../lib/format'
 import { FLAGS } from '../../../lib/config'
@@ -47,7 +47,7 @@ export default function HopTraPhi({ listing, soDu = 0, onDong, onXong }) {
     setDangGui(true)
     setLoi(null)
     try {
-      const kq = await traPhiHienThi({ listingId: listing.id, months })
+      const kq = await traPhiHienThi({ listingId: listing.id, months, listing })
       setXong(kq)
       onXong?.(kq)
     } catch (e) {
@@ -76,6 +76,7 @@ export default function HopTraPhi({ listing, soDu = 0, onDong, onXong }) {
             <div className="t-h3">Đã trừ {xong.token_charged} token</div>
             <div className="t-small">
               Hiển thị tới hết ngày {formatDate(xong.expires_at)}. Số dư còn {xong.so_du} token.
+              {isTokenDemo() && ' (Thử nghiệm token-demo: đã cập nhật vào ví demo)'}
             </div>
           </div>
         </div>
@@ -90,6 +91,12 @@ export default function HopTraPhi({ listing, soDu = 0, onDong, onXong }) {
       moTa={`${listing?.brand_text ?? ''} ${listing?.model_text ?? ''}`.trim() || undefined}
       onDong={onDong}
     >
+      {isTokenDemo() && (
+        <div className="hop-demo">
+          <b>Chế độ thử nghiệm (token-demo):</b> Thao tác sẽ trừ token trong ví demo, không phát sinh chi phí thật.
+        </div>
+      )}
+
       <div className="chon-luoi">
         {GOI_HIEN_THI.map((g) => (
           <button
@@ -130,10 +137,11 @@ export default function HopTraPhi({ listing, soDu = 0, onDong, onXong }) {
           <div className="hop-nhac">Còn thiếu {thieu} token để hiển thị {goi.label}.</div>
           {/* Nạp token chưa mở thì KHÔNG dựng nút "Nạp thêm" — bấm vào chỉ ra
               lỗi "chưa mở nạp tiền" từ Edge Function. Nút dẫn tới chỗ không
-              làm được là đúng thứ CLAUDE.md 1.2 cấm. Nói thật cách lấy token. */}
-          {FLAGS.nap_tien_that ? (
+              làm được là đúng thứ CLAUDE.md 1.2 cấm. Nói thật cách lấy token.
+              NHƯNG nếu đang ở chế độ token-demo, cho phép nạp thử nghiệm ngay! */}
+          {FLAGS.nap_tien_that || isTokenDemo() ? (
             <button type="button" className="btn btn-primary btn-block btn-lg" onClick={() => setMoNap(true)}>
-              <Wallet size={18} strokeWidth={1.8} /> Nạp thêm token
+              <Wallet size={18} strokeWidth={1.8} /> {isTokenDemo() ? 'Nạp thêm token (thử nghiệm)' : 'Nạp thêm token'}
             </button>
           ) : (
             <div className="t-small" style={{ textAlign: 'center' }}>

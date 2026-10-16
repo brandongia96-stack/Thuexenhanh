@@ -1,12 +1,22 @@
 import { useCallback, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Wallet, ReceiptText, Plus, Eye } from 'lucide-react'
+import { Wallet, ReceiptText, Plus, Eye, Sparkles, RotateCcw } from 'lucide-react'
 import { useAuth } from '../../auth/AuthProvider'
 import EmptyState from '../../../components/EmptyState'
 import Badge from '../../../components/Badge'
 import { Skeleton } from '../../../components/Loading'
 import HopNapToken from '../topup/HopNapToken'
-import { soDuVi, soGiaoDich } from '../billingApi'
+import {
+  soDuVi,
+  soGiaoDich,
+  isTokenDemo,
+  batTokenDemo,
+  tatTokenDemo,
+  demoReset,
+  demoDieuChinhVi,
+  SU_KIEN_DEMO_THAY_DOI,
+  SU_KIEN_VI_THAY_DOI,
+} from '../billingApi'
 import { NHAN_GIAO_DICH, quyDoiVnd } from '../goiNap'
 import { formatVnd, formatDateTime } from '../../../lib/format'
 import { FLAGS } from '../../../lib/config'
@@ -43,6 +53,7 @@ function DongSo({ d }) {
  */
 export default function TrangVi() {
   const { user, loading: dangDangNhap } = useAuth()
+  const [demoMode, setDemoMode] = useState(() => isTokenDemo())
   const [vi, setVi] = useState(null)
   const [so, setSo] = useState({ items: [], conNua: false, cursor: null })
   const [dangTai, setDangTai] = useState(true)
@@ -51,10 +62,14 @@ export default function TrangVi() {
   const [moNap, setMoNap] = useState(false)
 
   const tai = useCallback(async () => {
-    if (!user?.id) return
+    const uid = user?.id || (isTokenDemo() ? 'demo-user-01' : null)
+    if (!uid) {
+      setDangTai(false)
+      return
+    }
     setLoi(null)
     try {
-      const [b, s] = await Promise.all([soDuVi(user.id), soGiaoDich(user.id)])
+      const [b, s] = await Promise.all([soDuVi(uid), soGiaoDich(uid)])
       setVi(b)
       setSo(s)
     } catch (e) {
@@ -64,13 +79,33 @@ export default function TrangVi() {
     }
   }, [user?.id])
 
-  useEffect(() => { tai() }, [tai])
+  useEffect(() => {
+    tai()
+  }, [tai, demoMode])
+
+  // Lắng nghe thay đổi chế độ demo hoặc biến động số dư demo từ các màn khác
+  useEffect(() => {
+    const handleDemoChange = (e) => {
+      setDemoMode(Boolean(e.detail?.enabled))
+      tai()
+    }
+    const handleWalletChange = () => {
+      tai()
+    }
+    window.addEventListener(SU_KIEN_DEMO_THAY_DOI, handleDemoChange)
+    window.addEventListener(SU_KIEN_VI_THAY_DOI, handleWalletChange)
+    return () => {
+      window.removeEventListener(SU_KIEN_DEMO_THAY_DOI, handleDemoChange)
+      window.removeEventListener(SU_KIEN_VI_THAY_DOI, handleWalletChange)
+    }
+  }, [tai])
 
   const taiThem = async () => {
-    if (!so.cursor || dangTaiThem) return
+    const uid = user?.id || (isTokenDemo() ? 'demo-user-01' : null)
+    if (!so.cursor || dangTaiThem || !uid) return
     setDangTaiThem(true)
     try {
-      const tiep = await soGiaoDich(user.id, { cursor: so.cursor })
+      const tiep = await soGiaoDich(uid, { cursor: so.cursor })
       setSo((cu) => ({ ...tiep, items: [...cu.items, ...tiep.items] }))
     } catch (e) {
       setLoi(e?.message ?? 'Không tải thêm được')
@@ -79,7 +114,7 @@ export default function TrangVi() {
     }
   }
 
-  if (dangDangNhap || dangTai) {
+  if ((dangDangNhap && !demoMode) || dangTai) {
     return (
       <div className="page stack">
         <Skeleton height={28} width="30%" />
@@ -105,9 +140,72 @@ export default function TrangVi() {
 
   return (
     <div className="page stack">
+      {/* Thanh điều khiển Chế độ Thử nghiệm Token (token-demo) */}
+      {demoMode ? (
+        <div className="hop-demo stack" style={{ gap: 'var(--sp-2)' }}>
+          <div className="row" style={{ justifyContent: 'space-between', flexWrap: 'wrap', gap: 'var(--sp-2)' }}>
+            <div className="row" style={{ gap: 'var(--sp-2)' }}>
+              <Sparkles size={16} strokeWidth={2} />
+              <b>Chế độ Thử nghiệm Token (token-demo: ĐANG BẬT)</b>
+            </div>
+            <div className="row" style={{ gap: 'var(--sp-2)', flexWrap: 'wrap' }}>
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                onClick={async () => {
+                  await demoDieuChinhVi({ kind: 'tang', tokens: 30, reason: 'Nạp nhanh thử nghiệm' })
+                  tai()
+                }}
+              >
+                +30 token nhanh
+              </button>
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                onClick={() => {
+                  demoReset()
+                  tai()
+                }}
+              >
+                <RotateCcw size={14} /> Đặt lại 50 token
+              </button>
+              <button
+                type="button"
+                className="btn btn-ghost btn-sm"
+                style={{ color: 'var(--m-red)' }}
+                onClick={() => {
+                  tatTokenDemo()
+                  setDemoMode(false)
+                }}
+              >
+                Tắt demo (dùng số thật)
+              </button>
+            </div>
+          </div>
+          <div className="t-small">
+            Mọi thao tác nạp, trả phí đăng tin, gia hạn hoặc hoàn token đang chạy trên kho demo lưu trong trình duyệt.
+            Dữ liệu không mất khi tải lại trang và không ảnh hưởng CSDL thật.
+          </div>
+        </div>
+      ) : (
+        <div className="row" style={{ justifyContent: 'flex-end' }}>
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            style={{ color: 'var(--m-subtle)' }}
+            onClick={() => {
+              batTokenDemo()
+              setDemoMode(true)
+            }}
+          >
+            <Sparkles size={14} /> Bật chế độ thử nghiệm (token-demo)
+          </button>
+        </div>
+      )}
+
       <div className="row" style={{ justifyContent: 'space-between' }}>
         <h1 className="t-h1">Ví token</h1>
-        {FLAGS.nap_tien_that && (
+        {(FLAGS.nap_tien_that || demoMode) && (
           <button type="button" className="btn btn-primary" onClick={() => setMoNap(true)}>
             <Plus size={18} strokeWidth={2} /> Nạp token
           </button>
@@ -135,7 +233,7 @@ export default function TrangVi() {
       {/* Chưa mở nạp tiền thì nói thẳng là chưa mở, KHÔNG để một nút bấm vào
           không làm gì. Nút hứa hẹn thứ app chưa làm được là thứ bị cấm
           (CLAUDE.md mục 1.2). */}
-      {!FLAGS.nap_tien_that && (
+      {!FLAGS.nap_tien_that && !demoMode && (
         <div className="hop-nhac stack" style={{ gap: 'var(--sp-3)' }}>
           <span>
             Nạp token chưa mở — đang chờ tài khoản ngân hàng nhận tiền. Trong thời
@@ -185,10 +283,9 @@ export default function TrangVi() {
       </p>
 
       {moNap && (
-        /* Nạp tiền thật chưa mở -> hộp chạy ở chế độ xem thử: không gọi mạng,
-           không cộng token, mọi màn đeo nhãn "bản xem thử". */
-        <HopNapToken demo={!FLAGS.nap_tien_that} onDong={() => setMoNap(false)} onXong={tai} />
+        <HopNapToken demo={demoMode || !FLAGS.nap_tien_that} onDong={() => setMoNap(false)} onXong={tai} />
       )}
     </div>
   )
 }
+

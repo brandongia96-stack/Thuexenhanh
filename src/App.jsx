@@ -117,6 +117,7 @@ export default function App() {
               <Route path="/chu-xe/vi" element={
                 <RequireRole><TrangVi /></RequireRole>
               } />
+              <Route path="/tai-khoan/vi" element={<Navigate to="/chu-xe/vi" replace />} />
 
               {/* ── Vận hành ── */}
               <Route path="/kiem-duyet" element={
