@@ -7,7 +7,6 @@ import { HAS_BACKEND, FLAGS } from '../../lib/config'
 export default function DangNhap() {
   const { signInWithGoogle, signInWithEmail, isLoggedIn } = useAuth()
   const [loi, setLoi] = useState(null)
-  const [dongYTatCa, setDongYTatCa] = useState(false)
   const [dangChay, setDangChay] = useState(false)
   const navigate = useNavigate()
 
@@ -18,15 +17,8 @@ export default function DangNhap() {
 
   async function dangNhapGoogle() {
     setLoi(null)
-    if (!dongYTatCa) {
-      setLoi('Vui lòng đánh dấu chọn "Đồng ý tất cả điều khoản & chính sách" trước khi đăng nhập.')
-      return
-    }
     setDangChay(true)
     try {
-      if (typeof localStorage !== 'undefined') {
-        localStorage.setItem('txn_dong_y_tat_ca', 'true')
-      }
       await signInWithGoogle()
     } catch (e) {
       setLoi(e.message)
@@ -50,19 +42,19 @@ export default function DangNhap() {
           </div>
         )}
 
+        <p className="t-small">
+          Sau khi đăng nhập, bạn sẽ được xem và xác nhận từng mục ở bước “Trước khi bắt đầu”:{' '}
+          <Link to="/dieu-khoan" target="_blank">Điều khoản sử dụng</Link>,{' '}
+          <Link to="/quy-che" target="_blank">Quy chế hoạt động</Link> và{' '}
+          <Link to="/bao-mat" target="_blank">Chính sách bảo vệ dữ liệu cá nhân</Link>.
+        </p>
+
         <form className="stack" style={{ gap: 'var(--sp-3)' }} onSubmit={async (e) => {
           e.preventDefault();
           setLoi(null);
-          if (!dongYTatCa) {
-            setLoi('Vui lòng đánh dấu chọn "Đồng ý tất cả điều khoản & chính sách" trước khi đăng nhập.');
-            return;
-          }
           const form = new FormData(e.target);
           try {
             setDangChay(true);
-            if (typeof localStorage !== 'undefined') {
-              localStorage.setItem('txn_dong_y_tat_ca', 'true')
-            }
             await signInWithEmail(form.get('email'), form.get('password'));
           } catch(err) {
             setLoi(err.message);
@@ -75,39 +67,6 @@ export default function DangNhap() {
           <div>
             <input type="password" name="password" placeholder="Mật khẩu" required className="input" />
           </div>
-
-          {/* Ô ĐỒNG Ý TẤT CẢ */}
-          <label
-            className="row t-small"
-            style={{
-              alignItems: 'flex-start',
-              gap: 'var(--sp-2)',
-              cursor: 'pointer',
-              userSelect: 'none',
-              padding: '10px 12px',
-              backgroundColor: 'var(--m-card-hover, rgba(0,0,0,0.03))',
-              borderRadius: 'var(--r-box)',
-              border: '1px solid var(--m-border)',
-              margin: '2px 0',
-            }}
-          >
-            <input
-              type="checkbox"
-              id="dong-y-tat-ca"
-              checked={dongYTatCa}
-              onChange={(e) => {
-                setDongYTatCa(e.target.checked)
-                if (e.target.checked) setLoi(null)
-              }}
-              style={{ marginTop: 3, cursor: 'pointer', width: 16, height: 16 }}
-            />
-            <span style={{ lineHeight: 1.45 }}>
-              <strong>Tôi đồng ý với tất cả:</strong>{' '}
-              <Link to="/dieu-khoan" target="_blank" style={{ textDecoration: 'underline' }}>Điều khoản sử dụng</Link>,{' '}
-              <Link to="/quy-che" target="_blank" style={{ textDecoration: 'underline' }}>Quy chế hoạt động</Link> và{' '}
-              <Link to="/bao-mat" target="_blank" style={{ textDecoration: 'underline' }}>Chính sách bảo mật</Link> của Thuexenhanh.
-            </span>
-          </label>
 
           <button type="submit" disabled={!HAS_BACKEND || dangChay} className="btn btn-primary btn-block">
             {dangChay ? 'Đang xử lý…' : 'Đăng nhập'}
