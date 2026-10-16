@@ -112,3 +112,11 @@
 .the-xe-co-ds { display: flex; gap: var(--sp-2); font-size: 13px; color: var(--m-dark); }
 .the-xe-co-ds > svg { color: var(--m-red); flex-shrink: 0; margin-top: 2px; }
 .the-xe-co-ds ul { display: flex; flex-direction: column; gap: var(--sp-1); }
+
+/* ── Hồ sơ khách thấy ── */
+.hs { display: flex; flex-direction: column; gap: var(--sp-3); }
+.hs-the { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
+.hs-anh { width: 56px; height: 56px; border-radius: var(--r-circle); object-fit: cover; flex-shrink: 0; }
+.hs-chu { display: flex; align-items: center; justify-content: center; background: var(--m-green-light); color: var(--m-green-hover); font-size: 22px; font-weight: 800; }
+.hs-thong-tin { flex: 1; min-width: 140px; display: flex; flex-direction: column; }
+.hs-ten { gap: var(--sp-2); }

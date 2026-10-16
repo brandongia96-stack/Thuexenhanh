@@ -15,11 +15,12 @@ import { TOKENS_PER_MONTH } from '../../lib/config'
 import { soDuVi } from '../billing/billingApi'
 import '../billing/billing.css' // HopTraPhi dùng class của billing.css (hop-nen, chon-luoi…)
 import {
-  danhSachXeCuaToi, docHienSdt, ghiHienSdt, soLieuNhieuXe, thongTinCo, thongTinRieng,
+  danhSachXeCuaToi, docHienSdt, ghiHienSdt, hoSoCongKhai, soLieuNhieuXe, thongTinCo, thongTinRieng,
   tongQuanXe, tongSoLieuChuXe, viTriGia,
 } from './ownerApi'
 import { lyDoCanhBao } from './canhBao'
 import CongTacHienSdt from './CongTacHienSdt'
+import HoSoKhachThay from './HoSoKhachThay'
 import { chuoiDayDu, dinhDangTyLe, gopTheoXe, soRong, tyLeLaySo } from './soLieu'
 import ChiSo from './ChiSo'
 import TheXe from './TheXe'
@@ -52,6 +53,7 @@ export default function TrangChuXe() {
 
   // Đồng ý cho khách xem SĐT: true/false, null = không đọc được (ẩn khối).
   const [hienSdt, setHienSdt] = useState(null)
+  const [hoSo, setHoSo] = useState(null)
   const [dangGhiSdt, setDangGhiSdt] = useState(false)
   const [loiSdt, setLoiSdt] = useState(null)
 
@@ -141,6 +143,7 @@ export default function TrangChuXe() {
     if (!ownerId) return
     let huy = false
     docHienSdt(ownerId).then((v) => { if (!huy) setHienSdt(v) })
+    hoSoCongKhai(ownerId).then((v) => { if (!huy) setHoSo(v) })
     return () => { huy = true }
   }, [ownerId])
 
@@ -244,6 +247,8 @@ export default function TrangChuXe() {
           Chưa có lượt xem nào trong 30 ngày qua. Số liệu gộp theo ngày, cập nhật mỗi đêm, chưa gồm hôm nay.
         </p>
       )}
+
+      <HoSoKhachThay hoSo={hoSo} />
 
       <CongTacHienSdt bat={hienSdt} dangGhi={dangGhiSdt} loi={loiSdt} onDoi={doiHienSdt} />
 

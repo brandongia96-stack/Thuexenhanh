@@ -297,3 +297,24 @@ export async function thongTinCo(listingIds) {
   }
   return ra
 }
+
+/**
+ * Hồ sơ công khai của chính chủ xe — đúng thứ khách thấy (contracts/api.md §3g).
+ * Đọc view `owner_public`, KHÔNG đọc bảng `users`. null = chưa có tin nào đang
+ * hiển thị (view chỉ trả người có ≥ 1 tin) hoặc lỗi → giao diện ẩn khối.
+ */
+export async function hoSoCongKhai(userId) {
+  try {
+    const sb = await getSupabase()
+    const { data, error } = await sb
+      .from('owner_public')
+      .select('id,ten_hien_thi,avatar_url,da_xac_minh,so_xe_dang_cho_thue')
+      .eq('id', userId)
+      .maybeSingle()
+    if (error) throw error
+    return data ?? null
+  } catch (e) {
+    if (import.meta.env.DEV) console.warn('[owner] không đọc được owner_public:', e?.message)
+    return null
+  }
+}
