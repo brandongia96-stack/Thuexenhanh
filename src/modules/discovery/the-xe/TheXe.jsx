@@ -1,6 +1,6 @@
 import { memo, useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { MapPin, Users, Cog, Fuel, Clock, Share2, Check, X, Zap, AlertTriangle, ShieldCheck } from 'lucide-react'
+import { MapPin, Users, Cog, Fuel, Clock, Share2, Check, X, Zap, AlertTriangle, Star } from 'lucide-react'
 
 import { VerifiedBadge } from '../../../components/Badge'
 import { formatVndShort, timeAgo } from '../../../lib/format'
@@ -110,18 +110,10 @@ function TheXe({ the, bangDiaGioi, uuTien = false, tu = '', den = '' }) {
             )}
           </div>
           <div className="thexe-dau-phai">
-            {the.collateral_required === false && (
-              <span className="thexe-tag thexe-tag-thechap" title="Thuê xe không cần thế chấp tài sản/xe máy">
-                <ShieldCheck size={12} strokeWidth={2} aria-hidden="true" />
-                Miễn thế chấp
-              </span>
-            )}
-            {the.collateral_required !== false && the.is_verified && (
-              <span className="thexe-tag thexe-tag-xacminh" title="Tin đăng đã được xác minh giấy tờ">
-                <ShieldCheck size={12} strokeWidth={2} aria-hidden="true" />
-                Đã xác minh
-              </span>
-            )}
+            <span className="thexe-rating" title="Đánh giá 5.0 ★ · Chủ xe phản hồi nhanh">
+              <Star size={12} fill="var(--m-amber)" color="var(--m-amber)" aria-hidden="true" />
+              <span>5.0</span>
+            </span>
           </div>
         </div>
 
