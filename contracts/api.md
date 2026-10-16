@@ -437,6 +437,28 @@ sb.rpc('listing_card_gan', { p_lat, p_lng })
 
 **Cấm** đọc bảng `users` để lấy tên/ảnh người khác (RLS chặn, trả rỗng). **Cấm** hiện họ tên đầy đủ, email, SĐT, CCCD trên trang công khai — chỉ `ten_hien_thi`.
 
+## 3h. Lọc theo ngày thuê (0026, 16/10/2026)
+
+```js
+// Cả 4 tham số TUỲ CHỌN. Không gửi gì = như đọc listing_card.
+sb.rpc('listing_card_tim', { p_lat, p_lng, p_tu: '2026-10-21', p_den: '2026-10-23' })
+  .select('id,...,distance_km')      // PHẢI có `id` VÀ cột đang order
+  .in('status', [...]).gt('expires_at', now)
+  .order('published_at', { ascending: false }).order('id', { ascending: false })
+```
+
+- Có `p_tu` + `p_den` → bỏ xe có khoảng bận (`listing_blocked_dates`) chồng lên
+  [p_tu, p_den], tính cả hai mép. Ngày ngược hoặc quá 180 ngày → rỗng.
+- Có `p_lat` + `p_lng` → `distance_km` có giá trị; không thì `null`.
+- `listing_card_gan(p_lat, p_lng)` vẫn còn, kết quả như `listing_card_tim(p_lat, p_lng)`.
+  Code mới dùng `listing_card_tim`.
+- `listing_card.calendar_updated_at` (và trong 2 hàm): lần cuối chủ xe thêm/sửa/xoá
+  ngày bận. `null` = chưa từng khai lịch.
+- ⚠️ **Không có đặt xe.** Lọc ngày chỉ loại xe chủ đã khai BẬN. Giao diện phải nói
+  "Xe chưa báo bận trong những ngày này — gọi chủ xe để xác nhận", KHÔNG được ghi
+  "Còn trống"/"Đặt được".
+- Lỗi `column record.X does not exist` = đang order theo cột X mà không có trong `select`.
+
 ## 4. Mã lỗi chung
 
 | Mã | Nghĩa |
