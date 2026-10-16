@@ -102,3 +102,13 @@ lại Firebase. Phiên này làm rõ và chốt hướng hợp nhất.
    Khách chưa đăng nhập 30 xe / 24h / IP — vì 4G dùng chung IP (em đề xuất).
 3. Giá sàn: **xe 7 chỗ ≥ 500.000đ/ngày** (theo tài liệu). Số chỗ khác chưa có sàn.
 4. Thông tin công ty FastRent Tech: **chưa đưa lên web** — GPKD dự kiến 24/12/2026.
+
+
+---
+
+## 16/10/2026 — Ảnh đại diện chủ xe
+
+**Chốt: hiện ảnh Google của chủ xe mặc định** trên thẻ xe, khối chủ xe ở trang xe và trang `/chu/:id`
+(view `owner_public`, chỉ người đang có tin hiển thị). Không có công tắc ẩn ảnh ở bản này.
+Không ảnh thì hiện chữ cái đầu tên gọi. Họ tên đầy đủ, email, SĐT vẫn KHÔNG công khai.
+Luồng 12 phải ghi việc hiển thị ảnh + tên gọi này vào Chính sách bảo vệ dữ liệu cá nhân.
