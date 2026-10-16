@@ -113,16 +113,25 @@ describe('Cơ chế token-demo và các thao tác liên quan đến token', () =
       expect(tt.status).toBe('cho_thanh_toan')
     })
 
-    it('Tạo yêu cầu nạp qua MoMo và ZaloPay mang đúng thông tin ví nhận', async () => {
+    it('Cả ba phương thức dùng CHUNG một tài khoản ngân hàng nhận tiền', async () => {
+      // Backend `create-topup` chỉ sinh MỘT mã VietQR của tài khoản ngân hàng.
+      // MoMo và ZaloPay là app quét được mã đó, không phải cổng riêng — nên
+      // nơi nhận tiền phải y hệt nhau. Test này tồn tại để không ai lỡ tay bịa
+      // lại "ví MoMo nhận tiền" một lần nữa.
       batTokenDemo()
+      const reqNganHang = await demoTaoYeuCauNap(10, 'ngan_hang')
       const reqMomo = await demoTaoYeuCauNap(10, 'momo')
-      expect(reqMomo.phuong_thuc).toBe('momo')
-      expect(reqMomo.ngan_hang.bank).toContain('MoMo')
-      expect(reqMomo.vnd_amount).toBe(40000)
-
       const reqZalo = await demoTaoYeuCauNap(20, 'zalopay')
+
+      expect(reqMomo.phuong_thuc).toBe('momo')
       expect(reqZalo.phuong_thuc).toBe('zalopay')
-      expect(reqZalo.ngan_hang.bank).toContain('ZaloPay')
+
+      expect(reqMomo.ngan_hang).toEqual(reqNganHang.ngan_hang)
+      expect(reqZalo.ngan_hang).toEqual(reqNganHang.ngan_hang)
+      expect(reqMomo.ngan_hang.bank).not.toContain('MoMo')
+      expect(reqZalo.ngan_hang.bank).not.toContain('ZaloPay')
+
+      expect(reqMomo.vnd_amount).toBe(40000)
       expect(reqZalo.vnd_amount).toBe(80000)
     })
 

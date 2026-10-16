@@ -334,23 +334,14 @@ export async function demoTaoYeuCauNap(tokenAmount, phuongThuc = 'ngan_hang') {
   const transferCode = sinhMaTransfer()
   const vndAmount = vndForTokens(tokenAmount)
 
-  let thongTinNhan = {
-    bank: 'NGÂN HÀNG DEMO (MB / Vietcombank)',
+  // MỘT nơi nhận duy nhất cho cả ba nút. `phuongThuc` chỉ nói anh định quét
+  // bằng app nào — backend `create-topup` sinh đúng một mã VietQR của tài khoản
+  // ngân hàng, không có cổng MoMo/ZaloPay riêng nào cả. Bịa ra "ví MoMo nhận
+  // tiền" là hứa một đường tiền không tồn tại.
+  const thongTinNhan = {
+    bank: 'NGÂN HÀNG DEMO',
     account: '9999 8888 7777',
     name: 'THUEXENHANH DEMO',
-  }
-  if (phuongThuc === 'momo') {
-    thongTinNhan = {
-      bank: 'Ví MoMo',
-      account: '0988 888 888',
-      name: 'THUEXENHANH DEMO (MOMO)',
-    }
-  } else if (phuongThuc === 'zalopay') {
-    thongTinNhan = {
-      bank: 'Ví ZaloPay',
-      account: '0988 888 888',
-      name: 'THUEXENHANH DEMO (ZALOPAY)',
-    }
   }
 
   const itemMoi = {

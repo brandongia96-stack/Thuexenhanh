@@ -35,23 +35,14 @@ function maDemo() {
   return 'TXN' + s
 }
 
-/** Trả về đúng hình dạng mà `create-topup` trả về, nhưng không đi đâu cả. */
+/**
+ * Trả về đúng hình dạng mà `create-topup` trả về, nhưng không đi đâu cả.
+ *
+ * `phuongThuc` KHÔNG đổi nơi nhận tiền. Backend chỉ sinh MỘT mã VietQR của tài
+ * khoản ngân hàng — MoMo và ZaloPay là app quét được mã đó, không phải cổng
+ * thanh toán riêng. Tham số này chỉ để màn sau gợi ý quét bằng app nào.
+ */
 export function taoYeuCauNapDemo(tokenAmount, phuongThuc = 'ngan_hang') {
-  let nganHang = NGAN_HANG_DEMO
-  if (phuongThuc === 'momo') {
-    nganHang = {
-      bank: 'Ví MoMo',
-      account: '0988 888 888',
-      name: 'CHỦ TÀI KHOẢN DEMO (MOMO)',
-    }
-  } else if (phuongThuc === 'zalopay') {
-    nganHang = {
-      bank: 'Ví ZaloPay',
-      account: '0988 888 888',
-      name: 'CHỦ TÀI KHOẢN DEMO (ZALOPAY)',
-    }
-  }
-
   return {
     demo: true,
     topup_id: 'demo-' + Date.now(),
@@ -60,7 +51,9 @@ export function taoYeuCauNapDemo(tokenAmount, phuongThuc = 'ngan_hang') {
     vnd_amount: vndForTokens(tokenAmount),
     transfer_code: maDemo(),
     qr_url: null, // bản thật là ảnh từ img.vietqr.io; demo vẽ ô giả tại chỗ
-    ngan_hang: nganHang,
+    // MỘT nơi nhận duy nhất cho cả ba nút. Không bịa ra "ví MoMo nhận tiền"
+    // vì không có ví MoMo nào nhận cả.
+    ngan_hang: NGAN_HANG_DEMO,
   }
 }
 

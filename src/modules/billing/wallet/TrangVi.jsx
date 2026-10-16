@@ -239,10 +239,11 @@ export default function TrangVi() {
             Nạp token chưa mở — đang chờ tài khoản ngân hàng nhận tiền. Trong thời
             gian này token được cấp thủ công, anh <Link to="/lien-he">nhắn cho bên em</Link>.
           </span>
-          {/* Nút này KHÔNG hứa nạp được tiền — nó nói rõ là xem thử bố cục.
-              Toàn bộ hộp mở ra đều đeo nhãn và không gọi backend. */}
+          {/* Nút này KHÔNG hứa nạp được tiền. Hộp mở ra hiện đúng bảng giá thật
+              và ba cách nạp ở trạng thái "Sắp mở" — không gọi backend, không
+              dựng mã QR giả. */}
           <button type="button" className="btn btn-ghost btn-sm" onClick={() => setMoNap(true)}>
-            <Eye size={16} strokeWidth={1.8} /> Xem thử giao diện nạp token
+            <Eye size={16} strokeWidth={1.8} /> Xem trước màn nạp token
           </button>
         </div>
       )}
@@ -283,7 +284,11 @@ export default function TrangVi() {
       </p>
 
       {moNap && (
-        <HopNapToken demo={demoMode || !FLAGS.nap_tien_that} onDong={() => setMoNap(false)} onXong={tai} />
+        /* `demo` CHỈ bật theo token-demo, không bật theo `!nap_tien_that` nữa.
+           Cờ tắt mà cho chạy luồng QR giả trong app thật là dựng một đường
+           thanh toán không có thật — giờ 3 nút hiện "Sắp mở". Muốn bấm hết
+           luồng thì bật token-demo hoặc mở /thu-luong-06.html. */
+        <HopNapToken demo={demoMode} onDong={() => setMoNap(false)} onXong={tai} />
       )}
     </div>
   )

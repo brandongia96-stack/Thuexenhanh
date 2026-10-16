@@ -1,61 +1,27 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { Copy, Check, Loader2, Sparkles, Landmark } from 'lucide-react'
+import { Copy, Check, Loader2, Sparkles, Landmark, QrCode } from 'lucide-react'
 import Hop from '../Hop'
 import { GOI_NAP, TOI_THIEU, TOI_DA } from '../goiNap'
 import { taoYeuCauNap, trangThaiNap, isTokenDemo, demoXacNhanNapTien } from '../billingApi'
 import { taoYeuCauNapDemo, oQrDemo } from '../demo/napDemo'
 import { vndForTokens } from '../../../lib/pricing'
 import { formatVnd } from '../../../lib/format'
-import { TOKEN_VND } from '../../../lib/config'
+import { TOKEN_VND, FLAGS } from '../../../lib/config'
 
 // Hỏi lại trạng thái mỗi 5 giây, bỏ cuộc sau 15 phút. Người dùng dùng 4G —
 // hỏi dày hơn không làm tiền về nhanh hơn, chỉ tốn pin và dung lượng.
 const NHIP_HOI = 5000
 const HOI_TOI_DA = (15 * 60 * 1000) / NHIP_HOI
 
-function IconMoMo({ size = 22 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect width="24" height="24" rx="6" fill="#A50064" />
-      <text
-        x="12"
-        y="9.5"
-        fill="#ffffff"
-        fontSize="6.5"
-        fontWeight="800"
-        fontFamily="system-ui, -apple-system, sans-serif"
-        textAnchor="middle"
-      >
-        mo
-      </text>
-      <text
-        x="12"
-        y="17.5"
-        fill="#ffffff"
-        fontSize="6.5"
-        fontWeight="800"
-        fontFamily="system-ui, -apple-system, sans-serif"
-        textAnchor="middle"
-      >
-        mo
-      </text>
-    </svg>
-  )
-}
-
-function IconZaloPay({ size = 22 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <rect width="24" height="24" rx="6" fill="#0068FF" />
-      <path
-        d="M6.5 8H17.5L8.5 16H17.5"
-        stroke="#ffffff"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  )
+// Icon trung tính, KHÔNG vẽ nhái logo MoMo/ZaloPay.
+//
+// Hai lý do. Một: logo nhái của thương hiệu mình chưa có quan hệ là dữ liệu bịa
+// — đợt rà soát 02/10 đã phải gỡ logo Bộ Công Thương và logo thanh toán giả ở
+// chân trang. Hai: logo đặt cạnh nút làm người ta hiểu là có cổng MoMo riêng,
+// trong khi cả ba nút chỉ dẫn tới cùng một mã VietQR của tài khoản ngân hàng.
+// Tên app viết bằng chữ thì không sao — đó là nói app nào quét được mã.
+function IconViQuet({ size = 22 }) {
+  return <QrCode size={size} strokeWidth={1.8} aria-hidden="true" />
 }
 
 function DongCK({ nhan, giaTri, ma = false }) {
@@ -110,6 +76,11 @@ function QrXemThu({ seed, nhan = 'Ô đặt mã QR · bản xem thử' }) {
  */
 export default function HopNapToken({ onDong, onXong, demo = false }) {
   const cheDoDemo = demo || isTokenDemo()
+  // Ba nút nạp chỉ bấm được khi THẬT SỰ có đường đi tiếp:
+  //   · nạp tiền thật đã mở, hoặc
+  //   · đang ở chế độ thử (token-demo / trang thử) — nơi mọi màn đều đeo nhãn.
+  // Cờ tắt mà vẫn cho bấm là dựng một luồng thanh toán không dẫn tới đâu.
+  const moKhoaNut = FLAGS.nap_tien_that || cheDoDemo
   const [buoc, setBuoc] = useState('chon')      // chon | qr | xong
   const [tokens, setTokens] = useState(GOI_NAP[0].tokens)
   const [dangGui, setDangGui] = useState(false)
@@ -226,21 +197,19 @@ export default function HopNapToken({ onDong, onXong, demo = false }) {
   }
 
   if (buoc === 'qr' && yeuCau) {
+    // Cả ba phương thức đều là MỘT mã VietQR của tài khoản ngân hàng. MoMo và
+    // ZaloPay chỉ là app quét được mã đó — không có cổng thanh toán riêng, và
+    // cũng không có ai tên MoMo gửi tin báo tiền về cho mình. Chữ trên màn này
+    // phải nói đúng như vậy.
     const isMomo = yeuCau.phuong_thuc === 'momo'
     const isZaloPay = yeuCau.phuong_thuc === 'zalopay'
-    const tenPhuongThuc = isMomo ? 'MoMo' : isZaloPay ? 'ZaloPay' : 'ngân hàng'
+    const tenApp = isMomo ? 'MoMo' : isZaloPay ? 'ZaloPay' : 'ngân hàng'
 
-    const tieuDeModal = isMomo
-      ? (cheDoDemo ? 'Chuyển MoMo để nhận token (thử nghiệm)' : 'Chuyển MoMo để nhận token')
-      : isZaloPay
-      ? (cheDoDemo ? 'Chuyển ZaloPay để nhận token (thử nghiệm)' : 'Chuyển ZaloPay để nhận token')
-      : (cheDoDemo ? 'Chuyển khoản để nhận token (thử nghiệm)' : 'Chuyển khoản để nhận token')
+    const tieuDeModal = cheDoDemo
+      ? 'Chuyển khoản để nhận token (thử nghiệm)'
+      : 'Chuyển khoản để nhận token'
 
-    const moTaModal = isMomo
-      ? 'Quét mã bằng app MoMo. Số tiền và nội dung đã điền sẵn.'
-      : isZaloPay
-      ? 'Quét mã bằng app Zalo / ZaloPay. Số tiền và nội dung đã điền sẵn.'
-      : 'Quét mã bằng app ngân hàng. Số tiền và nội dung đã điền sẵn.'
+    const moTaModal = `Quét mã VietQR bằng app ${tenApp}. Số tiền và nội dung đã điền sẵn.`
 
     return (
       <Hop
@@ -256,24 +225,31 @@ export default function HopNapToken({ onDong, onXong, demo = false }) {
             src={yeuCau.qr_url}
             width={240}
             height={240}
-            alt={`Mã QR ${tenPhuongThuc} ${formatVnd(yeuCau.vnd_amount)}`}
+            alt={`Mã VietQR ${formatVnd(yeuCau.vnd_amount)}`}
           />
         ) : cheDoDemo ? (
-          <QrXemThu
-            seed={yeuCau.token_amount}
-            nhan={`Ô đặt mã QR ${tenPhuongThuc} · bản xem thử`}
-          />
+          <QrXemThu seed={yeuCau.token_amount} nhan="Ô đặt mã VietQR · bản xem thử" />
         ) : null}
 
+        {/* Tiền đi vào TÀI KHOẢN NGÂN HÀNG, dù anh quét bằng app nào. Nhãn phải
+            là "Ngân hàng" / "Số tài khoản" — gọi là "Ví nhận / Số ví" thì người
+            ta tưởng tiền nằm trong ví MoMo của mình. */}
         <div className="ck-bang">
-          <DongCK nhan={isMomo || isZaloPay ? 'Ví nhận' : 'Ngân hàng'} giaTri={yeuCau.ngan_hang?.bank} />
-          <DongCK nhan={isMomo || isZaloPay ? 'Số ví / SĐT' : 'Số tài khoản'} giaTri={yeuCau.ngan_hang?.account} ma />
+          <DongCK nhan="Ngân hàng" giaTri={yeuCau.ngan_hang?.bank} />
+          <DongCK nhan="Số tài khoản" giaTri={yeuCau.ngan_hang?.account} ma />
           <DongCK nhan="Số tiền" giaTri={formatVnd(yeuCau.vnd_amount)} />
           <DongCK nhan="Nội dung" giaTri={yeuCau.transfer_code} ma />
         </div>
 
+        {(isMomo || isZaloPay) && (
+          <div className="t-small">
+            Đây là mã VietQR của tài khoản ngân hàng. App {tenApp} quét được mã này
+            và chuyển tiền sang ngân hàng — Thuê Xe Nhanh không có cổng {tenApp} riêng.
+          </div>
+        )}
+
         <div className="hop-nhac">
-          Nội dung chuyển {isMomo || isZaloPay ? 'tiền' : 'khoản'} phải giữ nguyên mã <b>{yeuCau.transfer_code}</b>. Đây là thứ
+          Nội dung chuyển khoản phải giữ nguyên mã <b>{yeuCau.transfer_code}</b>. Đây là thứ
           duy nhất giúp hệ thống biết khoản tiền này là của anh.
         </div>
 
@@ -282,7 +258,7 @@ export default function HopNapToken({ onDong, onXong, demo = false }) {
         {/* Nút mô phỏng ở chế độ demo */}
         {cheDoDemo ? (
           <button type="button" className="btn btn-soft btn-block" onClick={giaLapTienVe}>
-            <Sparkles size={16} strokeWidth={2} /> Mô phỏng {tenPhuongThuc} báo có tiền về ngay →
+            <Sparkles size={16} strokeWidth={2} /> Mô phỏng ngân hàng báo có tiền về ngay →
           </button>
         ) : hetGio ? (
           <div className="t-small">
@@ -292,7 +268,7 @@ export default function HopNapToken({ onDong, onXong, demo = false }) {
         ) : (
           <div className="row t-small" style={{ justifyContent: 'center' }}>
             <Loader2 size={16} strokeWidth={1.8} className="quay" />
-            Đang chờ {tenPhuongThuc} báo có
+            Đang chờ ngân hàng báo có
           </div>
         )}
 
@@ -357,43 +333,61 @@ export default function HopNapToken({ onDong, onXong, demo = false }) {
 
       {loi && <div className="hop-loi">{loi}</div>}
 
+      {/* Cả ba nút dẫn tới CÙNG một mã VietQR của tài khoản ngân hàng. Nói ra
+          ngay đây, trước khi anh bấm — để không ai tưởng chọn MoMo thì tiền đi
+          đường khác. */}
+      <div className="t-small">
+        Cả ba cách đều dùng chung một mã VietQR của tài khoản ngân hàng. Chọn app
+        nào là chọn app anh dùng để quét.
+      </div>
+
       <div className="nap-cac-phuong-thuc">
         <button
           type="button"
           className="btn btn-primary btn-block btn-lg nap-nut-nganhang"
-          disabled={!hopLe || Boolean(dangGui)}
+          disabled={!moKhoaNut || !hopLe || Boolean(dangGui)}
           onClick={() => tao('ngan_hang')}
         >
           <Landmark size={20} strokeWidth={2} />
-          <span>{dangGui === 'ngan_hang' ? 'Đang tạo mã chuyển khoản…' : 'Chuyển khoản ngân hàng'}</span>
+          <span>
+            {!moKhoaNut
+              ? 'Chuyển khoản ngân hàng · Sắp mở'
+              : dangGui === 'ngan_hang'
+              ? 'Đang tạo mã chuyển khoản…'
+              : 'Chuyển khoản ngân hàng'}
+          </span>
         </button>
 
         <div className="nap-luoi-vi">
-          <button
-            type="button"
-            className="nap-o-vi nap-o-momo"
-            disabled={!hopLe || Boolean(dangGui)}
-            onClick={() => tao('momo')}
-          >
-            <span className="nap-icon-vi" aria-hidden="true">
-              <IconMoMo size={22} />
-            </span>
-            <span>{dangGui === 'momo' ? 'Đang tạo…' : 'MoMo'}</span>
-          </button>
-
-          <button
-            type="button"
-            className="nap-o-vi nap-o-zalopay"
-            disabled={!hopLe || Boolean(dangGui)}
-            onClick={() => tao('zalopay')}
-          >
-            <span className="nap-icon-vi" aria-hidden="true">
-              <IconZaloPay size={22} />
-            </span>
-            <span>{dangGui === 'zalopay' ? 'Đang tạo…' : 'ZaloPay'}</span>
-          </button>
+          {[
+            { ma: 'momo', ten: 'MoMo', lop: 'nap-o-momo' },
+            { ma: 'zalopay', ten: 'ZaloPay', lop: 'nap-o-zalopay' },
+          ].map((v) => (
+            <button
+              key={v.ma}
+              type="button"
+              className={'nap-o-vi ' + v.lop}
+              disabled={!moKhoaNut || !hopLe || Boolean(dangGui)}
+              onClick={() => tao(v.ma)}
+            >
+              <span className="nap-icon-vi">
+                <IconViQuet size={20} />
+              </span>
+              <span>
+                {!moKhoaNut ? v.ten : dangGui === v.ma ? 'Đang tạo…' : v.ten}
+                {!moKhoaNut && <span className="nap-sap-mo">Sắp mở</span>}
+              </span>
+            </button>
+          ))}
         </div>
       </div>
+
+      {!moKhoaNut && (
+        <div className="hop-nhac">
+          Nạp token tự động <b>sắp mở</b> — đang chờ tài khoản ngân hàng nhận tiền.
+          Trong thời gian này token được cấp thủ công, anh nhắn cho bên em.
+        </div>
+      )}
 
       <div className="t-small" style={{ textAlign: 'center' }}>
         Token chỉ dùng để trả phí hiển thị tin. Không phải tiền cọc, không liên quan

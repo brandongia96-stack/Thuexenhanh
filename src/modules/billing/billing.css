@@ -212,3 +212,12 @@
   flex-shrink: 0;
 }
 
+
+/* Nhãn "Sắp mở" trên hai ô ví khi nạp tiền thật chưa bật. */
+.nap-sap-mo {
+  display: block;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--m-subtle);
+  line-height: 1.3;
+}

@@ -19,6 +19,7 @@ import {
   soDuVi,
   soGiaoDich,
   batTokenDemo,
+  tatTokenDemo,
   demoReset,
   demoDieuChinhVi,
   SU_KIEN_VI_THAY_DOI,
@@ -57,6 +58,26 @@ function DongSo({ d }) {
       </div>
     </div>
   )
+}
+
+/**
+ * Hộp nạp token ở đúng trạng thái chủ xe THẬT đang thấy hôm nay.
+ *
+ * Trang thử này luôn bật `token-demo`, mà ở chế độ demo thì ba nút nạp mở khoá.
+ * Nên muốn nhìn trạng thái "Sắp mở", phải tắt demo trong lúc hộp đang mở rồi
+ * bật lại khi đóng. Mẹo này chỉ dùng ở trang thử, không có trong app thật.
+ */
+function HopSapMo({ onDong }) {
+  // Phải tắt demo XONG rồi mới dựng hộp. Dựng trước thì lần render đầu vẫn đọc
+  // `isTokenDemo() === true` và hộp mở khoá — không thấy được "Sắp mở".
+  const [sanSang, setSanSang] = useState(false)
+  useEffect(() => {
+    tatTokenDemo()
+    setSanSang(true)
+    return () => batTokenDemo()
+  }, [])
+  if (!sanSang) return null
+  return <HopNapToken demo={false} onDong={onDong} />
 }
 
 function Thu() {
@@ -158,6 +179,11 @@ function Thu() {
         <button className="btn btn-ghost" onClick={() => setMo('thieu')}>
           Mô phỏng ví thiếu token (kiểm tra chặn)
         </button>
+        {/* Đúng thứ chủ xe thật đang thấy hôm nay: nạp tiền thật chưa mở nên cả
+            ba cách nạp ở trạng thái "Sắp mở", không có mã QR nào được dựng. */}
+        <button className="btn btn-ghost" onClick={() => setMo('sapmo')}>
+          Màn nạp khi chưa mở nạp tiền thật ("Sắp mở")
+        </button>
       </div>
 
       <div className="card card-pad stack" style={{ gap: 0 }}>
@@ -179,6 +205,7 @@ function Thu() {
       {mo === 'nap' && (
         <HopNapToken demo onDong={() => setMo(null)} onXong={tai} />
       )}
+      {mo === 'sapmo' && <HopSapMo onDong={() => setMo(null)} />}
       {mo === 'traphi' && (
         <HopTraPhi listing={TIN_THU} soDu={soDu} onDong={() => setMo(null)} onXong={tai} />
       )}
