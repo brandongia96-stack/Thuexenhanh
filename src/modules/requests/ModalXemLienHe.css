@@ -1,0 +1,188 @@
+/* modules/requests/ModalXemLienHe.css */
+
+.modal-lienhe-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+.modal-lienhe-hop {
+  position: relative;
+  background: var(--m-surface);
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-box);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 440px;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.modal-lienhe-dong {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  color: var(--m-subtle);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-circle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.modal-lienhe-dong:hover {
+  background: var(--m-bg);
+  color: var(--m-dark);
+}
+
+.modal-lienhe-dau {
+  margin-bottom: 20px;
+}
+
+.modal-lienhe-tieude {
+  margin: 0 0 4px 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--m-dark);
+}
+
+.modal-lienhe-sub {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--m-subtle);
+}
+
+.modal-lienhe-dangnhap {
+  text-align: center;
+  padding: 16px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  font-size: 0.9rem;
+  color: var(--m-mid);
+}
+
+.modal-lienhe-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px 0;
+  font-size: 0.9rem;
+  color: var(--m-subtle);
+}
+
+.spinner-sm {
+  width: 18px;
+  height: 18px;
+  border: 2px solid var(--m-border);
+  border-top-color: var(--m-green);
+  border-radius: var(--r-circle);
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.modal-lienhe-loi {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  border-radius: var(--r-box);
+  font-size: 0.88rem;
+}
+
+.hop-so-dien-thoai {
+  background: var(--m-bg);
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-box);
+  padding: 14px;
+  text-align: center;
+  margin-bottom: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nhan-sdt {
+  font-size: 0.8rem;
+  color: var(--m-subtle);
+}
+
+.so-sdt {
+  font-size: 1.35rem;
+  font-weight: 800;
+  color: var(--m-green);
+  letter-spacing: 0.05em;
+}
+
+.modal-lienhe-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 18px;
+}
+
+.btn-action-call {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.btn-zalo {
+  background: #0068ff;
+  color: #fff;
+  border: none;
+  font-weight: 600;
+  cursor: pointer;
+  border-radius: var(--r-box);
+  transition: background 0.15s ease;
+}
+
+.btn-zalo:hover {
+  background: #0056d6;
+}
+
+.btn-action-zalo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-decoration: none;
+}
+
+.luu-y-an-toan {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #eff6ff;
+  border-radius: var(--r-box);
+  font-size: 0.8rem;
+  color: #1e40af;
+  line-height: 1.4;
+}
+
+.icon-shield {
+  flex-shrink: 0;
+  margin-top: 1px;
+}

@@ -29,6 +29,7 @@ const KhieuNai = lazy(() => import('./KhieuNai'))
 const YeuCauGo = lazy(() => import('./YeuCauGo'))
 const CungCapDuLieu = lazy(() => import('./CungCapDuLieu'))
 const XoaTaiKhoan = lazy(() => import('./XoaTaiKhoan'))
+const DuyetTinTimXe = lazy(() => import('./DuyetTinTimXe'))
 
 // Cấu trúc phân hệ (Sections) & Tab con
 const SECTIONS = [
@@ -45,7 +46,8 @@ const SECTIONS = [
     nhan: 'Kiểm duyệt & Xe',
     Icon: Car,
     items: [
-      { to: 'duyet-tin', nhan: 'Duyệt tin' },
+      { to: 'duyet-tin', nhan: 'Duyệt xe' },
+      { to: 'duyet-tim-xe', nhan: 'Duyệt tin tìm xe' },
       { to: 'duyet-giay-to', nhan: 'Duyệt Tích Xanh' },
       { to: 'gia-san', nhan: 'Giá sàn' },
       { to: 'gia-nhien-lieu', nhan: 'Giá nhiên liệu' },
@@ -150,6 +152,7 @@ export default function TrangQuanTri() {
             <Route index element={<Navigate to="/admin/tong-quan" replace />} />
             <Route path="tong-quan" element={<TongQuan />} />
             <Route path="duyet-tin" element={<HangDuyet />} />
+            <Route path="duyet-tim-xe" element={<DuyetTinTimXe />} />
             <Route path="duyet-giay-to" element={<DuyetGiayTo />} />
             <Route path="bao-cao" element={<QuanLyBaoCao />} />
             <Route path="nguoi-dung" element={<NguoiDung />} />

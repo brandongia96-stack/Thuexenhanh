@@ -1,0 +1,158 @@
+/* Modal chọn loại tin đăng */
+.modal-chon-dangtin-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.45);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 16px;
+  animation: modalFadeIn 0.2s ease-out;
+}
+
+@keyframes modalFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.modal-chon-dangtin-hop {
+  position: relative;
+  background: var(--m-surface);
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-box);
+  box-shadow: var(--shadow-lg);
+  width: 100%;
+  max-width: 480px;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.modal-chon-dangtin-dong {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  color: var(--m-subtle);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-circle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.modal-chon-dangtin-dong:hover {
+  background: var(--m-bg);
+  color: var(--m-dark);
+}
+
+.modal-chon-dangtin-dau {
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.modal-chon-dangtin-tieude {
+  margin: 0 0 6px 0;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--m-dark);
+}
+
+.modal-chon-dangtin-mota {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--m-subtle);
+}
+
+.modal-chon-dangtin-danhsach {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-chon-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 16px;
+  background: var(--m-surface);
+  border: 1.5px solid var(--m-border);
+  border-radius: var(--r-box);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.modal-chon-item:hover {
+  border-color: var(--m-green);
+  background: var(--m-green-light);
+  transform: translateY(-1px);
+}
+
+.modal-chon-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: var(--r-box);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.icon-chothue {
+  background: #eff6ff;
+  color: var(--m-green);
+}
+
+.icon-timxe {
+  background: #fdf4ff;
+  color: #a855f7;
+}
+
+.modal-chon-noidung {
+  flex: 1;
+}
+
+.modal-chon-nhan {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+
+.modal-chon-ten {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--m-dark);
+}
+
+.badge-loaitin {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: var(--r-box);
+}
+
+.badge-chuxe {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.badge-khach {
+  background: #f3e8ff;
+  color: #7e22ce;
+}
+
+.modal-chon-sub {
+  margin: 0;
+  font-size: 0.83rem;
+  color: var(--m-mid);
+  line-height: 1.35;
+}

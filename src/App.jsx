@@ -48,10 +48,12 @@ const TrangDaLuu = lazy(() => import('./modules/discovery/saved/TrangDaLuu'))
 const TrangVi = lazy(() => import('./modules/billing/wallet/TrangVi'))
 // Luồng 02 — đăng/sửa tin. Form + nén ảnh + lịch chặn ngày: chỉ chủ xe cần, nên tách gói riêng.
 const TrangDangTin = lazy(() => import('./modules/listing/TrangDangTin'))
-// Luồng 03 — bảng điều khiển chủ xe: danh sách xe + số liệu 30 ngày.
 const TrangChuXe = lazy(() => import('./modules/owner/TrangChuXe'))
 const LichXeTong = lazy(() => import('./modules/owner/LichXeTong'))
 const ThuVien = lazy(() => import('./modules/owner/ThuVien'))
+// Bảng tin Cộng đồng tìm xe & Đăng tin tìm xe
+const TrangCongDong = lazy(() => import('./modules/requests/TrangCongDong'))
+const FormDangTinTimXe = lazy(() => import('./modules/requests/FormDangTinTimXe'))
 
 
 /**
@@ -85,6 +87,12 @@ export default function App() {
               <Route path="/chu/:id" element={<TrangChuCongKhai />} />
               {/* Xe đã lưu thuộc luồng 05 (module discovery/saved), không phải 04. */}
               <Route path="/da-luu" element={<TrangDaLuu />} />
+
+              {/* ── Bảng tin Cộng đồng ── */}
+              <Route path="/cong-dong" element={<TrangCongDong />} />
+              <Route path="/cong-dong/dang-tin" element={
+                <RequireRole><FormDangTinTimXe /></RequireRole>
+              } />
 
               {/* ── Tài khoản ── */}
               <Route path="/dang-nhap" element={<DangNhap />} />

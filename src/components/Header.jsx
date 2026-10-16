@@ -1,13 +1,16 @@
 import { useState, useRef, useEffect } from 'react'
-import { Link, NavLink } from 'react-router-dom'
-import { LayoutDashboard, LogIn, LogOut, Plus, Wallet, Car, Heart, Settings, Calendar } from 'lucide-react'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
+import { LayoutDashboard, LogIn, LogOut, Plus, Wallet, Car, Heart, Settings, Calendar, Users } from 'lucide-react'
 import { useAuth } from '../modules/auth/AuthProvider'
+import ModalChonDangTin from './ModalChonDangTin'
 import './Header.css'
 
 export default function Header() {
   const { isLoggedIn, isOwner, isAdmin, profile, signOut } = useAuth()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [chonDangTinOpen, setChonDangTinOpen] = useState(false)
   const dropdownRef = useRef(null)
+  const navigate = useNavigate()
 
   useEffect(() => {
     function handleClickOutside(event) {
@@ -18,6 +21,15 @@ export default function Header() {
     document.addEventListener("mousedown", handleClickOutside)
     return () => document.removeEventListener("mousedown", handleClickOutside)
   }, [])
+
+  function handleNutDangTin(e) {
+    e.preventDefault()
+    if (!isLoggedIn) {
+      navigate('/dang-nhap?next=/cong-dong')
+    } else {
+      setChonDangTinOpen(true)
+    }
+  }
 
   return (
     <header className="hd">
@@ -43,6 +55,10 @@ export default function Header() {
 
         <nav className="hd-nav">
           <NavLink to="/thue-xe" className="hd-link">Thuê xe</NavLink>
+          <NavLink to="/cong-dong" className="hd-link">
+            <Users size={16} strokeWidth={1.8} />
+            Cộng đồng
+          </NavLink>
           {isOwner && (
             <NavLink to="/chu-xe" className="hd-link">
               <LayoutDashboard size={16} strokeWidth={1.8} />
@@ -52,10 +68,14 @@ export default function Header() {
         </nav>
 
         <div className="hd-right">
-          <Link to={isLoggedIn ? '/chu-xe/dang-tin' : '/dang-nhap'} className="btn btn-primary btn-sm">
+          <button 
+            type="button" 
+            onClick={handleNutDangTin} 
+            className="btn btn-primary btn-sm"
+          >
             <Plus size={16} strokeWidth={2} />
             Đăng tin
-          </Link>
+          </button>
 
           {isLoggedIn ? (
             <div className="hd-account" ref={dropdownRef}>
@@ -118,6 +138,10 @@ export default function Header() {
           )}
         </div>
       </div>
+      <ModalChonDangTin 
+        isOpen={chonDangTinOpen} 
+        onClose={() => setChonDangTinOpen(false)} 
+      />
     </header>
   )
 }

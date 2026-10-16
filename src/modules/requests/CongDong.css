@@ -1,0 +1,528 @@
+/* modules/requests/CongDong.css */
+
+.congdong-container {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 24px 16px 80px 16px;
+}
+
+/* 1. Hero Banner */
+.congdong-hero {
+  background: linear-gradient(135deg, #eff6ff 0%, #fdf4ff 100%);
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-box);
+  padding: 36px 24px;
+  text-align: center;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+.congdong-hero-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--m-surface);
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-box);
+  padding: 4px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--m-green);
+  margin-bottom: 12px;
+}
+
+.congdong-hero-title {
+  margin: 0 0 8px 0;
+  font-size: 1.85rem;
+  font-weight: 800;
+  color: var(--m-dark);
+  letter-spacing: -0.02em;
+}
+
+.congdong-hero-sub {
+  max-width: 580px;
+  margin: 0 auto 24px auto;
+  font-size: 0.95rem;
+  color: var(--m-mid);
+  line-height: 1.5;
+}
+
+.congdong-hero-actions {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.btn-hero-dangtin {
+  padding: 12px 24px;
+  font-size: 0.95rem;
+}
+
+.btn-hero-chothue {
+  padding: 12px 20px;
+  font-size: 0.95rem;
+  background: var(--m-surface);
+}
+
+/* 2. Banner Gói Pro */
+.congdong-pro-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background: linear-gradient(90deg, #1e293b 0%, #0f172a 100%);
+  color: #fff;
+  border-radius: var(--r-box);
+  padding: 16px 20px;
+  margin-bottom: 24px;
+}
+
+.pro-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.pro-badge-icon {
+  width: 40px;
+  height: 40px;
+  background: #f59e0b;
+  color: #000;
+  border-radius: var(--r-box);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.pro-banner-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #fbbf24;
+  margin-bottom: 2px;
+}
+
+.pro-banner-sub {
+  margin: 0;
+  font-size: 0.82rem;
+  color: #cbd5e1;
+}
+
+.btn-pro-action {
+  background: #fbbf24;
+  color: #000;
+  border: none;
+  font-weight: 700;
+  white-space: nowrap;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.btn-pro-action:hover {
+  background: #f59e0b;
+}
+
+@media (max-width: 640px) {
+  .congdong-pro-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* 3. Toolbar: Tabs & Bộ lọc */
+.congdong-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.congdong-tabs {
+  display: flex;
+  background: var(--m-bg);
+  padding: 4px;
+  border-radius: var(--r-box);
+  border: 1px solid var(--m-border);
+  gap: 4px;
+}
+
+.tab-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: transparent;
+  border: none;
+  padding: 8px 14px;
+  border-radius: var(--r-box);
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: var(--m-mid);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.tab-item:hover {
+  color: var(--m-dark);
+}
+
+.tab-item.active {
+  background: var(--m-surface);
+  color: var(--m-green);
+  font-weight: 700;
+  box-shadow: var(--shadow-sm);
+}
+
+.congdong-filters {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.filter-select {
+  background: var(--m-surface);
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-box);
+  padding: 7px 12px;
+  font-size: 0.85rem;
+  color: var(--m-dark);
+  outline: none;
+}
+
+.btn-lammoi {
+  width: 34px;
+  height: 34px;
+  border-radius: var(--r-box);
+  background: var(--m-surface);
+  border: 1px solid var(--m-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--m-subtle);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.btn-lammoi:hover {
+  background: var(--m-bg);
+  color: var(--m-dark);
+}
+
+.spinning {
+  animation: spin 0.8s linear infinite;
+}
+
+/* 4. Feed & Thẻ bài đăng */
+.congdong-feed {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.congdong-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.feed-item-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tin-cuatoi-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: #f8fafc;
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-box);
+}
+
+.badge-status-mine {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--m-green);
+}
+
+/* THẺ BÀI VIẾT TÌM XE (TheTinTimXe) */
+.the-timxe-card {
+  background: var(--m-surface);
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-box);
+  padding: 20px;
+  box-shadow: var(--shadow-sm);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+.the-timxe-card:hover {
+  border-color: #cbd5e1;
+  box-shadow: var(--shadow-md);
+}
+
+.the-timxe-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+}
+
+.the-timxe-tacgia {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.the-timxe-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: var(--r-circle);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.avatar-fallback {
+  background: var(--m-green-light);
+  color: var(--m-green);
+  font-weight: 700;
+  font-size: 1.1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.the-timxe-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.the-timxe-ten-hang {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.the-timxe-ten {
+  font-size: 0.98rem;
+  font-weight: 700;
+  color: var(--m-dark);
+}
+
+.badge-loai-tin {
+  font-size: 0.72rem;
+  font-weight: 700;
+  background: #f3e8ff;
+  color: #7e22ce;
+  padding: 2px 8px;
+  border-radius: var(--r-box);
+}
+
+.the-timxe-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--m-subtle);
+}
+
+.meta-cham {
+  font-size: 0.6rem;
+}
+
+.meta-khoang-cach {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--m-green);
+  font-weight: 600;
+}
+
+.btn-share-post {
+  position: relative;
+  background: transparent;
+  border: none;
+  color: var(--m-subtle);
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-circle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn-share-post:hover {
+  background: var(--m-bg);
+  color: var(--m-dark);
+}
+
+.tooltip-share {
+  position: absolute;
+  top: -26px;
+  right: 0;
+  background: #0f172a;
+  color: #fff;
+  font-size: 0.72rem;
+  padding: 2px 8px;
+  border-radius: var(--r-box);
+  white-space: nowrap;
+}
+
+/* Badges 5 tiêu chí */
+.the-timxe-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.timxe-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: var(--r-box);
+  font-size: 0.82rem;
+  font-weight: 600;
+}
+
+.chip-ngay {
+  background: #eff6ff;
+  color: #1d4ed8;
+}
+
+.chip-xe {
+  background: #f0fdf4;
+  color: #15803d;
+}
+
+.chip-vitri {
+  background: #fefce8;
+  color: #a16207;
+}
+
+.chip-gia {
+  background: #faf5ff;
+  color: #7e22ce;
+}
+
+/* Nội dung bài */
+.the-timxe-noidung {
+  font-size: 0.92rem;
+  color: var(--m-dark);
+  line-height: 1.6;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.the-timxe-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.tag-pill {
+  background: var(--m-bg);
+  border: 1px solid var(--m-border);
+  padding: 3px 8px;
+  border-radius: var(--r-box);
+  font-size: 0.78rem;
+  color: var(--m-mid);
+}
+
+/* Footer & Buttons */
+.the-timxe-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid #f1f5f9;
+  padding-top: 14px;
+  margin-top: 2px;
+}
+
+.stat-offers {
+  font-size: 0.82rem;
+  color: var(--m-mid);
+}
+
+.the-timxe-buttons {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.btn-xemlienhe {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.btn-chao-xe {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* Empty & Loading states */
+.congdong-empty-state {
+  text-align: center;
+  padding: 64px 20px;
+  background: var(--m-surface);
+  border: 1px dashed var(--m-border);
+  border-radius: var(--r-box);
+}
+
+.empty-icon-wrap {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--r-circle);
+  background: var(--m-bg);
+  color: var(--m-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 16px auto;
+}
+
+.congdong-empty-state h3 {
+  margin: 0 0 6px 0;
+  font-size: 1.15rem;
+  color: var(--m-dark);
+}
+
+.congdong-empty-state p {
+  max-width: 440px;
+  margin: 0 auto 20px auto;
+  font-size: 0.88rem;
+  color: var(--m-subtle);
+  line-height: 1.5;
+}
+
+.congdong-loading {
+  text-align: center;
+  padding: 60px 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  color: var(--m-subtle);
+  font-size: 0.9rem;
+}
+
+.congdong-loi-box {
+  background: #fef2f2;
+  border: 1px solid #fecaca;
+  color: #b91c1c;
+  padding: 16px;
+  border-radius: var(--r-box);
+  text-align: center;
+}
