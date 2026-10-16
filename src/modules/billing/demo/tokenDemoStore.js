@@ -322,11 +322,30 @@ function sinhMaTransfer() {
 /**
  * 5. Tạo yêu cầu nạp token mới (giống Edge Function `create-topup`).
  */
-export async function demoTaoYeuCauNap(tokenAmount) {
+export async function demoTaoYeuCauNap(tokenAmount, phuongThuc = 'ngan_hang') {
   const st = docState()
   const topupId = 'demo-topup-' + Date.now()
   const transferCode = sinhMaTransfer()
   const vndAmount = vndForTokens(tokenAmount)
+
+  let thongTinNhan = {
+    bank: 'NGÂN HÀNG DEMO (MB / Vietcombank)',
+    account: '9999 8888 7777',
+    name: 'THUEXENHANH DEMO',
+  }
+  if (phuongThuc === 'momo') {
+    thongTinNhan = {
+      bank: 'Ví MoMo',
+      account: '0988 888 888',
+      name: 'THUEXENHANH DEMO (MOMO)',
+    }
+  } else if (phuongThuc === 'zalopay') {
+    thongTinNhan = {
+      bank: 'Ví ZaloPay',
+      account: '0988 888 888',
+      name: 'THUEXENHANH DEMO (ZALOPAY)',
+    }
+  }
 
   const itemMoi = {
     id: topupId,
@@ -334,6 +353,7 @@ export async function demoTaoYeuCauNap(tokenAmount) {
     vnd_amount: vndAmount,
     status: 'cho_thanh_toan',
     transfer_code: transferCode,
+    phuong_thuc: phuongThuc,
     created_at: new Date().toISOString(),
     paid_at: null,
   }
@@ -344,15 +364,12 @@ export async function demoTaoYeuCauNap(tokenAmount) {
   return {
     demo: true,
     topup_id: topupId,
+    phuong_thuc: phuongThuc,
     token_amount: tokenAmount,
     vnd_amount: vndAmount,
     transfer_code: transferCode,
     qr_url: null, // HopNapToken sẽ tự vẽ ô QR demo
-    ngan_hang: {
-      bank: 'NGÂN HÀNG DEMO (MB / Vietcombank)',
-      account: '9999 8888 7777',
-      name: 'THUEXENHANH DEMO',
-    },
+    ngan_hang: thongTinNhan,
   }
 }
 

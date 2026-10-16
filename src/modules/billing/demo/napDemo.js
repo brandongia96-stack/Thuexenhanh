@@ -36,15 +36,31 @@ function maDemo() {
 }
 
 /** Trả về đúng hình dạng mà `create-topup` trả về, nhưng không đi đâu cả. */
-export function taoYeuCauNapDemo(tokenAmount) {
+export function taoYeuCauNapDemo(tokenAmount, phuongThuc = 'ngan_hang') {
+  let nganHang = NGAN_HANG_DEMO
+  if (phuongThuc === 'momo') {
+    nganHang = {
+      bank: 'Ví MoMo',
+      account: '0988 888 888',
+      name: 'CHỦ TÀI KHOẢN DEMO (MOMO)',
+    }
+  } else if (phuongThuc === 'zalopay') {
+    nganHang = {
+      bank: 'Ví ZaloPay',
+      account: '0988 888 888',
+      name: 'CHỦ TÀI KHOẢN DEMO (ZALOPAY)',
+    }
+  }
+
   return {
     demo: true,
     topup_id: 'demo-' + Date.now(),
+    phuong_thuc: phuongThuc,
     token_amount: tokenAmount,
     vnd_amount: vndForTokens(tokenAmount),
     transfer_code: maDemo(),
     qr_url: null, // bản thật là ảnh từ img.vietqr.io; demo vẽ ô giả tại chỗ
-    ngan_hang: NGAN_HANG_DEMO,
+    ngan_hang: nganHang,
   }
 }
 

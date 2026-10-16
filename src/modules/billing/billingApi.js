@@ -144,11 +144,11 @@ export async function trangThaiNap(topupId) {
  * Tạo yêu cầu nạp + sinh QR ngân hàng động.
  * KHÔNG cộng token. Token chỉ vào ví khi tiền thật về và webhook bắn tới.
  */
-export function taoYeuCauNap(tokenAmount) {
+export function taoYeuCauNap(tokenAmount, phuongThuc = 'ngan_hang') {
   if (isTokenDemo()) {
-    return demoTaoYeuCauNap(tokenAmount)
+    return demoTaoYeuCauNap(tokenAmount, phuongThuc)
   }
-  return callFunction('create-topup', { token_amount: tokenAmount })
+  return callFunction('create-topup', { token_amount: tokenAmount, payment_method: phuongThuc })
 }
 
 /**

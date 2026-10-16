@@ -144,8 +144,138 @@
 .fdt-quay { animation: fdt-quay 1s linear infinite; }
 @keyframes fdt-quay { to { transform: rotate(360deg) } }
 
+/* ─── Header trang đăng tin có số dư & nút nạp token ─── */
+.tdt-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--sp-3);
+}
+
+.tdt-header-left {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--sp-2);
+}
+
+.tdt-token-widget {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  background: var(--m-surface);
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-box);
+  padding: 4px 6px 4px 12px;
+  box-shadow: var(--shadow-sm);
+}
+
+.tdt-sodu-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  color: var(--m-mid);
+  font-size: 13.5px;
+  font-weight: 500;
+  transition: opacity var(--t-fast);
+}
+
+.tdt-sodu-link:hover {
+  opacity: 0.8;
+  color: var(--m-dark);
+}
+
+.tdt-coin-icon {
+  color: var(--m-amber);
+  flex-shrink: 0;
+}
+
+.tdt-sodu-label {
+  color: var(--m-mid);
+}
+
+.tdt-sodu-val {
+  font-weight: 700;
+  color: var(--m-dark);
+}
+
+.tdt-btn-topup {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  background: var(--m-green);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-box);
+  padding: 6px 10px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--t-fast), transform var(--t-fast);
+  white-space: nowrap;
+}
+
+.tdt-btn-topup:hover {
+  background: var(--m-green-hover);
+}
+
+.tdt-btn-topup:active {
+  transform: scale(0.97);
+}
+
+/* ─── Số dư & nút nạp trong khối giá của FormDangTin ─── */
+.fdt-gia-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: var(--sp-2);
+  margin-bottom: var(--sp-1);
+}
+
+.fdt-gia-sodu-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--sp-2);
+  background: var(--m-surface);
+  border: 1px solid var(--m-border);
+  border-radius: var(--r-box);
+  padding: 3px 6px 3px 10px;
+  font-size: 13px;
+  color: var(--m-mid);
+}
+
+.fdt-btn-topup-inline {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: var(--m-green);
+  color: #fff;
+  border: none;
+  border-radius: var(--r-box);
+  padding: 3px 8px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background var(--t-fast);
+}
+
+.fdt-btn-topup-inline:hover {
+  background: var(--m-green-hover);
+}
+
+.fdt-gia-nhac-thieu {
+  color: var(--m-amber);
+  margin-top: var(--sp-2);
+  font-weight: 500;
+}
+
 @media (max-width: 640px) {
   .fdt-goi { grid-template-columns: 1fr; }
   .fdt-luoi { grid-template-columns: 1fr; }
   .fdt-thanh-nut > .btn { flex: 1; }
+  .tdt-header { flex-direction: column; align-items: stretch; }
+  .tdt-token-widget { align-self: flex-start; }
 }
