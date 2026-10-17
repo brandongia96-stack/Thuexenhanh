@@ -82,7 +82,18 @@
 }
 
 @media (max-width: 480px) {
+  /* Từng tràn ~64 px ở 375 px: "Cộng đồng" / "Xe của tôi" / "Đăng nhập" chỉ còn icon vuông 36 px.
+     "Thuê xe" và "Đăng tin" giữ chữ (lối của khách và nguồn doanh thu). */
+  .hd-nhan { display: none; }
+  .hd-co-icon,
+  .hd-right .btn-sm.hd-co-icon { width: 36px; min-width: 36px; padding: 0; justify-content: center; }
   .hd-inner { padding: 0 var(--sp-2); gap: var(--sp-1); }
+}
+
+/* Máy rất hẹp (320 px): chủ xe đã đăng nhập (thêm "Xe của tôi" + avatar) từng tràn 6 px */
+@media (max-width: 360px) {
+  .hd-right { gap: var(--sp-1); }
+  .hd-link:not(.hd-co-icon) { padding: 0 var(--sp-1); }
 }
 
 /* ─── Avatar Menu (Account Dropdown) ─── */

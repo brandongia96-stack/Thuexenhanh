@@ -60,16 +60,17 @@ export default function Header() {
 
         <nav className="hd-nav">
           <NavLink to="/thue-xe" className="hd-link">Thuê xe</NavLink>
+          {/* hd-co-icon: điện thoại ≤ 480 px chỉ còn icon (chữ ẩn, giữ aria-label) để đầu trang không tràn ngang */}
           {FLAGS.cong_dong && (
-            <NavLink to="/cong-dong" className="hd-link">
+            <NavLink to="/cong-dong" className="hd-link hd-co-icon" aria-label="Cộng đồng">
               <Users size={16} strokeWidth={1.8} />
-              Cộng đồng
+              <span className="hd-nhan">Cộng đồng</span>
             </NavLink>
           )}
           {isOwner && (
-            <NavLink to="/chu-xe" className="hd-link">
+            <NavLink to="/chu-xe" className="hd-link hd-co-icon" aria-label="Xe của tôi">
               <LayoutDashboard size={16} strokeWidth={1.8} />
-              Xe của tôi
+              <span className="hd-nhan">Xe của tôi</span>
             </NavLink>
           )}
         </nav>
@@ -138,9 +139,9 @@ export default function Header() {
               )}
             </div>
           ) : (
-            <Link to="/dang-nhap" className="btn btn-ghost btn-sm">
+            <Link to="/dang-nhap" className="btn btn-ghost btn-sm hd-co-icon" aria-label="Đăng nhập">
               <LogIn size={16} strokeWidth={1.8} />
-              Đăng nhập
+              <span className="hd-nhan">Đăng nhập</span>
             </Link>
           )}
         </div>
