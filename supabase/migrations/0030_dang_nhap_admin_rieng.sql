@@ -12,9 +12,9 @@
 -- qua /admin) cũng KHÔNG có quyền — phiên đó không có trong admin_sessions,
 -- nên không lách được giới hạn đăng nhập sai.
 --
--- ⚠️ CHẠY FILE NÀY LÀ CẮT QUYỀN tài khoản Google/email cũ đang có vai trò
--- admin/kiem_duyet (dòng user_roles vẫn còn nhưng hết hiệu lực vì không nằm
--- trong admin_accounts). Gỡ hẳn dòng cũ là việc riêng, chờ anh xác nhận.
+-- ⚠️ CHẠY FILE NÀY LÀ GỠ QUYỀN tài khoản Google/email cũ đang có vai trò
+-- admin/kiem_duyet (mục 7: xoá mềm, in email từng tài khoản bị gỡ). Anh đã
+-- duyệt 17/10. Sau đó gắn tài khoản quản trị riêng bằng gan_tai_khoan_quan_tri.
 --
 -- MẬT KHẨU KHÔNG BAO GIỜ nằm trong file này hay bất kỳ file nào của repo.
 -- Anh tự tạo user trong Supabase Dashboard → Authentication (Supabase Auth
@@ -266,7 +266,36 @@ create trigger user_roles_chi_tai_khoan_quan_tri
   for each row execute function user_roles_chi_tai_khoan_quan_tri();
 
 -- ─────────────────────────────────────────────
--- 7. QUYỀN GỌI HÀM
+-- 7. GỠ VAI TRÒ QUẢN TRỊ CỦA TÀI KHOẢN THƯỜNG (anh duyệt 17/10: "em toàn quyền")
+--    Xoá mềm (deleted_at) mọi dòng admin/kiem_duyet của user không nằm trong
+--    admin_accounts — tức các tài khoản Google/email cũ. Không xoá cứng: dòng
+--    vẫn còn, có dấu thời gian, khôi phục được nếu cần.
+--    Danh sách email bị gỡ in ra ở tab "Messages"/"Notices" của SQL Editor.
+--    Chạy lại: không còn gì để gỡ thì in "0 dòng".
+-- ─────────────────────────────────────────────
+do $blk$
+declare
+  r     record;
+  n     int := 0;
+  v_mail text;
+begin
+  for r in
+    update user_roles ur
+       set deleted_at = now(), updated_at = now()
+     where ur.role in ('admin', 'kiem_duyet') and ur.deleted_at is null
+       and not exists (select 1 from admin_accounts a
+                        where a.user_id = ur.user_id and a.deleted_at is null)
+    returning ur.user_id, ur.role
+  loop
+    select email into v_mail from auth.users where id = r.user_id;
+    raise notice 'Đã gỡ vai trò % của tài khoản % (user_id %)', r.role, coalesce(v_mail, '(không có email)'), r.user_id;
+    n := n + 1;
+  end loop;
+  raise notice 'Gỡ vai trò quản trị của tài khoản thường: % dòng', n;
+end $blk$;
+
+-- ─────────────────────────────────────────────
+-- 8. QUYỀN GỌI HÀM
 -- ─────────────────────────────────────────────
 revoke all on function phien_quan_tri_hop_le(uuid, uuid)              from public, anon, authenticated;
 revoke all on function admin_login_bat_dau(text, text)                from public, anon, authenticated;

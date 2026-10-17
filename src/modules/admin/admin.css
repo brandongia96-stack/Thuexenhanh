@@ -34,6 +34,13 @@
   .ad-phien { width: 100%; justify-content: space-between; }
 }
 
+@media (max-width: 600px) {
+  .ad-phien { flex-wrap: wrap; justify-content: flex-start; }
+}
+
+.ad-doi-mk { max-width: 480px; gap: var(--sp-3); }
+.ad-doi-mk-dau { justify-content: space-between; align-items: center; }
+
 /* ─── Form đăng nhập quản trị (/admin khi chưa có phiên) ─── */
 .ad-dn { max-width: 420px; }
 .ad-dn-hop { gap: var(--sp-4); }

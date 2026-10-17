@@ -4,7 +4,7 @@
 // Chỉ hiện sau cổng đăng nhập quản trị (CongQuanTri.jsx).
 // Chặn quyền thật nằm ở server (RLS + hàm 0008_admin.sql + Edge Function, phiên 0030).
 
-import { lazy, Suspense } from 'react'
+import { lazy, Suspense, useState } from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation, Link } from 'react-router-dom'
 import {
   LayoutDashboard,
@@ -13,6 +13,7 @@ import {
   Users,
   Activity,
   LogOut,
+  KeyRound,
 } from 'lucide-react'
 import { PageLoading } from '../../components/Loading'
 import './admin.css'
@@ -32,6 +33,7 @@ const YeuCauGo = lazy(() => import('./YeuCauGo'))
 const CungCapDuLieu = lazy(() => import('./CungCapDuLieu'))
 const XoaTaiKhoan = lazy(() => import('./XoaTaiKhoan'))
 const DuyetTinTimXe = lazy(() => import('./DuyetTinTimXe'))
+const DoiMatKhauQuanTri = lazy(() => import('./DoiMatKhauQuanTri'))
 
 // Cấu trúc phân hệ (Sections) & Tab con
 const SECTIONS = [
@@ -95,6 +97,7 @@ const gioPhut = (d) =>
 
 export default function TrangQuanTri({ hetHanLuc = null, onThoat }) {
   const location = useLocation()
+  const [doiMatKhau, setDoiMatKhau] = useState(false)
   
   // Xác định sub-path hiện tại: ví dụ /admin/duyet-tin -> 'duyet-tin'
   const duongDan = location.pathname.replace(/^\/admin\/?/, '').split('/')[0] || 'tong-quan'
@@ -118,6 +121,11 @@ export default function TrangQuanTri({ hetHanLuc = null, onThoat }) {
         {onThoat && (
           <div className="ad-phien">
             {hetHanLuc && <span className="t-small">Phiên hết hạn lúc {gioPhut(hetHanLuc)}</span>}
+            <button type="button" className="btn btn-ghost btn-sm" onClick={() => setDoiMatKhau((v) => !v)}
+                    aria-expanded={doiMatKhau}>
+              <KeyRound size={16} strokeWidth={1.8} />
+              Đổi mật khẩu
+            </button>
             <button type="button" className="btn btn-ghost btn-sm" onClick={onThoat}>
               <LogOut size={16} strokeWidth={1.8} />
               Thoát
@@ -125,6 +133,12 @@ export default function TrangQuanTri({ hetHanLuc = null, onThoat }) {
           </div>
         )}
       </div>
+
+      {onThoat && doiMatKhau && (
+        <Suspense fallback={<PageLoading />}>
+          <DoiMatKhauQuanTri onDong={() => setDoiMatKhau(false)} />
+        </Suspense>
+      )}
 
       {/* ─── THANH SECTION CHÍNH (PRIMARY SECTIONS) ─── */}
       {/* Link phải TUYỆT ĐỐI: trang gắn ở route splat /admin/*, link tương đối bị

@@ -67,5 +67,17 @@ describe('thanh tab /admin', () => {
 
   it('nút Thoát chỉ hiện khi cổng đăng nhập truyền onThoat', () => {
     expect(htmlTai('/admin/tong-quan')).not.toContain('Thoát')
+    const html = renderToString(
+      <StaticRouter location="/admin/tong-quan">
+        <Routes>
+          <Route path="/admin/*" element={
+            <TrangQuanTri onThoat={() => {}} hetHanLuc={new Date('2026-10-18T08:30:00+07:00')} />
+          } />
+        </Routes>
+      </StaticRouter>,
+    )
+    expect(html).toContain('Thoát')
+    expect(html).toContain('Đổi mật khẩu')
+    expect(html).toContain('Phiên hết hạn lúc')
   })
 })
