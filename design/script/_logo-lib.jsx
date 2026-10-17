@@ -245,6 +245,11 @@ function iconC() {
     return iconKhoi(chuN, 10, 'U = {U} pt  ·  khối 6,5U bo 0,78U (12%)  ·  chữ n cao 4U, nét 1U  ·  nghiêng 10°');
 }
 
+// ---------- Logo đã chốt: AC2 (anh chọn 17/10/2026) ----------
+// Icon: chữ n có khe 45° (A) nghiêng 10°, cắt thủng khối app bo 12% (C). Wordmark A; chữ n đầu của "nhanh" có khe.
+var PA_CHOT = { ten: 'AC2', khoi: true, sg: 44, G: { rt: 0.15, khia: true, nKhe: true }, ki: 6 / 6.5, dy: -0.25, gap: 1.4,
+    icon: function () { return iconKhoi(nKhe(0.1), 10, 'U = {U} pt  ·  khối 6,5U bo 0,78U (12%)  ·  chữ n cao 4U, nét 1U, nghiêng 10°  ·  khe 0,4U nghiêng 45° từ góc ruột'); } };
+
 // ---------- Tiện ích trên artboard (doc, các lớp lop* và AB do script gọi tạo) ----------
 var AB; // [trái, trên, phải, dưới] của artboard đang vẽ
 function SX(x) { return AB[0] + x; }
@@ -288,6 +293,44 @@ function dungLogo(P, ic, ox, oy, s) {
     var g = lopLogo.groupItems.add();
     ch.b.move(g, ElementPlacement.PLACEATBEGINNING); ch.a.move(g, ElementPlacement.PLACEATBEGINNING); iItem.move(g, ElementPlacement.PLACEATBEGINNING);
     g.name = 'logo-' + P.ten;
+    return g;
+}
+// Icon dương bản: khối xanh + chữ n trắng (hai hình, không cắt thủng) — cho favicon / app icon trên mọi nền tab.
+function dungIconDuong(P, ic, ox, oy, s) {
+    var c = { L: lopLogo, ox: ox, oy: oy, s: s * P.ki, mode: 'fill' };
+    var khoi = dung(c, ic.nut.k[0]); to(khoi, MAU.chinh);
+    var n = dung(c, ic.nut.k[1]); to(n, MAU.trang);
+    var g = lopLogo.groupItems.add();
+    khoi.move(g, ElementPlacement.PLACEATEND); n.move(g, ElementPlacement.PLACEATBEGINNING);
+    g.name = 'icon-duong';
+    return g;
+}
+function toPhan(g, ten, mau) { try { to(g.pageItems.getByName(ten), mau); } catch (e) { } }
+function toBan(g, ban) { // 'mau' | 'sang' (nền đậm) | 'trang' | 'den'
+    var m = { mau: [MAU.chinh, MAU.navy, MAU.chinh], sang: [MAU.trang, MAU.trang, MAU.sangToi], trang: [MAU.trang, MAU.trang, MAU.trang], den: [MAU.den, MAU.den, MAU.den] }[ban];
+    toPhan(g, 'icon', m[0]); toPhan(g, 'thuexe', m[1]); toPhan(g, 'nhanh', m[2]);
+    return g;
+}
+function hop(ds) { // khung bao chung [trái, trên, phải, dưới]
+    var b = ds[0].geometricBounds.slice(0);
+    for (var i = 1; i < ds.length; i++) { var c = ds[i].geometricBounds; b[0] = Math.min(b[0], c[0]); b[1] = Math.max(b[1], c[1]); b[2] = Math.max(b[2], c[2]); b[3] = Math.min(b[3], c[3]); }
+    return b;
+}
+// Logo dọc từ bản ngang gốc (U = pt mỗi U của bản gốc): icon cao 12U ở trên, cách chữ 2,5U, căn giữa.
+function logoDoc(goc, U) {
+    var g = lopLogo.groupItems.add();
+    var i = phan(goc, 'icon').duplicate(g, ElementPlacement.PLACEATEND);
+    var a = phan(goc, 'thuexe').duplicate(g, ElementPlacement.PLACEATEND), b = phan(goc, 'nhanh').duplicate(g, ElementPlacement.PLACEATEND);
+    i.resize(200, 200);
+    var bc = hop([a, b]), bi = i.geometricBounds;
+    i.translate((bc[0] + bc[2]) / 2 - (bi[0] + bi[2]) / 2, bc[1] + 2.5 * U - bi[3]);
+    g.name = 'logo-doc';
+    return g;
+}
+function logoChu(goc) { // chỉ logotype
+    var g = lopLogo.groupItems.add();
+    phan(goc, 'thuexe').duplicate(g, ElementPlacement.PLACEATEND); phan(goc, 'nhanh').duplicate(g, ElementPlacement.PLACEATEND);
+    g.name = 'logotype';
     return g;
 }
 
