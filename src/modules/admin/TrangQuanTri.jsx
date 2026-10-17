@@ -1,7 +1,8 @@
 // admin — khung trang quản trị, gắn ở /admin/* (App.jsx).
 //
 // Phân chia theo Section (Nhóm phân hệ) & Tab riêng biệt, kèm trang Tổng quan (Overview).
-// Chặn quyền thật nằm ở server (RLS + hàm 0008_admin.sql + Edge Function).
+// Chỉ hiện sau cổng đăng nhập quản trị (CongQuanTri.jsx).
+// Chặn quyền thật nằm ở server (RLS + hàm 0008_admin.sql + Edge Function, phiên 0030).
 
 import { lazy, Suspense } from 'react'
 import { NavLink, Navigate, Route, Routes, useLocation, Link } from 'react-router-dom'
@@ -11,6 +12,7 @@ import {
   Scale,
   Users,
   Activity,
+  LogOut,
 } from 'lucide-react'
 import { PageLoading } from '../../components/Loading'
 import './admin.css'
@@ -88,7 +90,10 @@ const SECTIONS = [
   },
 ]
 
-export default function TrangQuanTri() {
+const gioPhut = (d) =>
+  d.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+
+export default function TrangQuanTri({ hetHanLuc = null, onThoat }) {
   const location = useLocation()
   
   // Xác định sub-path hiện tại: ví dụ /admin/duyet-tin -> 'duyet-tin'
@@ -110,6 +115,15 @@ export default function TrangQuanTri() {
             Bảng điều khiển vận hành, kiểm duyệt và quản lý nền tảng Thuê Xe Nhanh
           </p>
         </div>
+        {onThoat && (
+          <div className="ad-phien">
+            {hetHanLuc && <span className="t-small">Phiên hết hạn lúc {gioPhut(hetHanLuc)}</span>}
+            <button type="button" className="btn btn-ghost btn-sm" onClick={onThoat}>
+              <LogOut size={16} strokeWidth={1.8} />
+              Thoát
+            </button>
+          </div>
+        )}
       </div>
 
       {/* ─── THANH SECTION CHÍNH (PRIMARY SECTIONS) ─── */}

@@ -4,7 +4,7 @@
 // Ra:   kết quả của hàm Postgres tương ứng, hoặc { error, message, fields? }
 //
 // Hai lớp chặn quyền, không tin lớp nào một mình:
-//   1. Ở đây: xác thực JWT, tra vai trò trong user_roles bằng service_role.
+//   1. Ở đây: xác thực JWT, đòi phiên quản trị (0030), tra vai trò trong user_roles.
 //   2. Trong từng hàm 0008_admin.sql: hàm TỰ kiểm tra lại p_actor.
 // Client không bao giờ gửi "tôi là admin" — người gọi luôn lấy từ JWT.
 //
@@ -22,6 +22,17 @@ const TOKEN_VND = 4000
 
 type Body = Record<string, unknown>
 type Vai = { admin: boolean; kiemDuyet: boolean }
+
+function sessionId(req: Request): string | null {
+  try {
+    const tok = (req.headers.get('Authorization') ?? '').replace(/^Bearer /, '')
+    const b64 = tok.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')
+    const claims = JSON.parse(atob(b64.padEnd(Math.ceil(b64.length / 4) * 4, '=')))
+    return typeof claims.session_id === 'string' && UUID.test(claims.session_id) ? claims.session_id : null
+  } catch {
+    return null
+  }
+}
 
 const uuid = (v: unknown) => (typeof v === 'string' && UUID.test(v) ? v : null)
 const chu = (v: unknown, max = 500) => (typeof v === 'string' ? v.trim().slice(0, max) : '')
@@ -43,6 +54,20 @@ Deno.serve(async (req) => {
 
   const user = await nguoiGoi(req)
   if (!user) return loi('chua_dang_nhap', 'Bạn cần đăng nhập')
+
+  // 0030: quyền quản trị chỉ có trong phiên do /admin-login tạo (admin_sessions),
+  // tài khoản nằm trong admin_accounts, chưa Thoát, chưa quá 8 giờ. Token đã
+  // được nguoiGoi() xác thực ở trên nên đọc claim session_id là tin được.
+  const { data: phienOk, error: ePhien } = await admin().rpc('phien_quan_tri_hop_le', {
+    p_uid: user.id, p_session: sessionId(req),
+  })
+  if (ePhien) {
+    console.error('admin-ops phien', ePhien)
+    return loi('loi_he_thong', 'Không kiểm tra được quyền')
+  }
+  if (!phienOk) {
+    return loi('het_phien_quan_tri', 'Phiên quản trị đã hết hạn. Đăng nhập lại ở /admin')
+  }
 
   const { data: rows, error } = await admin()
     .from('user_roles').select('role').eq('user_id', user.id).is('deleted_at', null)

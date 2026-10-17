@@ -20,6 +20,37 @@
   padding-bottom: var(--sp-2);
 }
 
+/* ─── Phiên quản trị: giờ hết hạn + nút Thoát (0030) ─── */
+.ad-phien {
+  display: flex;
+  align-items: center;
+  gap: var(--sp-3);
+  flex-shrink: 0;
+  color: var(--m-subtle);
+}
+
+@media (max-width: 600px) {
+  .ad-header-top { flex-wrap: wrap; }
+  .ad-phien { width: 100%; justify-content: space-between; }
+}
+
+/* ─── Form đăng nhập quản trị (/admin khi chưa có phiên) ─── */
+.ad-dn { max-width: 420px; }
+.ad-dn-hop { gap: var(--sp-4); }
+.ad-dn-dau { display: flex; align-items: center; gap: var(--sp-3); }
+.ad-dn-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  flex-shrink: 0;
+  border-radius: var(--r-box);
+  background: var(--m-green-light);
+  color: var(--m-green);
+}
+.ad-dn-chu { color: var(--m-mid); }
+
 /* ─── Thanh Section chính (Primary Sections) ─── */
 .ad-section-bar {
   display: flex;

@@ -8,15 +8,25 @@ import { renderToString } from 'react-dom/server'
 import { Route, Routes, StaticRouter } from 'react-router-dom'
 import TrangQuanTri from './TrangQuanTri'
 
-function hrefTai(url) {
-  const html = renderToString(
+function htmlTai(url) {
+  return renderToString(
     <StaticRouter location={url}>
       <Routes>
         <Route path="/admin/*" element={<TrangQuanTri />} />
       </Routes>
     </StaticRouter>,
   )
-  return [...html.matchAll(/href="([^"]+)"/g)].map((m) => m[1])
+}
+
+function hrefTai(url) {
+  return [...htmlTai(url).matchAll(/href="([^"]+)"/g)].map((m) => m[1])
+}
+
+// href của mọi thẻ <a> đang được tô "active".
+function activeTai(url) {
+  return (htmlTai(url).match(/<a [^>]*>/g) ?? [])
+    .filter((a) => /class="[^"]*\bactive\b/.test(a))
+    .map((a) => a.match(/href="([^"]+)"/)[1])
 }
 
 describe('thanh tab /admin', () => {
@@ -34,5 +44,28 @@ describe('thanh tab /admin', () => {
     expect(hrefTai('/admin/bao-cao')).toEqual(
       expect.arrayContaining(['/admin/khieu-nai', '/admin/yeu-cau-go', '/admin/cung-cap-du-lieu', '/admin/xoa-tai-khoan']),
     )
+  })
+
+  // Mỗi mục con: tab chính đúng phân hệ + tab con chính nó được tô "active".
+  const MUC = {
+    '/admin/duyet-tin': '/admin/duyet-tin', '/admin/duyet-tim-xe': '/admin/duyet-tin',
+    '/admin/duyet-giay-to': '/admin/duyet-tin', '/admin/gia-san': '/admin/duyet-tin',
+    '/admin/gia-nhien-lieu': '/admin/duyet-tin',
+    '/admin/bao-cao': '/admin/bao-cao', '/admin/khieu-nai': '/admin/bao-cao',
+    '/admin/yeu-cau-go': '/admin/bao-cao', '/admin/cung-cap-du-lieu': '/admin/bao-cao',
+    '/admin/xoa-tai-khoan': '/admin/bao-cao',
+    '/admin/nguoi-dung': '/admin/nguoi-dung', '/admin/doanh-thu': '/admin/nguoi-dung',
+    '/admin/cuu-ho': '/admin/cuu-ho', '/admin/suc-khoe': '/admin/cuu-ho',
+  }
+  for (const [url, tabChinh] of Object.entries(MUC)) {
+    it(`${url} tô đúng tab ${tabChinh}`, () => {
+      const active = activeTai(url)
+      expect(active).toContain(tabChinh)
+      expect(active).toContain(url)
+    })
+  }
+
+  it('nút Thoát chỉ hiện khi cổng đăng nhập truyền onThoat', () => {
+    expect(htmlTai('/admin/tong-quan')).not.toContain('Thoát')
   })
 })

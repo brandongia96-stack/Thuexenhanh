@@ -17,7 +17,7 @@ import BannerHoiViTri from './components/BannerHoiViTri'
 // Trang chủ nằm trong gói đầu vì đó là nơi khách đáp xuống.
 const DangNhap = lazy(() => import('./modules/auth/DangNhap'))
 const TrangTaiKhoan = lazy(() => import('./modules/auth/TrangTaiKhoan'))
-const TrangQuanTri = lazy(() => import('./modules/admin/TrangQuanTri'))
+const CongQuanTri = lazy(() => import('./modules/admin/CongQuanTri'))
 const TrangThongBao = lazy(() => import('./modules/notify/TrangThongBao'))
 // Luồng 08 — khiếu nại CÓ CHỨC NĂNG (khác /khieu-nai, trang tĩnh giải thích chính sách).
 const TrangKhieuNaiCuaToi = lazy(() => import('./modules/trust/complaint/TrangKhieuNaiCuaToi'))
@@ -132,9 +132,8 @@ export default function App() {
               <Route path="/kiem-duyet" element={
                 <RequireRole><ChuaLam ten="Hàng chờ kiểm duyệt" luong="08 — Tin cậy & kiểm duyệt" /></RequireRole>
               } />
-              <Route path="/admin/*" element={
-                <RequireRole><TrangQuanTri /></RequireRole>
-              } />
+              {/* Quản trị: đăng nhập riêng (tên + mật khẩu) ngay tại /admin, không qua /dang-nhap */}
+              <Route path="/admin/*" element={<CongQuanTri />} />
 
               {/* ── Trang tĩnh ── */}
               <Route path="/quy-che" element={<QuyChe />} />
