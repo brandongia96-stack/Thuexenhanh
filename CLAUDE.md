@@ -279,7 +279,7 @@ Dữ liệu tĩnh bê từ code cũ: 27 hãng xe + model, 39 tỉnh thành, qu�
 powershell -ExecutionPolicy Bypass -File scripts\backup.ps1
 ```
 ```bash
-powershell -ExecutionPolicy Bypass -File scriptsackup-master.ps1
+powershell -ExecutionPolicy Bypass -File scripts\backup-master.ps1
 ```
 ```bash
 git add -A; git commit -m "mo ta viec da lam"
