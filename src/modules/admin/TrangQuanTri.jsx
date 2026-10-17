@@ -113,6 +113,8 @@ export default function TrangQuanTri() {
       </div>
 
       {/* ─── THANH SECTION CHÍNH (PRIMARY SECTIONS) ─── */}
+      {/* Link phải TUYỆT ĐỐI: trang gắn ở route splat /admin/*, link tương đối bị
+          nối vào mục đang mở (/admin/tong-quan/duyet-tin) rồi bị `*` đẩy về Tổng quan. */}
       <nav className="ad-section-bar" aria-label="Phân hệ quản trị">
         {SECTIONS.map((sec) => {
           const laActive = sectionHienTai.id === sec.id
@@ -120,7 +122,7 @@ export default function TrangQuanTri() {
           return (
             <Link
               key={sec.id}
-              to={sec.to}
+              to={`/admin/${sec.to}`}
               className={`ad-section-tab${laActive ? ' active' : ''}`}
             >
               <Icon size={17} strokeWidth={laActive ? 2.2 : 1.8} />
@@ -136,7 +138,7 @@ export default function TrangQuanTri() {
           {sectionHienTai.items.map((sub) => (
             <NavLink
               key={sub.to}
-              to={sub.to}
+              to={`/admin/${sub.to}`}
               className={({ isActive }) => `ad-subtab${isActive ? ' active' : ''}`}
             >
               {sub.nhan}
