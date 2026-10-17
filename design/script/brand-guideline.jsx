@@ -83,7 +83,7 @@ function vienHoa(it) { // biến logo thành nét viền (để minh hoạ cách
 trang(0, null, null, MAU.navy);
 dat(sao2(goc, 'sang'), 960, 470, 1100, null);
 chu('Bộ nhận diện thương hiệu', 64, 880, 36, 'Bold', MAU.trang);
-chu('Phiên bản 1.0  ·  10/2026  ·  Logo AC2 — khe tốc độ trong khối', 64, 938, 16, 'Medium', MAU.sangToi);
+chu('Phiên bản 1.1  ·  10/2026  ·  Logo AC2 — khe tốc độ trong khối', 64, 938, 16, 'Medium', MAU.sangToi);
 
 // ===== 02 · Logo =====
 trang(1, 'Logo', 'Bản ngang là bản chính. Bản dọc cho chỗ vuông (ảnh đại diện, bảng hiệu đứng). Icon dùng riêng khi chỗ quá nhỏ cho chữ.');
@@ -147,10 +147,10 @@ chu('Nhỏ hơn 20 px → bỏ chữ, chỉ dùng icon', 1300, 920, 15, 'Medium'
 // ===== 05 · Màu =====
 trang(4, 'Màu sắc', 'Hai tông xanh dương: navy cho sự tin cậy, xanh chính cho tốc độ. Tỉ lệ tương phản tính theo WCAG 2.');
 var mauChinh = [
-    [MAU.navy, 'Xanh navy', 'Chữ "thuexe" · nền đậm', MAU.trang, 'trắng'],
-    [MAU.chinh, 'Xanh chính', 'Icon · chữ "nhanh" · = --m-green-hover', MAU.trang, 'trắng'],
-    [MAU.sang, 'Xanh sáng', 'Khối lớn, điểm nhấn · = --m-green', MAU.trang, 'trắng'],
-    [MAU.sangToi, 'Xanh trên nền đậm', '"nhanh" + icon khi nền navy', MAU.navy, 'navy']];
+    [MAU.navy, 'Xanh navy', 'Chữ "thuexe" · nền đậm · token --m-navy', MAU.trang, 'trắng'],
+    [MAU.chinh, 'Xanh chính', 'Màu chính: icon, "nhanh", nút · token --m-green', MAU.trang, 'trắng'],
+    [MAU.sang, 'Xanh sáng', 'Khối lớn, điểm nhấn · token --m-blue', MAU.trang, 'trắng'],
+    [MAU.sangToi, 'Xanh trên nền đậm', 'Nhấn trên nền navy · token --m-sang-toi', MAU.navy, 'navy']];
 for (i = 0; i < 4; i++) {
     var x5 = 64 + i * 454, c5 = mauChinh[i], toi5 = doSang(c5[0]) < 0.3, mc = toi5 ? MAU.trang : MAU.navy, tp = tuongPhan(c5[0], c5[3]);
     o(x5, 180, 430, 400, c5[0]);
@@ -169,7 +169,8 @@ for (i = 0; i < 4; i++) {
     chu(c6[2], x6 + 32, 800, 14, 'Medium', mc6);
 }
 chu('Chữ nhỏ trên nền trắng chỉ dùng navy hoặc xanh chính (đạt AA). Xanh sáng #3B82F6 chỉ cho khối lớn hoặc chữ từ 24 px.', 64, 900, 15, 'Regular', MAU.vua);
-chu('Nút bấm của app đang dùng --m-green #3B82F6; logo dùng #2563EB (= --m-green-hover) nên khớp trạng thái bấm, không cần đổi token.', 64, 932, 15, 'Regular', MAU.vua);
+chu('Màu chính của app (--m-green) = #2563EB, cùng màu logo: chữ trắng trên nút đạt 5,2:1 (AA). Nút khi rê chuột / bấm: #1D4ED8 (--m-green-hover).', 64, 932, 15, 'Regular', MAU.vua);
+chu('Đổi từ #3B82F6 (bản 1.0) vì chữ trắng trên #3B82F6 chỉ đạt 3,7:1 — chưa đủ cho chữ nút 14 px.', 64, 964, 15, 'Regular', MAU.vua);
 
 // ===== 06 · Chữ =====
 trang(5, 'Chữ', 'Plus Jakarta Sans cho giao diện và văn bản. Logotype là hình tự dựng — không gõ lại bằng font.');
