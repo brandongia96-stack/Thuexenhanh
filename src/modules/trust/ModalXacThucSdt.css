@@ -18,7 +18,7 @@
 }
 
 .modal-otp-card {
-  background: var(--m-surface, #ffffff);
+  background: var(--m-surface);
   border-radius: var(--r-box);
   width: 100%;
   max-width: 440px;
@@ -50,9 +50,9 @@
 .modal-otp-icon-wrap {
   width: 36px;
   height: 36px;
-  border-radius: 50%;
-  background: var(--m-green-light, #ecfdf5);
-  color: var(--m-green, #059669);
+  border-radius: var(--r-circle);
+  background: var(--m-green-light);
+  color: var(--m-green);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -157,7 +157,7 @@
 }
 
 .modal-otp-test-box {
-  background: var(--m-card-hover, #f8fafc);
+  background: var(--m-bg);
   border: 1px dashed var(--m-border);
   border-radius: var(--r-md);
   padding: 10px 12px;
@@ -170,8 +170,8 @@
 }
 
 .modal-otp-error {
-  background: var(--m-red-bg, #fef2f2);
-  color: var(--m-red, #dc2626);
+  background: var(--m-red-bg);
+  color: var(--m-red);
   padding: 10px 14px;
   border-radius: var(--r-md);
   font-size: 13px;

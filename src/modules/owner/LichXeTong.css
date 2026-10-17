@@ -146,7 +146,7 @@
   left: 2px;
   right: 2px;
   background: var(--m-red-bg);
-  border: 1px solid var(--m-red-border, #fca5a5);
+  border: 1px solid var(--m-red);
   border-radius: var(--r-box);
 }
 

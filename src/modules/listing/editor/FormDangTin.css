@@ -54,9 +54,9 @@
   background: none;
   border: none;
   padding: 0;
-  font-size: 13.5px;
+  font-size: 13px;
   font-weight: 600;
-  color: var(--m-blue);
+  color: var(--m-green);
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 3px;
@@ -64,7 +64,7 @@
 }
 
 .fdt-btn-sosanh:hover {
-  color: var(--m-green);
+  color: var(--m-green-hover);
 }
 
 /* ─── Lưới trường ─── */

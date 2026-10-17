@@ -10,8 +10,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  background-color: #10B981; /* Green color for banner */
-  color: white;
+  background-color: var(--m-green-ok);
+  color: #fff;
   padding: var(--sp-3) var(--sp-4);
   cursor: pointer;
   margin-bottom: var(--sp-2);
@@ -84,7 +84,7 @@
 .tk-avatar {
   width: 48px;
   height: 48px;
-  border-radius: 50%;
+  border-radius: var(--r-circle);
   object-fit: cover;
 }
 
@@ -132,7 +132,7 @@
 .tk-cong-tac.bat { background: var(--m-green); }
 .tk-cong-tac:disabled { opacity: .6; cursor: progress; }
 .tk-cong-tac-nut {
-  position: absolute; top: 2px; left: 2px; width: 24px; height: 24px; border-radius: var(--r-full);
+  position: absolute; top: 2px; left: 2px; width: 24px; height: 24px; border-radius: var(--r-circle);
   background: var(--m-surface); box-shadow: var(--shadow-sm); transition: transform var(--t-fast);
 }
 .tk-cong-tac.bat .tk-cong-tac-nut { transform: translateX(22px); }

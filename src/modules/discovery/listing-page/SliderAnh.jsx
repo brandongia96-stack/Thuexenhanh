@@ -78,7 +78,7 @@ export default function SliderAnh({ anh = [], ten, freeSac = false, freeChargeKm
             className="slider-sac"
             title={chargePolicy === 'mien_phi_gioi_han' && freeChargeKm ? `Miễn phí sạc trong ${freeChargeKm} km` : 'Chủ xe cam kết miễn phí sạc pin'}
           >
-            <Zap size={14} fill="currentColor" strokeWidth={2.2} aria-hidden="true" />
+            <Zap size={14} fill="currentColor" strokeWidth={2} aria-hidden="true" />
             <span>Free sạc</span>
           </div>
         )}

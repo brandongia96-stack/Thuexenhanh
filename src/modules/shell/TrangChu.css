@@ -16,8 +16,8 @@
   font-size: clamp(30px, 5vw, 52px); font-weight: 800; line-height: 1.12;
   letter-spacing: -.03em; color: var(--m-dark);
 }
-.tc-mota { color: var(--m-mid); font-size: 16px; line-height: 1.6; max-width: 480px; margin-top: var(--sp-3); }
-.tc-lienket { color: var(--m-green); font-weight: 600; font-size: 14px; }
+.tc-mota { color: var(--m-mid); font-size: 15px; line-height: 1.6; max-width: 480px; margin-top: var(--sp-3); }
+.tc-lienket { color: var(--m-green); font-weight: 600; font-size: 15px; }
 .tc-lienket:hover { color: var(--m-green-hover); }
 
 .tc-tim {
@@ -25,7 +25,7 @@
   padding: var(--sp-6); border-radius: var(--r-xl);
   background: var(--m-surface); box-shadow: var(--shadow-lg);
 }
-.tc-tim-tieude { font-size: 18px; font-weight: 700; }
+.tc-tim-tieude { font-size: 20px; font-weight: 700; }
 
 /* ── Đầu mục dùng chung ── */
 .tc-dau { display: flex; align-items: baseline; justify-content: space-between; gap: var(--sp-3); }
@@ -51,14 +51,14 @@
 /* ── Hộp CTA tối cuối trang ── */
 .tc-cta {
   text-align: center;
-  background: var(--m-dark); color: #fff;
+  background: var(--m-navy); color: #fff;
   border-radius: var(--r-xl); padding: var(--sp-10) var(--sp-4);
   display: flex; flex-direction: column; align-items: center; gap: var(--sp-3);
 }
-.tc-cta h2 { font-size: clamp(24px, 4vw, 40px); font-weight: 800; letter-spacing: -.02em; }
-.tc-cta p { color: rgba(255, 255, 255, .72); max-width: 460px; }
-.tc-cta .btn { background: #fff; color: var(--m-dark); }
-.tc-cta .btn:hover { background: var(--m-bg); }
+.tc-cta h2 { font-size: clamp(24px, 4vw, 32px); font-weight: 800; letter-spacing: -.02em; color: #fff; }
+.tc-cta p { color: var(--m-sang-toi); max-width: 460px; font-size: 15px; }
+.tc-cta .btn { background: #fff; color: var(--m-navy); font-weight: 700; }
+.tc-cta .btn:hover { background: var(--m-green-light); color: var(--m-navy); }
 
 @media (min-width: 900px) {
   .tc-hero { grid-template-columns: 1.1fr 1fr; gap: var(--sp-10); padding-top: var(--sp-8); }
@@ -70,7 +70,7 @@
   .tc { gap: var(--sp-6); }
   .tc-hero { gap: var(--sp-4); padding-top: var(--sp-2); }
   .tc-h1 { font-size: 26px; }
-  .tc-mota { font-size: 14.5px; }
+  .tc-mota { font-size: 14px; }
   .tc-tim { padding: var(--sp-4); }
   .tc-cta { padding: var(--sp-6) var(--sp-3); }
 }

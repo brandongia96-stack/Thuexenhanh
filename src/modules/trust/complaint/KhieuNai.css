@@ -13,7 +13,7 @@
   font-weight: 600;
   white-space: nowrap;
 }
-.kn-nhan-info { background: var(--m-blue); color: #fff; opacity: 0.85; }
+.kn-nhan-info { background: var(--m-green); color: #fff; }
 .kn-nhan-warn { background: var(--m-amber); color: #fff; }
 .kn-nhan-ok   { background: var(--m-green); color: #fff; }
 .kn-nhan-mid  { background: var(--m-border); color: var(--m-mid); }

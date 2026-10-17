@@ -58,7 +58,7 @@ export default function ThuVien() {
         <section className="tv-section">
           <div className="tv-section-header">
             <h2 className="tv-section-title">
-              <FileCheck size={22} color="var(--m-blue)" />
+              <FileCheck size={22} strokeWidth={1.8} color="var(--m-green)" />
               1. Bộ biểu mẫu pháp lý chuẩn (File Word &amp; In ấn)
             </h2>
           </div>
@@ -268,7 +268,7 @@ export default function ThuVien() {
         <section className="tv-section">
           <div className="tv-section-header">
             <h2 className="tv-section-title">
-              <AlertTriangle size={22} color="#f97316" />
+              <AlertTriangle size={22} strokeWidth={1.8} color="var(--m-amber)" />
               3. Cẩm nang xử lý Phạt nguội &amp; Sự cố thực tế
             </h2>
           </div>
@@ -296,7 +296,7 @@ export default function ThuVien() {
               <h3 className="t-h3" style={{ color: 'var(--m-dark)' }}>Nghĩa vụ thuế của chủ xe cá nhân</h3>
               <p className="t-body" style={{ marginTop: 4 }}>
                 Theo quy định hiện hành, cá nhân cho thuê tài sản có tổng doanh thu trong năm dương lịch từ <strong>100 triệu đồng trở xuống</strong> thuộc đối tượng không phải nộp thuế GTGT và thuế TNCN. Trường hợp doanh thu trên 100 triệu đồng/năm, chủ xe tự kê khai tại Chi cục Thuế địa phương theo hướng dẫn.
-                {' '}<Link to="/thue" style={{ color: 'var(--m-blue)', fontWeight: 600 }}>Xem chi tiết chính sách thuế →</Link>
+                {' '}<Link to="/thue" style={{ color: 'var(--m-green)', fontWeight: 600 }}>Xem chi tiết chính sách thuế →</Link>
               </p>
             </div>
           </div>
@@ -347,7 +347,7 @@ export default function ThuVien() {
               rel="noopener noreferrer"
               className="tv-tool-link-card"
             >
-              <ExternalLink size={18} color="var(--m-blue)" />
+              <ExternalLink size={18} strokeWidth={1.8} color="var(--m-green)" />
               <div>
                 <div>Tra cứu Phạt nguội</div>
                 <div className="t-small" style={{ color: 'var(--m-subtle)' }}>Cục Cảnh sát Giao thông (csgt.vn)</div>
@@ -360,7 +360,7 @@ export default function ThuVien() {
               rel="noopener noreferrer"
               className="tv-tool-link-card"
             >
-              <ExternalLink size={18} color="var(--m-green)" />
+              <ExternalLink size={18} strokeWidth={1.8} color="var(--m-green)" />
               <div>
                 <div>Tra cứu Giấy phép lái xe</div>
                 <div className="t-small" style={{ color: 'var(--m-subtle)' }}>Cục Đường bộ Việt Nam (gplx.gov.vn)</div>
@@ -373,7 +373,7 @@ export default function ThuVien() {
               rel="noopener noreferrer"
               className="tv-tool-link-card"
             >
-              <ExternalLink size={18} color="#f97316" />
+              <ExternalLink size={18} strokeWidth={1.8} color="var(--m-amber)" />
               <div>
                 <div>Tra cứu Đăng kiểm xe</div>
                 <div className="t-small" style={{ color: 'var(--m-subtle)' }}>Cục Đăng kiểm VN (vr.org.vn)</div>
@@ -386,7 +386,7 @@ export default function ThuVien() {
               rel="noopener noreferrer"
               className="tv-tool-link-card"
             >
-              <ExternalLink size={18} color="#8b5cf6" />
+              <ExternalLink size={18} strokeWidth={1.8} color="var(--m-mid)" />
               <div>
                 <div>Cổng Dịch vụ công QG</div>
                 <div className="t-small" style={{ color: 'var(--m-subtle)' }}>Nộp phạt vi phạm online (dichvucong.gov.vn)</div>

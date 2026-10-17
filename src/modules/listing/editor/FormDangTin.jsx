@@ -263,7 +263,7 @@ export default function FormDangTin({ dieuKhien, onXong, onNhanBan, soDu, onMoNa
                     onClick={onMoNapToken}
                     title="Nạp thêm token"
                   >
-                    <Plus size={13} strokeWidth={2.5} />
+                    <Plus size={13} strokeWidth={2} />
                     <span>Nạp</span>
                   </button>
                 )}

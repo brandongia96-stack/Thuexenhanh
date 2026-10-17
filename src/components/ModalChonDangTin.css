@@ -107,7 +107,7 @@
 }
 
 .icon-chothue {
-  background: #eff6ff;
+  background: var(--m-green-light);
   color: var(--m-green);
 }
 
@@ -134,15 +134,15 @@
 }
 
 .badge-loaitin {
-  font-size: 0.72rem;
+  font-size: 12px;
   font-weight: 600;
   padding: 2px 8px;
   border-radius: var(--r-box);
 }
 
 .badge-chuxe {
-  background: #dbeafe;
-  color: #1e40af;
+  background: var(--m-green-light);
+  color: var(--m-green);
 }
 
 .badge-khach {

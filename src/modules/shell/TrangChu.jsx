@@ -360,7 +360,7 @@ function XeGanBan() {
     <section className="stack">
       <div className="tc-dau">
         <h2 className="tc-h2">
-          <MapPin size={22} color="var(--m-red)" style={{ verticalAlign: '-4px', marginRight: 4 }} />
+          <MapPin size={22} strokeWidth={1.8} color="var(--m-red)" style={{ verticalAlign: '-4px', marginRight: 4 }} />
           Xe gần bạn nhất
         </h2>
       </div>
@@ -369,7 +369,7 @@ function XeGanBan() {
         <div className="card card-pad empty" style={{ border: '1px dashed var(--m-border)', background: 'var(--m-bg)' }}>
           <p className="t-body" style={{ color: 'var(--m-dark)' }}>Cho phép định vị để xem các xe đang ở gần bạn nhất (bán kính 50km).</p>
           <button className="btn btn-primary" onClick={timXeGanDay} disabled={dangLayGPS}>
-            <MapPin size={18} /> {dangLayGPS ? 'Đang định vị...' : 'Quét radar tìm xe gần đây'}
+            <MapPin size={18} strokeWidth={1.8} /> {dangLayGPS ? 'Đang định vị...' : 'Quét radar tìm xe gần đây'}
           </button>
         </div>
       )}

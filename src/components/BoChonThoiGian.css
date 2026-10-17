@@ -391,8 +391,8 @@
 /* Xe đã báo bận: tô vàng cảnh báo nhưng không chặn */
 .cal-cell.is-busy {
   position: relative;
-  background: var(--m-amber-bg, #fffbeb);
-  color: var(--m-amber, #b45309);
+  background: var(--m-amber-bg);
+  color: var(--m-amber);
   font-weight: 700;
 }
 
@@ -405,7 +405,7 @@
   width: 4px;
   height: 4px;
   border-radius: var(--r-circle);
-  background: var(--m-amber, #b45309);
+  background: var(--m-amber);
 }
 
 .cal-cell.in-range {

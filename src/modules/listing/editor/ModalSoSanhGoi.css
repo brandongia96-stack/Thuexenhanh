@@ -86,8 +86,8 @@
 
 .mssg-card-highlight {
   border: 2px solid var(--m-green);
-  background: linear-gradient(180deg, #f0fdf4 0%, var(--m-surface) 100%);
-  box-shadow: 0 10px 15px -3px rgba(16, 185, 129, 0.1);
+  background: linear-gradient(180deg, var(--m-green-light) 0%, var(--m-surface) 100%);
+  box-shadow: 0 10px 15px -3px rgba(37, 99, 235, 0.1);
 }
 
 .mssg-badge-hot {
@@ -140,13 +140,13 @@
 .mssg-bang {
   width: 100%;
   border-collapse: collapse;
-  font-size: 13.5px;
+  font-size: 13px;
   text-align: left;
 }
 
 .mssg-bang th {
   padding: var(--sp-3) var(--sp-4);
-  background: #f8fafc;
+  background: var(--m-bg);
   color: var(--m-mid);
   font-weight: 600;
   border-bottom: 1px solid var(--m-border);
@@ -169,7 +169,7 @@
 }
 
 .mssg-bang tr:hover {
-  background: #f8fafc;
+  background: var(--m-bg);
 }
 
 .mssg-bang td {
@@ -178,7 +178,7 @@
 }
 
 .mssg-bang tr.highlight-col td.center:last-child {
-  background: rgba(16, 185, 129, 0.04);
+  background: var(--m-green-light);
 }
 
 .mssg-check {
@@ -188,7 +188,7 @@
   width: 22px;
   height: 22px;
   border-radius: var(--r-full);
-  background: #ecfdf5;
+  background: var(--m-green-light);
   color: var(--m-green);
 }
 
@@ -199,15 +199,15 @@
   width: 22px;
   height: 22px;
   border-radius: var(--r-full);
-  background: #f1f5f9;
-  color: #94a3b8;
+  background: var(--m-bg);
+  color: var(--m-subtle);
 }
 
 /* ─── Footer Dẫn Đến Trang Ví ─── */
 .mssg-chan {
   padding: var(--sp-4) var(--sp-6);
   border-top: 1px solid var(--m-border);
-  background: #f8fafc;
+  background: var(--m-bg);
   display: flex;
   align-items: center;
   justify-content: space-between;

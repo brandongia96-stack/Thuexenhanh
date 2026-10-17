@@ -160,7 +160,7 @@ export default function ModalSoSanhGoi({ onDong, goiHienTai, onChonGoi }) {
                       <td className="center">
                         {typeof m.coban === 'boolean' ? (
                           m.coban ? (
-                            <span className="mssg-check"><Check size={14} strokeWidth={2.5} /></span>
+                            <span className="mssg-check"><Check size={14} strokeWidth={2} /></span>
                           ) : (
                             <span className="mssg-cross"><X size={14} strokeWidth={2} /></span>
                           )
@@ -171,7 +171,7 @@ export default function ModalSoSanhGoi({ onDong, goiHienTai, onChonGoi }) {
                       <td className="center">
                         {typeof m.daydu === 'boolean' ? (
                           m.daydu ? (
-                            <span className="mssg-check"><Check size={14} strokeWidth={2.5} /></span>
+                            <span className="mssg-check"><Check size={14} strokeWidth={2} /></span>
                           ) : (
                             <span className="mssg-cross"><X size={14} strokeWidth={2} /></span>
                           )
@@ -190,7 +190,7 @@ export default function ModalSoSanhGoi({ onDong, goiHienTai, onChonGoi }) {
         {/* Chân Popup dẫn về trang Ví & Nạp Token */}
         <div className="mssg-chan">
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--sp-2)' }}>
-            <Wallet size={18} color="var(--m-blue)" />
+            <Wallet size={18} strokeWidth={1.8} color="var(--m-green)" />
             <span className="t-small">
               Muốn kiểm tra số dư hoặc nạp thêm token cho xe?
             </span>
@@ -201,7 +201,7 @@ export default function ModalSoSanhGoi({ onDong, goiHienTai, onChonGoi }) {
             style={{ fontWeight: 600, display: 'inline-flex', alignItems: 'center', gap: 6 }}
             onClick={onDong}
           >
-            Đến trang Ví Token <ArrowRight size={14} />
+            Đến trang Ví Token <ArrowRight size={14} strokeWidth={1.8} />
           </Link>
         </div>
       </div>

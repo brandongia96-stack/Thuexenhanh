@@ -130,7 +130,7 @@ export default function TrangXe() {
                   className="badge badge-freesac"
                   title={tin.charge_policy === 'mien_phi_gioi_han' && tin.free_charge_km ? `Miễn phí sạc trong ${tin.free_charge_km} km` : 'Chủ xe cam kết miễn phí sạc pin'}
                 >
-                  <Zap size={13} fill="currentColor" strokeWidth={2.2} aria-hidden="true" />
+                  <Zap size={13} fill="currentColor" strokeWidth={2} aria-hidden="true" />
                   Free sạc
                 </span>
               )}
@@ -211,7 +211,7 @@ export default function TrangXe() {
             </div>
             {freeSac && (
               <div className="hop-freesac-tag">
-                <Zap size={14} fill="currentColor" strokeWidth={2.2} aria-hidden="true" />
+                <Zap size={14} fill="currentColor" strokeWidth={2} aria-hidden="true" />
                 <span>Bao gồm miễn phí sạc pin</span>
               </div>
             )}

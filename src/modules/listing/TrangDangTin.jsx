@@ -132,7 +132,7 @@ export default function TrangDangTin() {
               title="Nạp thêm token"
               aria-label="Nạp thêm token"
             >
-              <Plus size={15} strokeWidth={2.5} />
+              <Plus size={15} strokeWidth={2} />
               <span className="tdt-btn-topup-label">Nạp token</span>
             </button>
           </div>
@@ -152,15 +152,15 @@ export default function TrangDangTin() {
             style={{
               width: 64,
               height: 64,
-              borderRadius: '50%',
-              background: 'var(--m-amber-bg, #FEF3C7)',
-              color: 'var(--m-amber, #D97706)',
+              borderRadius: 'var(--r-circle)',
+              background: 'var(--m-amber-bg)',
+              color: 'var(--m-amber)',
               display: 'grid',
               placeItems: 'center',
               margin: '0 auto',
             }}
           >
-            <PhoneCall size={32} />
+            <PhoneCall size={32} strokeWidth={1.8} />
           </div>
 
           <div className="stack" style={{ gap: 'var(--sp-2)' }}>
@@ -275,7 +275,7 @@ export default function TrangDangTin() {
             title="Nạp thêm token"
             aria-label="Nạp thêm token"
           >
-            <Plus size={15} strokeWidth={2.5} />
+            <Plus size={15} strokeWidth={2} />
             <span className="tdt-btn-topup-label">Nạp token</span>
           </button>
         </div>

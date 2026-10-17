@@ -265,9 +265,9 @@ export default function TrangChuXe() {
       </aside>
 
       {/* Quà tặng biểu mẫu cho chủ xe (Mức 2) */}
-      <div className="card card-pad row" style={{ gap: 'var(--sp-4)', marginTop: 'var(--sp-2)', marginBottom: 'var(--sp-4)', backgroundColor: 'var(--m-blue-bg)' }}>
+      <div className="card card-pad row" style={{ gap: 'var(--sp-4)', marginTop: 'var(--sp-2)', marginBottom: 'var(--sp-4)', backgroundColor: 'var(--m-green-light)' }}>
         <div style={{ flex: 1 }}>
-          <h3 className="t-h3" style={{ color: 'var(--m-blue)' }}>Biểu mẫu hỗ trợ kinh doanh</h3>
+          <h3 className="t-h3" style={{ color: 'var(--m-green)' }}>Biểu mẫu hỗ trợ kinh doanh</h3>
           <p className="t-small" style={{ marginTop: 4 }}>Tải ngay bộ Mẫu hợp đồng thuê xe & Biên bản bàn giao chuẩn pháp lý (File Word).</p>
         </div>
         <a 
@@ -275,7 +275,7 @@ export default function TrangChuXe() {
           download="Hop-dong-thue-xe-va-bien-ban-ban-giao.docx"
           className="btn btn-primary"
         >
-          <Download size={16} /> Tải file Word (.docx)
+          <Download size={16} strokeWidth={1.8} /> Tải file Word (.docx)
         </a>
       </div>
 

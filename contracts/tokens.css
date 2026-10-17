@@ -193,7 +193,7 @@ ul, ol { list-style: none; }
   font-size: 12px; font-weight: 600;
 }
 .badge-verified { background: var(--m-green-ok-bg); color: var(--m-green-ok); }
-.badge-info     { background: var(--m-blue-bg);  color: var(--m-blue); }
+.badge-info     { background: var(--m-green-light); color: var(--m-green); }
 .badge-warn     { background: var(--m-amber-bg); color: var(--m-amber); }
 .badge-danger   { background: var(--m-red-bg);   color: var(--m-red); }
 .badge-neutral  { background: var(--m-bg);       color: var(--m-mid); }
@@ -226,13 +226,13 @@ ul, ol { list-style: none; }
   grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
 }
 
-/* ─── Chữ ─── */
-.t-h1 { font-size: 28px; font-weight: 800; letter-spacing: -.02em; }
-.t-h2 { font-size: 20px; font-weight: 700; letter-spacing: -.01em; }
-.t-h3 { font-size: 17px; font-weight: 700; }
-.t-body  { font-size: 15px; color: var(--m-mid); }
-.t-small { font-size: 13px; color: var(--m-subtle); }
-.t-price { font-size: 18px; font-weight: 800; color: var(--m-green); }
+/* ─── Chữ (Brand Guideline v1.1 thang chữ: 32 Bold · 20 SemiBold · 15 Regular · 13 Medium) ─── */
+.t-h1 { font-size: 32px; font-weight: 700; letter-spacing: -.02em; }
+.t-h2 { font-size: 20px; font-weight: 600; letter-spacing: -.01em; }
+.t-h3 { font-size: 17px; font-weight: 600; }
+.t-body  { font-size: 15px; color: var(--m-mid); line-height: 1.5; }
+.t-small { font-size: 13px; font-weight: 500; color: var(--m-subtle); }
+.t-price { font-size: 20px; font-weight: 800; color: var(--m-green); }
 
 /* ─── Miễn trừ trách nhiệm ───
    BẮT BUỘC xuất hiện ở mọi trang chi tiết xe. */
@@ -240,7 +240,7 @@ ul, ol { list-style: none; }
   padding: var(--sp-3);
   background: var(--m-bg);
   border-radius: var(--r-md);
-  font-size: 12px; color: var(--m-subtle); line-height: 1.6;
+  font-size: 13px; color: var(--m-subtle); line-height: 1.6;
 }
 
 @media (max-width: 640px) {

@@ -26,10 +26,10 @@ function Anh({ xe, uuTien }) {
       <div className="the-xe-anh the-xe-anh-trong">
         {freeSac && (
           <span className="thexe-sac">
-            <Zap size={12} fill="currentColor" strokeWidth={2.2} aria-hidden="true" /> Free sạc
+            <Zap size={12} fill="currentColor" strokeWidth={2} aria-hidden="true" /> Free sạc
           </span>
         )}
-        <Car size={28} strokeWidth={1.5} />
+        <Car size={28} strokeWidth={1.8} />
         <span className="t-small">Chưa có ảnh</span>
       </div>
     )
@@ -42,7 +42,7 @@ function Anh({ xe, uuTien }) {
     >
       {freeSac && (
         <span className="thexe-sac">
-          <Zap size={12} fill="currentColor" strokeWidth={2.2} aria-hidden="true" /> Free sạc
+          <Zap size={12} fill="currentColor" strokeWidth={2} aria-hidden="true" /> Free sạc
         </span>
       )}
       <img

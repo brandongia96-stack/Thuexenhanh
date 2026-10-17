@@ -17,8 +17,8 @@
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  background: var(--m-blue-bg);
-  color: var(--m-blue);
+  background: var(--m-green-light);
+  color: var(--m-green);
   border: 1px solid var(--m-green-border);
   padding: 4px 12px;
   border-radius: var(--r-full);
@@ -122,8 +122,8 @@
 }
 
 .tv-icon-word {
-  background: #eef2ff;
-  color: #3b82f6;
+  background: var(--m-green-light);
+  color: var(--m-green);
 }
 
 .tv-icon-guide {
@@ -202,9 +202,9 @@
 }
 
 .tv-tool-link-card:hover {
-  background: var(--m-blue-bg);
-  border-color: var(--m-blue);
-  color: var(--m-blue);
+  background: var(--m-green-light);
+  border-color: var(--m-green);
+  color: var(--m-green);
 }
 
 @media (max-width: 640px) {

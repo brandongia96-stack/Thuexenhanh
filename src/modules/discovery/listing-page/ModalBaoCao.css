@@ -148,17 +148,17 @@
 
 .mbc-reason-item:hover {
   background: var(--m-bg);
-  border-color: #cbd5e1;
+  border-color: var(--m-border);
 }
 
 .mbc-reason-selected {
-  background: var(--m-blue-bg);
-  border-color: var(--m-blue);
-  box-shadow: 0 0 0 1px var(--m-blue);
+  background: var(--m-green-light);
+  border-color: var(--m-green);
+  box-shadow: 0 0 0 1px var(--m-green);
 }
 
 .mbc-reason-selected:hover {
-  background: var(--m-blue-bg);
+  background: var(--m-green-light);
 }
 
 .mbc-radio-circle {
@@ -175,15 +175,15 @@
 }
 
 .mbc-reason-selected .mbc-radio-circle {
-  border-color: var(--m-blue);
-  background: var(--m-blue);
+  border-color: var(--m-green);
+  background: var(--m-green);
 }
 
 .mbc-radio-dot {
   width: 6px;
   height: 6px;
   border-radius: var(--r-circle);
-  background: #ffffff;
+  background: var(--m-surface);
 }
 
 .mbc-reason-content {
@@ -201,7 +201,7 @@
 
 .mbc-reason-selected .mbc-reason-label {
   font-weight: 600;
-  color: var(--m-blue);
+  color: var(--m-green);
 }
 
 .mbc-reason-desc {
@@ -230,12 +230,12 @@
 }
 
 .mbc-upload-dropzone:hover {
-  border-color: var(--m-blue);
-  background: var(--m-blue-bg);
+  border-color: var(--m-green);
+  background: var(--m-green-light);
 }
 
 .mbc-upload-icon {
-  color: var(--m-blue);
+  color: var(--m-green);
   flex-shrink: 0;
 }
 
@@ -319,7 +319,7 @@
   align-items: flex-start;
   gap: var(--sp-2);
   padding: var(--sp-2) var(--sp-3);
-  background: var(--m-blue-bg);
+  background: var(--m-green-light);
   border-radius: var(--r-box);
   color: var(--m-mid);
   font-size: 12px;
@@ -328,7 +328,7 @@
 }
 
 .mbc-privacy-note svg {
-  color: var(--m-blue);
+  color: var(--m-green);
   flex-shrink: 0;
   margin-top: 1px;
 }
@@ -350,7 +350,7 @@
 }
 
 .mbc-camket-box:hover {
-  background: #ebebee;
+  background: var(--m-border);
 }
 
 .mbc-camket-input {
@@ -358,7 +358,7 @@
   height: 17px;
   margin-top: 2px;
   cursor: pointer;
-  accent-color: var(--m-blue);
+  accent-color: var(--m-green);
   flex-shrink: 0;
 }
 

@@ -156,9 +156,9 @@ export default function HopLienHe({ tin, userId, conHienThi }) {
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           zIndex: 9999, padding: 'var(--sp-4)'
         }}>
-          <div className="card card-pad stack" style={{ maxWidth: 400, background: '#fff' }}>
+          <div className="card card-pad stack" style={{ maxWidth: 400, background: 'var(--m-surface)' }}>
             <div className="row" style={{ color: 'var(--m-red)', justifyContent: 'center', marginBottom: 8 }}>
-              <AlertCircle size={48} strokeWidth={1.5} />
+              <AlertCircle size={48} strokeWidth={1.8} />
             </div>
             <h3 className="t-h3" style={{ textAlign: 'center', color: 'var(--m-red)' }}>Cảnh báo an toàn</h3>
             <p className="t-body" style={{ textAlign: 'center', marginTop: 8 }}>

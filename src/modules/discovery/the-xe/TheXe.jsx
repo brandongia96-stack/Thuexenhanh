@@ -63,7 +63,7 @@ function TheXe({ the, bangDiaGioi, uuTien = false, tu = '', den = '' }) {
             className="thexe-sac"
             title={the.charge_policy === 'mien_phi_gioi_han' && the.free_charge_km ? `Miễn phí sạc trong ${the.free_charge_km} km` : 'Chủ xe cam kết miễn phí sạc pin'}
           >
-            <Zap size={13} fill="currentColor" strokeWidth={2.2} aria-hidden="true" />
+            <Zap size={13} fill="currentColor" strokeWidth={2} aria-hidden="true" />
             <span>Free sạc</span>
           </span>
         )}

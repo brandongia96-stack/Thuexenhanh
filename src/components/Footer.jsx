@@ -19,7 +19,17 @@ export default function Footer() {
     <footer className="footer-v2">
       <div className="page footer-v2-top">
         <div className="brand-col">
-          <h3>Thuê Xe Nhanh</h3>
+          <Link to="/" className="footer-logo" aria-label="Thuê Xe Nhanh — trang chủ">
+            <img
+              src="/logo-ngang-sang.svg"
+              alt="Thuê Xe Nhanh"
+              width="180"
+              height="24"
+              className="footer-logo-img"
+              loading="lazy"
+              decoding="async"
+            />
+          </Link>
           <p>
             Nơi chủ xe đăng tin và khách thuê tìm xe tự lái.
             Xem số điện thoại, gọi thẳng chủ xe, tự thoả thuận.
@@ -70,7 +80,7 @@ export default function Footer() {
         {/* Thông tin pháp nhân lấy từ modules/legal/phienBan.js — rỗng thì ẩn cả khối.
             CẤM gõ thẳng thông tin vào đây: mã số / địa chỉ bịa là vi phạm §1.2. */}
         {coPhapNhan() && (
-          <div className="footer-legal-info" style={{ color: 'var(--m-subtle)', fontSize: '13px' }}>
+          <div className="footer-legal-info" style={{ color: 'var(--m-sang-toi)', fontSize: '13px' }}>
             {PHAP_NHAN.ten && <strong>{PHAP_NHAN.ten}</strong>}
             {PHAP_NHAN.maSo && <div>Mã số: {PHAP_NHAN.maSo}</div>}
             {PHAP_NHAN.diaChi && <div>Địa chỉ: {PHAP_NHAN.diaChi}</div>}
@@ -78,7 +88,7 @@ export default function Footer() {
           </div>
         )}
 
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--sp-2)', fontSize: '13px', color: 'var(--m-subtle)', paddingTop: 'var(--sp-2)', borderTop: '1px solid var(--m-border)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 'var(--sp-2)', fontSize: '13px', color: 'var(--m-sang-toi)', paddingTop: 'var(--sp-2)', borderTop: '1px solid rgba(147, 197, 253, 0.2)' }}>
           <span>© {new Date().getFullYear()} Thuê Xe Nhanh. Toàn quyền bảo lưu.</span>
           <span>Nền tảng kết nối thuê xe tự lái trực tiếp</span>
         </div>

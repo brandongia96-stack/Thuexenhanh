@@ -149,17 +149,17 @@
 }
 
 .btn-zalo {
-  background: #0068ff;
+  background: var(--m-zalo);
   color: #fff;
   border: none;
   font-weight: 600;
   cursor: pointer;
   border-radius: var(--r-box);
-  transition: background 0.15s ease;
+  transition: background 0.15s ease, filter 0.15s ease;
 }
 
 .btn-zalo:hover {
-  background: #0056d6;
+  filter: brightness(0.9);
 }
 
 .btn-action-zalo {
@@ -175,10 +175,10 @@
   align-items: flex-start;
   gap: 8px;
   padding: 10px 12px;
-  background: #eff6ff;
+  background: var(--m-green-light);
   border-radius: var(--r-box);
-  font-size: 0.8rem;
-  color: #1e40af;
+  font-size: 13px;
+  color: var(--m-green);
   line-height: 1.4;
 }
 
