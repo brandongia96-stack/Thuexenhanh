@@ -1,4 +1,5 @@
 // logo-dot1.jsx — Logo đợt 1: 3 artboard phương án A / B / C (luồng 15 Designer, brief design/BRIEF-LOGO.md).
+// Bộ phương án kết hợp A + C (anh chọn 17/10): chạy design/script/logo-dot1-ac.jsx (đặt BO_LOGO = 'AC' rồi #include file này).
 // Mọi hình dựng từ hình cơ bản (hình chữ nhật bo góc, elip, nét) trên lưới đơn vị U,
 // rồi gộp / cắt bằng Pathfinder (Live Pathfinder Add / Subtract + Expand). Không dùng font cho logo.
 // Chạy: powershell -ExecutionPolicy Bypass -File scripts\adobe\chay.ps1 -App ai -Script design\script\logo-dot1.jsx
@@ -93,7 +94,13 @@ function pf(c, ds, lenh) {
     for (var i = 0; i < ds.length; i++) ds[i].move(g, ElementPlacement.PLACEATBEGINNING); // phần tử đầu nằm dưới cùng
     chon(g);
     app.executeMenuCommand(lenh); app.executeMenuCommand('expandStyle');
-    return app.activeDocument.selection[0];
+    // Cắt ra nhiều mảnh (vd. chữ n có khe) thì Expand có thể để các mảnh rời nhau → gom lại một nhóm.
+    var sel = app.activeDocument.selection, manh = [];
+    for (var j = 0; j < sel.length; j++) manh.push(sel[j]);
+    if (manh.length == 1) return manh[0];
+    var g2 = c.L.groupItems.add();
+    for (j = 0; j < manh.length; j++) manh[j].move(g2, ElementPlacement.PLACEATEND);
+    return g2;
 }
 
 // Cây dựng hình: lá = hàm vẽ; nút = {op: 'cong'|'tru', k: [...], tf?}
@@ -155,7 +162,7 @@ function gT(G) {
 // Khoảng cách theo mắt: đứng–đứng 0,75U, đứng–tròn 0,6U, chéo–tròn 0,45U
 var KHOANG = [0.55, 0.75, 0.6, 0.45, 0.45, 0.6, 0.75, 0.6, 0.75, 0.75];
 function dungChu(L, G, ox, oy, s) {
-    var gl = [gT(G), gN(G, ASC), gU(G), gE(G), gX(G), gE(G), gN(G, X), gN(G, ASC), gA(G), gN(G, X), gN(G, ASC)];
+    var gl = [gT(G), gN(G, ASC), gU(G), gE(G), gX(G), gE(G), G.nKhe ? gNKhe(G) : gN(G, X), gN(G, ASC), gA(G), gN(G, X), gN(G, ASC)];
     var x = 0, ds = [];
     for (var i = 0; i < gl.length; i++) {
         ds.push(dung({ L: L, ox: ox + x * s, oy: oy, s: s, mode: 'fill' }, gl[i].nut));
@@ -168,13 +175,18 @@ function dungChu(L, G, ox, oy, s) {
 }
 
 // ---------- 3 icon chữ n ----------
-function iconA() { // Khe tốc độ: khe chéo 45° mọc từ góc ruột, tách thân và vòm
-    var w = 3.5, rt = 0.15;
+// Chữ n có khe chéo 45° mọc từ góc ruột, tách thân và vòm (phương án A). Dùng cho icon lẫn chữ n đầu của "nhanh".
+function nKhe(rt) {
+    var w = 3.5;
     var than = HR(0, 0, 1, X, [rt, rt, 0, rt]), chan = HR(w - 1, 0, w, 2, [rt, rt, 0, 0]);
     var vom = HP([[0.5, 1.5], [w, 1.5], [w, X, 1.5], [0.5, X]]), ruot = HR(1, 0.5, w - 1, X - H, [0, 0, 0.5, 0]);
     var d = [0.7071, 0.7071], b = 0.4, t = 1.9, L0 = [1, X - H], R0 = [L0[0] + 0.7071 * b, L0[1] - 0.7071 * b];
     var khe = HP([L0, R0, [R0[0] + d[0] * t, R0[1] + d[1] * t], [L0[0] + d[0] * t, L0[1] + d[1] * t]]);
-    return { w: w, h: X, nut: tru(cong(than, chan, tru(vom, ruot)), khe), phu: [],
+    return tru(cong(than, chan, tru(vom, ruot)), khe);
+}
+function gNKhe(G) { return { w: 3.5, nut: nKhe(G.rt) }; }
+function iconA() {
+    return { w: 3.5, h: X, nut: nKhe(0.15), phu: [],
         spec: 'U = {U} pt  ·  cao 4U  ·  nét 1U  ·  vai R 1,5U  ·  ruột R 0,5U  ·  khe 0,4U nghiêng 45° từ góc ruột' };
 }
 // Đường gồm các đoạn thẳng / cung (cung đi theo chiều kim đồng hồ). Trả về cách lấy điểm & cắt đoạn.
@@ -223,13 +235,17 @@ function iconB() { // Con đường: chữ n một nét đầu tròn, vai phải
             HE(c1[0] - 1.5, c1[1] - 1.5, c1[0] + 1.5, c1[1] + 1.5)],
         spec: 'U = {U} pt  ·  cao 4U  ·  nét đường 1,5U đầu tròn  ·  vai phải R 1,5U, góc trái R 0,75U (tâm nét)  ·  vạch 0,28U × 0,55U' };
 }
-function iconC() { // Khối app: chữ n âm bản nghiêng 10° trong khối vuông bo 12%
-    var S = 6.5, w = 3.5, rt = 0.1, dx = (S - w) / 2, dy = (S - X) / 2, tg = Math.tan(10 * Math.PI / 180);
+// Khối app: chữ n âm bản (cắt thủng) trong khối vuông 6,5U bo 12%, nghiêng `goc` độ.
+function iconKhoi(chuN, goc, spec) {
+    var S = 6.5, w = 3.5, dx = (S - w) / 2, dy = (S - X) / 2, tg = Math.tan(goc * Math.PI / 180);
+    chuN.tf = function (x, y) { return [x + (y - X / 2) * tg + dx, y + dy]; };
+    return { w: S, h: S, nut: tru(HR(0, 0, S, S, 0.78), chuN), phu: [], spec: spec };
+}
+function iconC() {
+    var w = 3.5, rt = 0.1;
     var chuN = cong(HR(0, 0, 1, X, [rt, rt, 0, rt]), HR(w - 1, 0, w, 2, [rt, rt, 0, 0]),
         tru(HP([[0.5, 1.5], [w, 1.5], [w, X, 1.5], [0.5, X]]), HR(1, 0.5, w - 1, X - H, [0, 0, 0.5, 0.3])));
-    chuN.tf = function (x, y) { return [x + (y - X / 2) * tg + dx, y + dy]; };
-    return { w: S, h: S, nut: tru(HR(0, 0, S, S, 0.78), chuN), phu: [],
-        spec: 'U = {U} pt  ·  khối 6,5U bo 0,78U (12%)  ·  chữ n cao 4U, nét 1U  ·  nghiêng 10°' };
+    return iconKhoi(chuN, 10, 'U = {U} pt  ·  khối 6,5U bo 0,78U (12%)  ·  chữ n cao 4U, nét 1U  ·  nghiêng 10°');
 }
 
 // ---------- 3 phương án ----------
@@ -242,14 +258,27 @@ var PA = [
         chuThich: 'Wordmark: đầu nét tròn hẳn (0,5U), chữ x nét đầu tròn — thân thiện, mềm.' },
     { ten: 'C', tieuDe: 'Khối app', icon: iconC, G: { rt: 0.06, khia: false }, ki: 6 / 6.5, dy: -0.25, gap: 1.4, sg: 40,
         y: 'Chữ n âm bản nghiêng 10° trong khối vuông bo góc: gọn, nhận ra ngay trên màn hình điện thoại.',
-        chuThich: 'Wordmark: đầu nét gần vuông (0,06U), không khía — chắc, nghiêm, "uy tín".' }
+        chuThich: 'Wordmark: đầu nét gần vuông (0,06U), không khía — chắc, nghiêm, "uy tín".', khoi: true }
+];
+var BO = (typeof BO_LOGO != 'undefined') ? BO_LOGO : 'ABC';
+if (BO == 'AC') PA = [ // Anh chọn A, muốn chữ n có khe vào "nhanh" + khung khối của C
+    { ten: 'AC1', nhan: 'A + C · KHỐI ĐỨNG', tieuDe: 'Khe tốc độ trong khối', khoi: true, sg: 40,
+        icon: function () { return iconKhoi(nKhe(0.1), 0, 'U = {U} pt  ·  khối 6,5U bo 0,78U (12%)  ·  chữ n cao 4U, nét 1U  ·  khe 0,4U nghiêng 45° từ góc ruột'); },
+        G: { rt: 0.15, khia: true, nKhe: true }, ki: 6 / 6.5, dy: -0.25, gap: 1.4,
+        y: 'Icon A đặt trong khối app của C; chữ n đầu của "nhanh" mang đúng khe 45° ấy — icon và chữ nói cùng một ý.',
+        chuThich: 'Wordmark A (khía nhỏ, đầu nét bo 0,15U); riêng chữ n đầu "nhanh" là n có khe như icon.' },
+    { ten: 'AC2', nhan: 'A + C · KHỐI NGHIÊNG', tieuDe: 'Khe tốc độ, khối nghiêng', khoi: true, sg: 40,
+        icon: function () { return iconKhoi(nKhe(0.1), 10, 'U = {U} pt  ·  khối 6,5U bo 0,78U (12%)  ·  chữ n cao 4U, nét 1U, nghiêng 10°  ·  khe 0,4U'); },
+        G: { rt: 0.15, khia: true, nKhe: true }, ki: 6 / 6.5, dy: -0.25, gap: 1.4,
+        y: 'Như AC1 nhưng chữ n trong khối nghiêng 10° về phía trước — thêm cảm giác chạy; chữ "nhanh" vẫn đứng.',
+        chuThich: 'Wordmark A (khía nhỏ, đầu nét bo 0,15U); riêng chữ n đầu "nhanh" là n có khe như icon.' }
 ];
 
 // ---------- Tài liệu ----------
 var doc = app.documents.add(DocumentColorSpace.RGB, 1920, 1080);
 var r0 = doc.artboards[0].artboardRect;
-doc.artboards[0].name = 'A';
-for (var i = 1; i < 3; i++) doc.artboards.add([r0[0] + 2100 * i, r0[1], r0[2] + 2100 * i, r0[3]]).name = PA[i].ten;
+doc.artboards[0].name = PA[0].ten;
+for (var i = 1; i < PA.length; i++) doc.artboards.add([r0[0] + 2100 * i, r0[1], r0[2] + 2100 * i, r0[3]]).name = PA[i].ten;
 var lopNen = doc.layers[0]; lopNen.name = 'Nen';
 var lopLuoi = doc.layers.add(); lopLuoi.name = 'Luoi';
 var lopDung = doc.layers.add(); lopDung.name = 'Dung hinh';
@@ -316,7 +345,7 @@ function veLuoi(P, ic, cx, cy) {
     for (var i = 0; i < ic.phu.length; i++) ic.phu[i]({ L: lopDung, ox: ox, oy: oy, s: sg, mode: 'vong' });
     // thước 1U dưới thân trái
     var u0 = pt(c, 0, -0.55), u1 = pt(c, 1, -0.55);
-    if (P.ten == 'C') { u0 = pt(c, 0, -0.55); u1 = pt(c, 1, -0.55); }
+    if (P.khoi) { u0 = pt(c, 0, -0.55); u1 = pt(c, 1, -0.55); }
     vach(lopLuoi, u0[0], u0[1], u1[0], u1[1], MAU.den, 1);
     vach(lopLuoi, u0[0], u0[1] - 5, u0[0], u0[1] + 5, MAU.den, 1); vach(lopLuoi, u1[0], u1[1] - 5, u1[0], u1[1] + 5, MAU.den, 1);
     var tu = lopChu.textFrames.add(); tu.contents = 'U';
@@ -343,7 +372,7 @@ for (var p = 0; p < PA.length; p++) {
     var goc = dungLogo(P, ic, SX(150), SY(380), 20);
     dat(goc, 620, 330, 940, null);
     toLogo(goc, MAU.chinh, MAU.navy, MAU.chinh);
-    if (P.ten == 'C') to(phan(goc, 'icon'), MAU.chinh);
+    if (P.khoi) to(phan(goc, 'icon'), MAU.chinh);
 
     // 2. Lưới dựng hình icon
     veLuoi(P, ic, 1580, 330);
@@ -352,7 +381,7 @@ for (var p = 0; p < PA.length; p++) {
 
     // 3. Nền xanh đậm
     var toi = dat(banSao(goc), 360, 875, 560, null);
-    toLogo(toi, P.ten == 'C' ? MAU.trang : MAU.sangToi, MAU.trang, MAU.sangToi);
+    toLogo(toi, P.khoi ? MAU.trang : MAU.sangToi, MAU.trang, MAU.sangToi);
     chu('NỀN XANH ĐẬM  #0B2E6F', 48, 680, 12, 'SemiBold', MAU.sangToi, 180);
 
     // 4. Một màu
@@ -365,12 +394,12 @@ for (var p = 0; p < PA.length; p++) {
     var icGoc = phan(goc, 'icon'), co = [16, 24, 32, 48], xs = [1372, 1412, 1464, 1532];
     for (var k = 0; k < co.length; k++) {
         var cx = xs[k] + co[k] / 2;
-        var i1 = banSao(icGoc); to(i1, MAU.chinh); dat(i1, cx, 740, null, P.ten == 'C' ? co[k] : Math.round(co[k] * 0.82));
-        if (P.ten == 'C') { var i2 = banSao(icGoc); to(i2, MAU.den); dat(i2, cx, 812, null, co[k]); }
+        var i1 = banSao(icGoc); to(i1, MAU.chinh); dat(i1, cx, 740, null, P.khoi ? co[k] : Math.round(co[k] * 0.82));
+        if (P.khoi) { var i2 = banSao(icGoc); to(i2, MAU.den); dat(i2, cx, 812, null, co[k]); }
         else khoiApp(icGoc, cx, 812, co[k]);
         chu(String(co[k]), cx - 6, 852, 11, 'Medium', MAU.mo);
     }
-    if (P.ten == 'C') { var ia = banSao(icGoc); to(ia, MAU.chinh); dat(ia, 1700, 776, null, 96); }
+    if (P.khoi) { var ia = banSao(icGoc); to(ia, MAU.chinh); dat(ia, 1700, 776, null, 96); }
     else khoiApp(icGoc, 1700, 776, 96);
     chu('app icon 96', 1666, 840, 11, 'Medium', MAU.mo);
     var l20 = dat(banSao(goc), 1360, 920, null, 20); toLogo(l20, MAU.chinh, MAU.navy, MAU.chinh);
@@ -381,7 +410,7 @@ for (var p = 0; p < PA.length; p++) {
     chu('cao 32', 1690, 973, 11, 'Medium', MAU.mo);
 
     // 6. Chú thích
-    chu('PHƯƠNG ÁN ' + P.ten, 64, 52, 13, 'Bold', MAU.chinh, 220);
+    chu('PHƯƠNG ÁN ' + (P.nhan || P.ten), 64, 52, 13, 'Bold', MAU.chinh, 220);
     chu(P.tieuDe, 64, 76, 30, 'Bold', MAU.den);
     chu(P.y, 64, 122, 15, 'Regular', MAU.vua);
     var hex = [['0B2E6F', 'thuexe', MAU.navy], ['2563EB', 'nhanh + icon', MAU.chinh], ['93C5FD', 'trên nền đậm', MAU.sangToi]];
@@ -404,7 +433,7 @@ for (p = 0; p < PA.length; p++) {
     doc.exportFile(f, ExportType.PNG24, opt);
     xuat.push(f.fsName);
 }
-var ai = new File(THU_MUC.fsName + '/nguon/logo-dot1.ai');
+var ai = new File(THU_MUC.fsName + (BO == 'AC' ? '/nguon/logo-dot1-ac.ai' : '/nguon/logo-dot1.ai'));
 doc.saveAs(ai, new IllustratorSaveOptions());
 doc.close(SaveOptions.DONOTSAVECHANGES);
 xuat.join(' | ') + ' | ' + ai.fsName;
