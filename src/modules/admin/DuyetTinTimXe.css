@@ -1,0 +1,46 @@
+/* admin/DuyetTinTimXe — màn duyệt tin "Cộng đồng tìm xe".
+   Trước 17/10 các class dưới KHÔNG có ở file CSS nào → màn hiện thành một cột chữ trần. */
+
+.admin-page { display: flex; flex-direction: column; gap: var(--sp-4); }
+.admin-header { display: flex; justify-content: space-between; align-items: flex-start; gap: var(--sp-3); flex-wrap: wrap; }
+.admin-header h2 { margin: 0; font-size: 18px; font-weight: 700; color: var(--m-dark); }
+.admin-subtitle { margin: 4px 0 0; font-size: 13px; color: var(--m-subtle); max-width: 640px; }
+
+.admin-alert { display: flex; align-items: center; gap: var(--sp-2); padding: var(--sp-3); border-radius: var(--r-box); font-size: 14px; }
+.admin-alert.alert-error { background: var(--m-red-bg); color: var(--m-red); }
+
+.admin-loading, .admin-empty {
+  padding: var(--sp-6) var(--sp-4); text-align: center; color: var(--m-subtle);
+  background: var(--m-surface); border: 1px solid var(--m-border); border-radius: var(--r-box);
+}
+.admin-empty h3 { margin: 0 0 4px; font-size: 16px; color: var(--m-dark); }
+.admin-empty p { margin: 0; font-size: 13px; }
+.admin-empty-icon { color: var(--m-green); margin-bottom: var(--sp-2); }
+
+.admin-queue-list { display: flex; flex-direction: column; gap: var(--sp-3); }
+.admin-queue-card {
+  display: flex; flex-direction: column; gap: var(--sp-3);
+  padding: var(--sp-4); background: var(--m-surface);
+  border: 1px solid var(--m-border); border-radius: var(--r-box); box-shadow: var(--shadow-sm);
+}
+
+.queue-card-head { display: flex; justify-content: space-between; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
+.queue-user-info { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; font-size: 14px; color: var(--m-dark); }
+.queue-phone { color: var(--m-mid); }
+.queue-time { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; color: var(--m-subtle); margin-left: var(--sp-2); }
+.queue-card-actions { display: flex; gap: var(--sp-2); }
+.btn-tuchoi { color: var(--m-red); }
+
+.queue-criteria-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: var(--sp-2) var(--sp-4); }
+.criteria-item { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--m-mid); min-width: 0; }
+.criteria-item svg { flex: none; color: var(--m-subtle); }
+
+.queue-content-box { padding: var(--sp-3); background: var(--m-bg); border-radius: var(--r-box); }
+.queue-content-title { font-size: 12px; font-weight: 600; color: var(--m-subtle); margin-bottom: 4px; }
+.queue-content-text { font-size: 14px; line-height: 1.55; color: var(--m-dark); white-space: pre-wrap; }
+
+@media (max-width: 640px) {
+  .queue-card-actions { width: 100%; }
+  .queue-card-actions .btn { flex: 1; justify-content: center; }
+  .queue-time { margin-left: 0; }
+}

@@ -5,6 +5,7 @@ import {
   MessageCircle, Send, CheckCircle2, Share2, Sparkles, User, Tag
 } from 'lucide-react'
 import { formatVnd } from '../../lib/format'
+import { moTaNganSach } from './nganSach'
 import { useAuth } from '../auth/AuthProvider'
 import ModalXemLienHe from './ModalXemLienHe'
 import ModalChaoXe from './ModalChaoXe'
@@ -129,12 +130,10 @@ export default function TheTinTimXe({ request, onCapNhat }) {
           </div>
         )}
 
-        {request.budget_max && (
-          <div className="timxe-chip chip-gia">
-            <DollarSign size={13} />
-            <span>~{formatVnd(request.budget_max)}/ngày</span>
-          </div>
-        )}
+        <div className="timxe-chip chip-gia">
+          <DollarSign size={13} />
+          <span>{moTaNganSach(request.budget_min, request.budget_max)}</span>
+        </div>
       </div>
 
       {/* 3. Nội dung bài viết */}

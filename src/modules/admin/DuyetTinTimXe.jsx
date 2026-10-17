@@ -2,7 +2,9 @@ import { useState, useEffect } from 'react'
 import { Check, X, RefreshCw, AlertCircle, Calendar, MapPin, DollarSign, Car, User, Clock } from 'lucide-react'
 import { getSupabase } from '../../lib/supabase'
 import { adminXuLyTinTimXe } from '../requests/requestsApi'
-import { formatVnd } from '../../lib/format'
+import { moTaNganSach } from '../requests/nganSach'
+import { PROVINCES } from '../../data/provinces'
+import './DuyetTinTimXe.css'
 
 export default function DuyetTinTimXe() {
   const [danhSach, setDanhSach] = useState([])
@@ -101,7 +103,7 @@ export default function DuyetTinTimXe() {
         <div className="admin-loading">Đang tải danh sách chờ duyệt...</div>
       ) : danhSach.length === 0 ? (
         <div className="admin-empty">
-          <Check size={32} style={{ color: '#16a34a', marginBottom: 8 }} />
+          <Check size={32} className="admin-empty-icon" />
           <h3>Không có tin nào đang chờ duyệt</h3>
           <p>Tất cả các bài đăng tìm xe từ khách đã được xử lý xong.</p>
         </div>
@@ -152,14 +154,17 @@ export default function DuyetTinTimXe() {
                 </div>
                 <div className="criteria-item">
                   <MapPin size={14} />
-                  <span>{item.address_text || 'Chưa rõ địa chỉ'}</span>
+                  {/* province_id = vị trí trong PROVINCES + 1 (đúng cách form lưu). */}
+                  <span>{[item.address_text, PROVINCES[(item.province_id ?? 0) - 1]].filter(Boolean).join(', ') || 'Chưa chọn khu vực'}</span>
                 </div>
-                {item.budget_max && (
-                  <div className="criteria-item">
-                    <DollarSign size={14} />
-                    <span>~{formatVnd(item.budget_max)}/ngày</span>
-                  </div>
-                )}
+                <div className="criteria-item">
+                  <DollarSign size={14} />
+                  <span>{moTaNganSach(item.budget_min, item.budget_max)}</span>
+                </div>
+                <div className="criteria-item">
+                  <User size={14} />
+                  <span>{item.consent_share_phone ? 'Đồng ý cho chủ xe xem số' : 'KHÔNG chia sẻ số'}</span>
+                </div>
               </div>
 
               <div className="queue-content-box">

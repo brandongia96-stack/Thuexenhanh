@@ -130,7 +130,9 @@ begin
   else
     -- Hàm nội bộ (đếm lượt xem/chào, đánh dấu đã báo) đặt cờ này trong giao dịch.
     -- Client gọi qua API không đặt được GUC tuỳ ý.
-    if current_setting('txn.cap_nhat_noi_bo', true) = '1' then
+    -- Kết nối DB trực tiếp (cron, SQL Editor, migration) không có JWT → cho qua,
+    -- cùng luật với guard_listing_sensitive_cols (0017).
+    if current_setting('txn.cap_nhat_noi_bo', true) = '1' or auth.role() is null then
       return new;
     end if;
     if not la_kiem_duyet() then

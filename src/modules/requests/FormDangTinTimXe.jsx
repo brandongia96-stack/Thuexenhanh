@@ -9,6 +9,7 @@ import { useViTri } from '../../context/ViTriContext'
 import { PROVINCES, districtsOf } from '../../data/provinces'
 import { sinhNoiDungTimXe, tinhSoNgay } from './autoTextGenerator'
 import { taoTinTimXe } from './requestsApi'
+import { khoangNganSach } from './nganSach'
 import './FormDangTinTimXe.css'
 
 export default function FormDangTinTimXe() {
@@ -170,9 +171,9 @@ export default function FormDangTinTimXe() {
         addressText: [addressText, district].filter(Boolean).join(', '),
         lat,
         lng,
-        budgetMin: budgetOption === 'duoi_700k' ? 0 : 700000,
-        budgetMax: budgetOption === 'duoi_700k' ? 700000 : 2500000,
-        budgetNegotiable: true,
+        budgetMin: khoangNganSach(budgetOption, Number(budgetCustom) || 0).min,
+        budgetMax: khoangNganSach(budgetOption, Number(budgetCustom) || 0).max,
+        budgetNegotiable: khoangNganSach(budgetOption, Number(budgetCustom) || 0).thoaThuan,
         extraTags,
         customNote,
         content: finalContent

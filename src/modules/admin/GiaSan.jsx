@@ -64,7 +64,7 @@ export default function GiaSan() {
   return (
     <div className="stack" style={{ gap: 'var(--sp-4)' }}>
       <p className="t-small" style={{ margin: 0 }}>
-        Tin xe dưới giá sàn của số chỗ tương ứng sẽ không gửi duyệt được. Sàn áp dụng theo dòng có số chỗ lớn nhất ≤ số chỗ của xe.
+        Tin xe dưới giá sàn của số chỗ tương ứng KHÔNG bị chặn — server gắn cờ "Giá bất thường" để người duyệt xem tay (PL-33, đổi 11/10). Sàn áp dụng theo dòng có số chỗ lớn nhất ≤ số chỗ của xe.
       </p>
       {data.length === 0 ? <EmptyState title="Chưa có mức giá sàn nào" /> : (
         <div className="card" style={{ overflowX: 'auto' }}>

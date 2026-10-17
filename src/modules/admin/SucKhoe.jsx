@@ -47,7 +47,7 @@ export default function SucKhoe() {
       ) : (
         <>
           <div className="ad-luoi">
-            <div className="card ad-ov"><div className="t-small">Tin chờ duyệt</div><div className="ad-so-lon">{d.tin_cho_duyet}</div></div>
+            <div className="card ad-ov"><div className="t-small">Tin chưa lên sàn (chờ duyệt + chờ trả phí)</div><div className="ad-so-lon">{d.tin_cho_duyet}</div></div>
             <div className="card ad-ov"><div className="t-small">Báo cáo chưa xử lý</div><div className="ad-so-lon">{d.bao_cao_chua_xu_ly}</div></div>
           </div>
 
