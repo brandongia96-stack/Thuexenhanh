@@ -40,21 +40,22 @@ export default function Header() {
       <div className="hd-inner">
         <Link to="/" className="hd-logo" aria-label="Thuê Xe Nhanh — trang chủ">
           {/* Nằm ở màn hình đầu → KHÔNG lazy (HIEU-NANG.md 1.3). width/height giữ chỗ, không gây CLS.
-              Nguồn 108×108 hiển thị 36×36 → nét trên màn 3x. Tên nằm ngay cạnh nên alt để trống. */}
+              Màn rộng: logo ngang AC2 (SVG ~5 KB, cao 24 px — tối thiểu 20 px theo brand guideline).
+              Màn ≤ 600 px: chỉ icon 36×36 (nguồn 108×108) — logo ngang + menu + 2 nút không vừa, từng tràn ở 500 px. */}
           <picture>
-            <source srcSet="/logo.webp" type="image/webp" />
+            <source media="(max-width: 600px)" srcSet="/logo.webp" type="image/webp" width="36" height="36" />
+            <source media="(max-width: 600px)" srcSet="/logo.png" width="36" height="36" />
             <img
-              src="/logo.png"
-              alt=""
-              width="36"
-              height="36"
+              src="/logo-ngang.svg"
+              alt="Thuê Xe Nhanh"
+              width="206"
+              height="24"
               className="hd-logo-img"
               loading="eager"
               decoding="async"
               fetchPriority="high"
             />
           </picture>
-          <span>Thuê Xe Nhanh</span>
         </Link>
 
         <nav className="hd-nav">

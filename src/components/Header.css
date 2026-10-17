@@ -29,10 +29,11 @@
   white-space: nowrap;
 }
 
+/* Logo ngang: tỉ lệ viewBox 600 × 69,77 → cao 24 px rộng 206 px */
 .hd-logo-img {
-  width: 36px;
-  height: 36px;
-  border-radius: var(--r-sm);
+  display: block;
+  width: 206px;
+  height: 24px;
   object-fit: contain;
 }
 
@@ -66,6 +67,8 @@
 
 @media (max-width: 640px) {
   .hd-inner { gap: var(--sp-2); padding: 0 var(--sp-3); }
+  /* Logo ngang cao 20 px (cỡ tối thiểu theo brand guideline) — rộng 172 px, bằng logo + chữ cũ, không đẩy nút ra mép */
+  .hd-logo-img { width: 172px; height: 20px; }
   .hd-nav { gap: 0; }
   /* "Thuê xe" từng bị xuống 2 dòng ở 375px. Giữ một dòng, thu padding cho vừa. */
   .hd-link { white-space: nowrap; padding: 0 var(--sp-2); font-size: 13.5px; }
@@ -73,9 +76,12 @@
   .hd-right .btn-sm { padding: 0 var(--sp-2); font-size: 13.5px; }
 }
 
-/* Ẩn chữ cạnh logo khi điện thoại hẹp để nhường chỗ cho nút bấm */
+/* ≤ 600 px: <picture> đổi sang icon vuông để nhường chỗ cho menu + nút bấm (khớp media trong Header.jsx) */
+@media (max-width: 600px) {
+  .hd-logo-img { width: 36px; height: 36px; }
+}
+
 @media (max-width: 480px) {
-  .hd-logo span { display: none; }
   .hd-inner { padding: 0 var(--sp-2); gap: var(--sp-1); }
 }
 
