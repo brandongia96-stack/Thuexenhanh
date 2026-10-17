@@ -57,3 +57,8 @@ tools/cccd-scanner/*.jpg
 tools/cccd-scanner/*.jpeg
 __pycache__/
 *.pyc
+
+# Luồng 15 designer: file gốc Photoshop/Illustrator nặng + bản xuất chờ duyệt — không commit
+# (vẫn nằm trong backup-master). Bản đã duyệt chép sang public/ hoặc src/assets/.
+design/nguon/
+design/xuat/
