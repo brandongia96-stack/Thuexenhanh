@@ -11,10 +11,12 @@
   /* ─── Màu thương hiệu ───
      Lưu ý: tên là --m-green nhưng giá trị THỰC TẾ là xanh dương.
      Giữ nguyên tên để khỏi phải sửa toàn bộ code cũ khi tham chiếu. */
-  --m-green:        #3b82f6;
-  --m-green-hover:  #2563eb;
+  --m-green:        #2563eb;
+  --m-green-hover:  #1d4ed8;
   --m-green-light:  #eff6ff;
   --m-green-border: #bfdbfe;
+  --m-navy:         #0b2e6f;
+  --m-sang-toi:     #93c5fd;
 
   /* ─── Chữ ─── */
   --m-dark:   #141414;
