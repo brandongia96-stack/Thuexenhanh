@@ -86,6 +86,11 @@ chép sang `public/` → commit (**KHÔNG push**, CLAUDE.md §2.3 luật 13).
   `DONOTSAVECHANGES`, chỉ lưu vào `design/nguon/` hoặc `design/xuat/`.
 - **Cấm ảnh/giấy tờ tuỳ thân** (CCCD, bằng lái…) dù chỉ làm mẫu — repo từng lộ ảnh CCCD.
 
+## Việc đang giao (17/10)
+
+**Logo đợt 1 — 3 artboard phương án.** Đọc `design/BRIEF-LOGO.md` + skill
+`thiet-ke-logo` + ảnh mẫu trong `design/tham-khao/`. Anh duyệt xong mới làm brand guideline.
+
 ## Việc đầu tiên gợi ý
 
 1. Xin anh cho cài font Plus Jakarta Sans (nếu anh đồng ý, cài font, chạy lại `_kiem-tra.jsx`).
